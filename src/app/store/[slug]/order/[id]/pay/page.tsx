@@ -10,10 +10,11 @@ export default async function FibPayPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
-  searchParams: Promise<{ paymentId?: string }>;
+  searchParams: Promise<{ paymentId?: string; token?: string }>;
 }) {
   const { slug, id } = await params;
-  const { paymentId } = await searchParams;
+  const { paymentId, token } = await searchParams;
+  if (!token) notFound();
 
   const supabase = await createClient();
   const { data: tenant } = await supabase
@@ -31,6 +32,7 @@ export default async function FibPayPage({
     .select('id, tenant_id, order_number, total_iqd, payment_method, payment_status')
     .eq('id', id)
     .eq('tenant_id', tenant.id)
+    .eq('public_access_token', token)
     .maybeSingle();
 
   if (!order || order.payment_method !== 'fib') notFound();
@@ -40,7 +42,7 @@ export default async function FibPayPage({
       <div className="max-w-lg mx-auto rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
         <h1 className="text-xl font-bold text-green-900">تم الدفع بنجاح ✓</h1>
         <Link
-          href={`/store/${slug}/order/${id}`}
+          href={`/store/${slug}/order/${id}?token=${encodeURIComponent(token)}`}
           className="mt-4 inline-block text-sm text-green-700 hover:underline"
         >
           عرض تفاصيل الطلب
