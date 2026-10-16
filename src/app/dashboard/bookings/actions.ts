@@ -410,7 +410,7 @@ export async function createPublicBookingAction(
   if (!parsed.success) return { fieldErrors: toFieldErrors(parsed.error.flatten().fieldErrors) };
   const d = parsed.data;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: tenant } = await supabase
     .from('tenants')
@@ -432,8 +432,18 @@ export async function createPublicBookingAction(
 
   if (!service) return { error: 'الخدمة غير متاحة' };
 
-  // Availability check
+  // If a staff member was selected, ensure it belongs to this active tenant.
   if (d.staffId) {
+    const { data: selectedStaff } = await supabase
+      .from('staff_members')
+      .select('id')
+      .eq('id', d.staffId)
+      .eq('tenant_id', tenant.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (!selectedStaff) return { error: 'الموظف المحدد غير متاح' };
+
     const { data: available } = await supabase.rpc('check_booking_availability', {
       p_tenant_id: tenant.id,
       p_staff_id: d.staffId,
