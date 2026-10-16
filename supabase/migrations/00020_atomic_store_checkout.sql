@@ -144,7 +144,7 @@ BEGIN
   FOR v_item IN
     SELECT value
     FROM jsonb_array_elements(p_items) AS items(value)
-    ORDER BY value->>'productId'
+    ORDER BY (value->>'productId')::UUID
   LOOP
     IF COALESCE(v_item->>'productId', '') !~* '^[0-9a-f-]{36}$'
        OR COALESCE(v_item->>'quantity', '') !~ '^[0-9]+$' THEN
