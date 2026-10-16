@@ -7,6 +7,7 @@ import {
   registerSchema,
   forgotPasswordSchema,
   otpSchema,
+  resetPasswordSchema,
 } from '@/lib/validations/auth';
 
 export type ActionState = {
@@ -176,16 +177,24 @@ export async function resetPasswordAction(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const password = String(formData.get('password') ?? '');
-  const confirmPassword = String(formData.get('confirmPassword') ?? '');
-  if (password.length < 10) return { error: 'كلمة المرور يجب أن تكون 10 أحرف على الأقل' };
-  if (password !== confirmPassword) return { error: 'كلمتا المرور غير متطابقتين' };
+  const parsed = resetPasswordSchema.safeParse({
+    password: String(formData.get('password') ?? ''),
+    confirmPassword: String(formData.get('confirmPassword') ?? ''),
+  });
+
+  if (!parsed.success) {
+    return { fieldErrors: flattenZodErrors(parsed.error.flatten().fieldErrors) };
+  }
+
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
-  const { error } = await supabase.auth.updateUser({ password });
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) redirect('/login');
+
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) return { error: 'تعذر تحديث كلمة المرور. أعد طلب رمز التحقق وحاول مجددًا' };
-  redirect('/dashboard');
+
+  await supabase.auth.signOut();
+  redirect('/login?passwordReset=success');
 }
 
 export async function logoutAction() {

@@ -1,9 +1,10 @@
 # نادوس NADOS
+
 منصة تجارة إلكترونية عربية RTL موجهة للتاجر العراقي، مبنية على Next.js 15.5.28 وTypeScript وTailwind وSupabase.
 
 ## الوحدات الموجودة في المستودع
-- المصادقة وإعداد حساب/متجر التاجر.
-- واجهة متجر عامة ومنتجات وسلة وcheckout.
+- المصادقة عبر الهاتف وOTP، مع استعادة كلمة المرور عبر SMS.
+- واجهة متجر عامة، منتجات، سلة، وcheckout يعتمد على RPC ذري للتحقق من الأسعار والمخزون وإنشاء الطلب.
 - لوحة تحكم للمنتجات والتصنيفات والطلبات والعملاء والتقارير.
 - تكاملات توصيل عبر adapters قابلة للتكوين.
 - WhatsApp webhooks ومعالجة الرسائل واستخراج تفاصيل الطلبات بالذكاء الاصطناعي.
@@ -11,22 +12,25 @@
 - الدعم الفني وقاعدة المعرفة.
 - مؤشرات SaaS، مهام cron، ومراقبة Sentry.
 - نظام حجوزات وخدمات وموظفين وتقويم.
-- 18 migration أساسية في supabase/migrations وملفات E2E أولية.
+- 20 migration في supabase/migrations، مع RLS وسياسات للواجهات العامة واختبارات E2E أولية.
 
-## إعداد محلي
-1. استخدم Node.js 20 or newer.
-2. انسخ .env.local.example إلى .env.local وأكمل مفاتيحك محليًا.
-3. لا ترفع أي مفاتيح أو ملف .env إلى GitHub.
-4. ثبّت الحزم عبر npm install.
-5. نفّذ npx supabase login ثم npx supabase link --project-ref YOUR_PROJECT_REF، وبعدها npx supabase db push لتطبيق migrations بالترتيب.
-6. نفّذ npm run typecheck ثم npm run lint ثم npm run build.
-7. شغّل npm run dev.
+## الإعداد المحلي
+1. استخدم Node.js 20.
+2. انسخ .env.local.example إلى .env.local، ولا تضع أي أسرار حقيقية في Git.
+3. ثبّت الحزم: npm install
+4. شغّل Supabase المحلي: npm run supabase:start
+5. نفّذ npx supabase status وانسخ API_URL وANON_KEY وSERVICE_ROLE_KEY إلى .env.local.
+6. طبّق migrations والـ seed المحلي: npm run supabase:reset
+7. شغّل الفحوصات: npm run typecheck ثم npm run lint ثم npm run build.
+8. شغّل التطبيق: npm run dev
 
-## مهم قبل الإنتاج
-الكود المرفوع لا يعني أن حسابات الدفع أو WhatsApp أو شركات التوصيل أصبحت متصلة. أضف بيانات الاعتماد الرسمية في إعدادات الاستضافة، وطبّق migrations على staging، واختبر عزل المتاجر (RLS) وتدفقات الدفع والويب هوكس. راجع docs/LAUNCH_CHECKLIST.md.
+لإيقاف الخدمات المحلية استخدم npm run supabase:stop.
 
 ## فحوصات
 - npm run typecheck
 - npm run lint
 - npm run build
 - npm run test:e2e
+
+## مهم قبل الإنتاج
+وجود الكود لا يعني أن حسابات الدفع أو WhatsApp أو شركات التوصيل أصبحت متصلة. أضف بيانات الاعتماد الرسمية في إعدادات الاستضافة، وطبّق migrations على staging، واختبر عزل المتاجر (RLS) وتدفقات الدفع والويب هوكس. لا تستخدم مفاتيح الإنتاج محليًا أو داخل CI. راجع docs/LAUNCH_CHECKLIST.md وdocs/TODO.md؛ في النسخة الأساسية السابقة نجحت فحوص TypeScript وESLint والبناء، لكن تغييرات هذا الفرع تحتاج تشغيل CI جديدًا. تدقيق الاعتماديات أظهر مخاطر عالية عابرة تحتاج مراجعة قبل الإنتاج؛ لم يتم نشر الإنتاج.

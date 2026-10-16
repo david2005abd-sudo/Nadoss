@@ -14,7 +14,7 @@ export default async function BookingSuccessPage({
 
   const supabase = await createClient();
   const { data: tenant } = await supabase
-    .from('tenants')
+    .from('public_storefronts')
     .select('name, phone, slug')
     .eq('slug', slug)
     .maybeSingle();

@@ -15,8 +15,8 @@ export default function ResetPasswordPage() {
       <p className="text-sm text-gray-500 mb-6">بعد التحقق من رمز SMS، اختر كلمة مرور قوية لحسابك.</p>
       {state.error && <div role="alert" className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">{state.error}</div>}
       <form action={formAction} className="space-y-4">
-        <FormField label="كلمة المرور الجديدة" name="password" type="password" minLength={10} required autoComplete="new-password" />
-        <FormField label="تأكيد كلمة المرور" name="confirmPassword" type="password" minLength={10} required autoComplete="new-password" />
+        <FormField label="كلمة المرور الجديدة" name="password" type="password" minLength={10} required autoComplete="new-password" errors={state.fieldErrors?.password} />
+        <FormField label="تأكيد كلمة المرور" name="confirmPassword" type="password" minLength={10} required autoComplete="new-password" errors={state.fieldErrors?.confirmPassword} />
         <Button type="submit" className="w-full" disabled={isPending}>{isPending ? 'جارٍ التحديث...' : 'حفظ كلمة المرور'}</Button>
       </form>
       <p className="mt-6 text-center text-sm text-gray-600"><Link href="/login" className="text-nados-primary font-medium hover:underline">العودة لتسجيل الدخول</Link></p>
