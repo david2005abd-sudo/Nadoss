@@ -106,7 +106,7 @@ export async function placeOrderAction(
       amount: Number(order.total_iqd),
       orderId: order.id,
       description: `طلب ${order.order_number} من ${order.tenant_slug}`,
-      callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/api/payments/callback`,
+      callbackUrl: `${(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\\/+$/, '')}/api/payments/callback?gateway=${encodeURIComponent(parsed.data.paymentMethod)}`,
     });
   } catch {
     // Release reserved stock if the gateway failed before creating a usable payment session.
