@@ -1,0 +1,12 @@
+# SECURITY — NADOS
+- Never commit .env files, API keys, access tokens or customer data.
+- Never expose Supabase service-role credentials to browser code.
+- Enable RLS for every tenant-owned table before connecting UI data.
+- Derive tenant identity from trusted auth state and validate membership server-side.
+- Validate all external input with Zod.
+- Rate-limit public endpoints and verify webhook signatures.
+- Use idempotency for order/payment callbacks where appropriate.
+- Verify payment server-to-server; never trust a browser redirect as proof of payment.
+- Record sensitive actions in audit logs without storing secrets.
+- Test cross-tenant access denial before launch.
+- Avoid returning stack traces or credentials in client-facing errors.
