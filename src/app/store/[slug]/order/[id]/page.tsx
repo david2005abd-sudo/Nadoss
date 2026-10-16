@@ -9,10 +9,11 @@ export default async function OrderConfirmationPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
-  searchParams: Promise<{ new?: string }>;
+  searchParams: Promise<{ new?: string; token?: string }>;
 }) {
   const { slug, id } = await params;
-  const { new: isNew } = await searchParams;
+  const { new: isNew, token } = await searchParams;
+  if (!token) notFound();
 
   const supabase = await createClient();
 
@@ -36,6 +37,7 @@ export default async function OrderConfirmationPage({
     )
     .eq('id', id)
     .eq('tenant_id', tenant.id)
+    .eq('public_access_token', token)
     .maybeSingle();
 
   if (!order) notFound();
