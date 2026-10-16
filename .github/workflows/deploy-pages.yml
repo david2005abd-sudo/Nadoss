@@ -33,6 +33,11 @@ jobs:
       - name: Park middleware for static export
         run: mv src/middleware.ts src/middleware.ts.disabled
 
+      # The storefront is per-tenant dynamic data (needs the live API); it is
+      # not part of the static preview.
+      - name: Remove store route for static export
+        run: rm -rf src/app/store
+
       # Browser-side Supabase auth needs the public URL + anon key baked into
       # the client bundle. The key is public by design; see scripts/gen-env.js.
       - name: Generate .env.local for the static build

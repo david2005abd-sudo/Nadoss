@@ -1,71 +1,96 @@
+'use client';
+
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { formatIQD } from '@/lib/utils';
 import { ShoppingBag, Store } from 'lucide-react';
 
-export const dynamic = 'force-static';
+type Tenant = { id: string; name: string; phone: string | null };
+type Product = {
+  id: string;
+  name_ar: string;
+  name: string;
+  price_iqd: number;
+  images: unknown;
+  stock: number;
+};
 
-// Static export has no request context, so no slug can be resolved at build
-// time; the page reads the tenant from the browser after hydration.
-export function generateStaticParams() {
-  return [];
-}
+export default function StoreHomePage() {
+  const params = useParams();
+  const slug = typeof params?.slug === 'string' ? params.slug : '';
 
-/**
- * Storefront page. Rendered statically for the preview build; fetches the
- * tenant's products from the browser on mount so it also works on
- * GitHub Pages (no server required).
- */
-export default async function StoreHomePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+  const [tenant, setTenant] = useState<Tenant | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [missing, setMissing] = useState(false);
 
-  let tenant: { id: string; name: string; phone: string | null } | null = null;
-  let products: {
-    id: string;
-    name_ar: string;
-    name: string;
-    price_iqd: number;
-    images: unknown;
-    stock: number;
-  }[] = [];
+  useEffect(() => {
+    let cancelled = false;
 
-  try {
-    const supabase = createClient();
-    const { data: tenantData } = await supabase
-      .from('tenants')
-      .select('id, name, slug, phone, is_active')
-      .eq('slug', slug)
-      .eq('is_active', true)
-      .maybeSingle();
-    tenant = tenantData;
+    async function load() {
+      if (!slug) {
+        setMissing(true);
+        setLoading(false);
+        return;
+      }
+      try {
+        const supabase = createClient();
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('id, name, slug, phone, is_active')
+          .eq('slug', slug)
+          .eq('is_active', true)
+          .maybeSingle();
 
-    if (tenant) {
-      const { data: productData } = await supabase
-        .from('products')
-        .select('id, name_ar, name, price_iqd, images, stock')
-        .eq('tenant_id', tenant.id)
-        .eq('is_active', true)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(24);
-      products = productData ?? [];
+        if (cancelled) return;
+
+        if (!tenantData) {
+          setMissing(true);
+          setLoading(false);
+          return;
+        }
+
+        setTenant(tenantData);
+
+        const { data: productData } = await supabase
+          .from('products')
+          .select('id, name_ar, name, price_iqd, images, stock')
+          .eq('tenant_id', tenantData.id)
+          .eq('is_active', true)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: false })
+          .limit(24);
+
+        if (!cancelled) setProducts(productData ?? []);
+      } catch {
+        if (!cancelled) setMissing(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-  } catch {
-    // Supabase not configured — render the static shell below
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-gray-400">
+        جارٍ التحميل...
+      </div>
+    );
   }
 
-  if (!tenant) {
+  if (missing || !tenant) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 text-center">
         <Store className="h-14 w-14 text-gray-300" />
         <h1 className="mt-4 text-2xl font-bold text-gray-900">المتجر غير موجود</h1>
-        <p className="mt-2 text-gray-500">
-          تأكد من الرابط أو أن المتجر مفعّل
-        </p>
+        <p className="mt-2 text-gray-500">تأكد من الرابط أو أن المتجر مفعّل</p>
         <Link
           href="/"
           className="mt-6 rounded-lg bg-nados-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-nados-primary-dark"
@@ -107,7 +132,7 @@ export default async function StoreHomePage({
                   key={p.id}
                   className="overflow-hidden rounded-xl border border-gray-100 bg-white"
                 >
-                  <div className="aspect-square bg-gray-100">
+                  <div className="relative aspect-square bg-gray-100">
                     {image ? (
                       <img
                         src={image}
@@ -120,7 +145,7 @@ export default async function StoreHomePage({
                       </div>
                     )}
                     {p.stock > 0 && p.stock <= 5 && (
-                      <span className="absolute m-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
+                      <span className="absolute right-2 top-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
                         آخر {p.stock} قطعة
                       </span>
                     )}
