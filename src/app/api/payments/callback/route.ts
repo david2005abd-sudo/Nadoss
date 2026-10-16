@@ -27,10 +27,16 @@ export async function GET(request: NextRequest) {
 
   try {
     const event = await verifyCallback(token, gateway);
-    await applyPaymentUpdate(event);
-    return NextResponse.redirect(
-      new URL(`/payment/result?status=${event.status}`, request.url)
-    );
+    const publicOrder = await applyPaymentUpdate(event);
+    if (publicOrder) {
+      return NextResponse.redirect(
+        new URL(
+          `/store/${publicOrder.slug}/order/${publicOrder.id}?token=${encodeURIComponent(publicOrder.accessToken)}`,
+          request.url
+        )
+      );
+    }
+    return NextResponse.redirect(new URL('/payment/result?status=processing', request.url));
   } catch (err) {
     console.error('[payments/callback GET]', err);
     return NextResponse.json({ error: 'Verification failed' }, { status: 400 });
@@ -66,18 +72,18 @@ async function applyPaymentUpdate(event: {
   status: string;
   orderId?: string;
   amount?: number;
-}) {
-  if (!event.orderId) return;
+}): Promise<{ id: string; slug: string; accessToken: string } | null> {
+  if (!event.orderId) return null;
 
   const admin = getAdminClient();
 
   const { data: order } = await admin
     .from('orders')
-    .select('id, tenant_id, total_iqd, payment_status, status')
+    .select('id, tenant_id, total_iqd, payment_status, status, public_access_token')
     .eq('id', event.orderId)
     .maybeSingle();
 
-  if (!order) return;
+  if (!order) return null;
 
   const newPaymentStatus =
     event.status === 'paid'
@@ -96,8 +102,10 @@ async function applyPaymentUpdate(event: {
     throw new Error('Verified payment amount does not match order total');
   }
 
-  // Idempotency: skip if already paid
-  if (order.payment_status === 'paid' && newPaymentStatus === 'paid') return;
+  // Idempotency: do not reapply stats/audit for a repeated paid callback.
+  if (order.payment_status === 'paid' && newPaymentStatus === 'paid') {
+    return getPublicOrderContext(admin, order);
+  }
 
   const newOrderStatus =
     newPaymentStatus === 'paid' && order.status === 'pending'
@@ -144,4 +152,22 @@ async function applyPaymentUpdate(event: {
       p_amount: order.total_iqd,
     });
   }
+
+  return getPublicOrderContext(admin, order);
+}
+
+async function getPublicOrderContext(
+  admin: ReturnType<typeof getAdminClient>,
+  order: { id: string; tenant_id: string; public_access_token: string | null }
+): Promise<{ id: string; slug: string; accessToken: string } | null> {
+  if (!order.public_access_token) return null;
+
+  const { data: tenant } = await admin
+    .from('tenants')
+    .select('slug')
+    .eq('id', order.tenant_id)
+    .maybeSingle();
+
+  if (!tenant?.slug) return null;
+  return { id: order.id, slug: tenant.slug, accessToken: order.public_access_token };
 }
