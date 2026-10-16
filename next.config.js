@@ -4,7 +4,7 @@ const isExport = process.env.NEXT_EXPORT === 'true';
 const nextConfig = isExport
   ? {
       output: 'export',
-      basePath: '/Work10',
+      basePath: '/Nadoss',
       trailingSlash: true,
       images: { unoptimized: true },
       poweredByHeader: false,
