@@ -38,8 +38,11 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const signature = request.headers.get('x-hub-signature-256');
 
-  // In production, always verify. Skip in dev if no secret is set.
+  // Fail closed in production: missing signature configuration must never disable verification.
   const appSecret = process.env.WHATSAPP_APP_SECRET;
+  if (!appSecret && process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Webhook verification is not configured' }, { status: 503 });
+  }
   if (appSecret && !verifyWhatsAppSignature(rawBody, signature, appSecret)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
