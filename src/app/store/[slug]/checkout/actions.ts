@@ -98,7 +98,7 @@ export async function placeOrderAction(
   }
 
   // Do not put redirect() inside the try/catch: Next.js implements redirect by throwing.
-  let payment;
+  let payment: Awaited<ReturnType<typeof createPayment>>;
   try {
     payment = await createPayment({
       gateway: parsed.data.paymentMethod,
@@ -108,7 +108,12 @@ export async function placeOrderAction(
       callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/api/payments/callback`,
     });
   } catch {
-    // The order remains pending for reconciliation; no client-supplied status is trusted.
+    // Release reserved stock if the gateway failed before creating a usable payment session.
+    try {
+      await createAdminClient().rpc('cancel_unpaid_store_order', { p_order_id: order.id });
+    } catch {
+      // Reconciliation can handle a failed cancellation RPC.
+    }
     return { error: 'تعذر بدء عملية الدفع. لم يتم تأكيد الدفع؛ اختر طريقة أخرى أو تواصل مع المتجر.' };
   }
 
