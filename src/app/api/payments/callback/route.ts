@@ -113,6 +113,9 @@ async function applyPaymentUpdate(event: {
     if (releaseError) throw new Error('Unable to release stock for failed payment');
     return getPublicOrderContext(admin, order);
   }
+  if (order.payment_status === 'failed' && newPaymentStatus === 'failed' && order.status !== 'pending') {
+    return getPublicOrderContext(admin, order);
+  }
   if (order.payment_status === newPaymentStatus && ['paid', 'refunded'].includes(newPaymentStatus)) {
     return getPublicOrderContext(admin, order);
   }
