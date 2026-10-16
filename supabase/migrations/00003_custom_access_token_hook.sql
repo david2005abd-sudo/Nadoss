@@ -9,7 +9,7 @@ LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
 DECLARE
   claims JSONB;
   user_tenant_id UUID;
