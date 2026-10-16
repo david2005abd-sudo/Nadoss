@@ -72,7 +72,7 @@ export default async function FibPayPage({
 
   return (
     <>
-      <ClearCartOnOrder />
+      <ClearCartOnOrder tenantSlug={slug} />
       <div className="max-w-lg mx-auto space-y-5">
       <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center space-y-4">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
