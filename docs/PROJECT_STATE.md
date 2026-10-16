@@ -1,16 +1,28 @@
 # PROJECT_STATE.md — نادوس (NADOS)
 
 ## الحالة الحالية
-- **المرحلة:** 10 — التطوير المستمر (الجزء 3 مكتمل)
+- **المرحلة:** 10 — التطوير المستمر مع إصلاحات ما قبل التحقق.
 - **التاريخ:** 2026-10-16
-- **الإنجاز الحالي:** نظام حجز مواعيد كامل (UI + Server Actions + صفحة عامة + تقويم + إدارة الخدمات والموظفين)
+- **الإنجاز السابق:** نظام حجز مواعيد متكامل مبدئيًا (UI + Server Actions + صفحة عامة + تقويم + إدارة الخدمات والموظفين).
+- **العمل الحالي:** فرع fix/ci-supabase-validation يعالج أخطاء تمنع تشغيل migrations وE2E بصورة موثوقة؛ لم تُؤكد نتائج CI بعد.
 
-## ما تم إنجازه (المرحلة 10 — الجزء 3)
-- ✅ `src/lib/validations/booking.ts`: schemas + state machine + labels
-- ✅ `src/app/dashboard/bookings/actions.ts`: 9 Server Actions (services, staff, bookings، public booking)
-- ✅ `src/lib/whatsapp/sender.ts`: outbound-only sender قابل لإعادة الاستخدام
-- ✅ صفحات: `/dashboard/bookings` (list + filters)، `/new`، `/[id]` (detail + status + reschedule)، `/services`، `/staff`، `/calendar`
-- ✅ مكونات: BookingForm، BookingStatusBadge، BookingStatusUpdater، RescheduleForm، ServiceCategoryCreateForm، ServiceCategoryRowActions، StaffCreateForm، BookingCalendar (grid week view 8am-10pm)
-- ✅ صفحة عامة: `/store/[slug]/book` (Wizard 3 خطوات) + `/book/success`
-- ✅ إشعار تلقائي للتاجر عبر WhatsApp عند حجز جديد من الويب
-- ✅ تحديث Sidebar بقسم "الحجوزات"
+## إصلاحات التدقيق الحالية
+- إصلاح عبارة INSERT INTO public.tenants في migration 00005 التي كانت جزءًا من تعليق SQL، وتسبب فشل إنشاء قاعدة البيانات.
+- إضافة supabase/config.toml للبيئة المحلية، مع إعداد custom access-token hook.
+- جعل hook يعمل كـ SECURITY DEFINER مع search_path ثابت ومنح صلاحية استخدام schema المطلوبة؛ الغرض أن يتمكن من قراءة عضوية المستخدم وإضافة tenant claims دون منح وصول مباشر إلى الجداول.
+- إضافة scripts/seed-e2e-user.mjs لإنشاء تاجر اختبار والتحقق من إنشاء عضويته عبر trigger.
+- تعديل GitHub Actions لتصدير مفاتيح Supabase المحلية، وتشغيل seed عبر آلية Supabase القياسية مرة واحدة، وانتظار الخادم عبر TCP.
+
+## ما تم إنجازه سابقًا
+- مصادقة الهاتف/OTP وصفحات الدخول والتسجيل.
+- واجهة متجر عامة وسلة وcheckout وتدفق الطلب.
+- إدارة المنتجات والتصنيفات والطلبات والعملاء.
+- بوابات دفع adapters، تكاملات توصيل، WhatsApp، الاشتراكات وحدود الاستخدام.
+- نظام دعم/قاعدة معرفة، مراقبة، health checks، مهام cron، ومقاييس SaaS.
+- نظام حجز: قائمة الحجوزات، تفاصيلها، الخدمات، الموظفون، التقويم، ونموذج حجز عام.
+- 18 migration أساسية في supabase/migrations.
+
+## القيود الحالية
+- وجود الملفات لا يعني نجاح build أو E2E؛ يجب مراجعة GitHub Actions.
+- لم تُطبّق migrations على مشروع Supabase إنتاجي ولم تُختبر مفاتيح دفع أو WhatsApp حقيقية.
+- لا تُفعّل مدفوعات حقيقية ولا تكاملات خارجية قبل staging ومراجعة docs/LAUNCH_CHECKLIST.md.
