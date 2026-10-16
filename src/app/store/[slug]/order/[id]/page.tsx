@@ -74,7 +74,7 @@ export default async function OrderConfirmationPage({
 
   return (
     <>
-      <ClearCartOnOrder />
+      <ClearCartOnOrder tenantSlug={slug} />
       <div className="max-w-2xl mx-auto space-y-6">
       {isNew && (
         <div className="rounded-2xl border border-green-200 bg-green-50 p-6 text-center">
