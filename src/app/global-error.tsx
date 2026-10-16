@@ -2,37 +2,25 @@
 
 import { useEffect } from 'react';
 
-export default function GlobalError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
     <html lang="ar" dir="rtl">
-      <body>
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-          <div className="w-full max-w-md rounded-2xl border border-red-100 bg-white p-8 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-2xl">
-              ⚠️
-            </div>
-            <h1 className="mt-4 text-xl font-bold text-gray-900">حدث خطأ غير متوقع</h1>
-            <p className="mt-2 text-sm text-gray-500">
-              نعتذر عن الإزعاج — حاول مرة أخرى
-            </p>
+      <body style={{ margin: 0, fontFamily: 'Tajawal, Arial, sans-serif', background: '#F8FAFC', color: '#172033' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ maxWidth: 420, width: '100%', background: '#fff', border: '1px solid #E6EAF0', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontSize: 40 }}>⚠️</div>
+            <h1 style={{ fontSize: 20, fontWeight: 800, marginTop: 12 }}>حدث خطأ غير متوقع</h1>
+            <p style={{ fontSize: 14, color: '#667085' }}>نعتذر عن الإزعاج — حاول مرة أخرى</p>
             {error.digest && (
-              <p className="mt-2 font-mono text-xs text-gray-400" dir="ltr">
-                {error.digest}
-              </p>
+              <p style={{ fontSize: 12, color: '#667085', direction: 'ltr' }}>{error.digest}</p>
             )}
             <button
               onClick={reset}
-              className="mt-6 rounded-lg bg-nados-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-nados-primary-dark"
+              style={{ marginTop: 18, background: '#5B5CE2', color: '#fff', border: 0, borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
             >
               حاول مرة أخرى
             </button>

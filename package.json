@@ -1,8 +1,8 @@
 {
-  "name": "nados",
+  "name": "nasaq",
   "version": "0.1.0",
   "private": true,
-  "description": "NADOS - Iraqi multi-tenant e-commerce SaaS platform",
+  "description": "NASAQ - Arabic multi-activity website builder and project management SaaS demo",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

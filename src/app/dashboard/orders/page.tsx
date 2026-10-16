@@ -1,157 +1,130 @@
-import Link from 'next/link';
+'use client';
+
+import { useState } from 'react';
+import { DashboardModule } from '@/components/nasaq/dashboard-page';
+import { EmptyState, Field, Modal, StatusBadge, TableToolbar } from '@/components/nasaq/ui';
 import { formatIQD } from '@/lib/utils';
-import { ShoppingCart, Search } from 'lucide-react';
+import type { Order } from '@/lib/nasaq/seed';
 
-export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
+const STATUS_OPTIONS = ['جديد', 'قيد التجهيز', 'بانتظار التوصيل', 'مكتمل', 'ملغي'];
 
-export const metadata = { title: 'الطلبات' };
-
-const STATUS_LABELS: Record<string, string> = {
-  draft: 'مسودة',
-  pending: 'بانتظار',
-  confirmed: 'مؤكد',
-  preparing: 'يُحضَّر',
-  ready: 'جاهز',
-  shipped: 'مشحون',
-  delivered: 'مُسلَّم',
-  cancelled: 'ملغي',
-  returned: 'مرتجع',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  pending: 'bg-amber-50 text-amber-700',
-  confirmed: 'bg-blue-50 text-blue-700',
-  preparing: 'bg-indigo-50 text-indigo-700',
-  ready: 'bg-purple-50 text-purple-700',
-  shipped: 'bg-cyan-50 text-cyan-700',
-  delivered: 'bg-green-50 text-green-700',
-  cancelled: 'bg-red-50 text-red-700',
-  returned: 'bg-orange-50 text-orange-700',
-};
-
-const STATUS_FILTERS = [
-  { v: '', l: 'الكل' },
-  { v: 'pending', l: 'بانتظار' },
-  { v: 'confirmed', l: 'مؤكد' },
-  { v: 'shipped', l: 'مشحون' },
-  { v: 'delivered', l: 'مُسلَّم' },
-  { v: 'cancelled', l: 'ملغي' },
-];
-
-export default async function OrdersPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ status?: string; q?: string }>;
-}) {
-  const { status, q } = await searchParams;
-
-  const orders: {
-    id: string;
-    order_number: string;
-    status: string;
-    payment_method: string;
-    total_iqd: number;
-    created_at: string;
-  }[] = [];
-  const error: string | null = null;
+export default function OrdersPage() {
+  const [q, setQ] = useState('');
+  const [filter, setFilter] = useState('');
+  const [detail, setDetail] = useState<Order | null>(null);
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">الطلبات</h1>
-        <p className="mt-0.5 text-sm text-gray-500">متابعة وإدارة جميع الطلبات</p>
-      </div>
+    <DashboardModule title="الطلبات" subtitle="متابعة طلبات العملاء وتحديث الحالات خطوة بخطوة.">
+      {({ project, patch }) => {
+        const statusesPresent = Array.from(new Set(project.orders.map((o) => o.status)));
+        const filters = [{ v: '', l: 'الكل' }, ...statusesPresent.map((s) => ({ v: s, l: s }))];
 
-      {error && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          {error}
-        </div>
-      )}
+        const filtered = project.orders.filter((o) => {
+          const matchQ = !q || (o.number ?? '').includes(q) || (o.customer ?? '').includes(q);
+          const matchS = !filter || o.status === filter;
+          return matchQ && matchS;
+        });
 
-      <div className="flex flex-wrap items-center gap-3">
-        <form className="min-w-60 flex-1">
-          {status && <input type="hidden" name="status" value={status} />}
-          <div className="relative">
-            <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="search"
-              name="q"
-              defaultValue={q ?? ''}
-              placeholder="ابحث برقم الطلب..."
-              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-nados-primary"
+        function setStatus(id: string, status: string) {
+          patch({ orders: project.orders.map((o) => (o.id === id ? { ...o, status } : o)) });
+        }
+
+        const totalRevenue = project.orders.reduce((s, o) => s + (o.total ?? 0), 0);
+
+        return (
+          <>
+            <div className="grid-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="card"><span className="text-xs text-muted">إجمالي الطلبات</span><p className="kpi-value">{project.orders.length}</p></div>
+              <div className="card"><span className="text-xs text-muted">قيمة الطلبات</span><p className="kpi-value">{formatIQD(totalRevenue)}</p></div>
+              <div className="card"><span className="text-xs text-muted">بانتظار المعالجة</span><p className="kpi-value">{project.orders.filter((o) => o.status === 'جديد' || o.status === 'قيد التجهيز').length}</p></div>
+              <div className="card"><span className="text-xs text-muted">طلبات مكتملة</span><p className="kpi-value">{project.orders.filter((o) => o.status === 'مكتمل').length}</p></div>
+            </div>
+
+            <TableToolbar
+              search={q}
+              onSearchChange={setQ}
+              searchPlaceholder="ابحث برقم الطلب أو اسم العميل..."
+              filters={filters}
+              activeFilter={filter}
+              onFilterChange={setFilter}
             />
-          </div>
-        </form>
 
-        <div className="flex flex-wrap gap-1 text-sm">
-          {STATUS_FILTERS.map((opt) => (
-            <Link
-              key={opt.v}
-              href={
-                opt.v
-                  ? `/dashboard/orders?status=${opt.v}`
-                  : '/dashboard/orders'
-              }
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                (status ?? '') === opt.v
-                  ? 'bg-nados-primary text-white'
-                  : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              {opt.l}
-            </Link>
-          ))}
-        </div>
-      </div>
+            {filtered.length > 0 ? (
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>رقم الطلب</th>
+                      <th>العميل</th>
+                      <th>التاريخ</th>
+                      <th>العناصر</th>
+                      <th>الإجمالي</th>
+                      <th>الحالة</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((o) => (
+                      <tr key={o.id}>
+                        <td className="font-bold text-text-primary">{o.number}</td>
+                        <td>{o.customer}</td>
+                        <td className="text-muted">{o.date}</td>
+                        <td><span className="badge badge-muted">{o.items}</span></td>
+                        <td className="font-bold">{formatIQD(o.total)}</td>
+                        <td><StatusBadge status={o.status} /></td>
+                        <td>
+                          <div className="flex flex-wrap gap-1">
+                            <button type="button" className="btn btn-outline btn-sm" onClick={() => setDetail(o)}>تفاصيل</button>
+                            {o.status !== 'مكتمل' && (
+                              <button type="button" className="btn btn-primary btn-sm" onClick={() => setStatus(o.id, 'مكتمل')}>إتمام</button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="table-wrap">
+                <EmptyState title={q || filter ? 'لا توجد طلبات مطابقة' : 'لا توجد طلبات بعد'} description="شارك رابط متجرك لتبدأ استقبال الطلبات." />
+              </div>
+            )}
 
-      {orders.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-xs text-gray-500">
-                <tr>
-                  <th className="px-4 py-3 text-right font-medium">رقم الطلب</th>
-                  <th className="px-4 py-3 text-right font-medium">الدفع</th>
-                  <th className="px-4 py-3 text-right font-medium">الإجمالي</th>
-                  <th className="px-4 py-3 text-right font-medium">الحالة</th>
-                  <th className="px-4 py-3 text-right font-medium">التاريخ</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {orders.map((o) => (
-                  <tr key={o.id} className="hover:bg-gray-50/50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{o.order_number}</td>
-                    <td className="px-4 py-3 text-xs text-gray-600">{o.payment_method ?? '—'}</td>
-                    <td className="whitespace-nowrap px-4 py-3 font-semibold text-gray-900">
-                      {formatIQD(o.total_iqd)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          STATUS_COLORS[o.status] ?? 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {STATUS_LABELS[o.status] ?? o.status}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-500">
-                      {new Date(o.created_at).toLocaleDateString('ar-IQ')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-gray-200 bg-white py-20 text-center">
-          <ShoppingCart className="mx-auto h-12 w-12 text-gray-300" />
-          <p className="mt-3 text-gray-500">
-            {status || q ? 'لا توجد طلبات مطابقة' : 'لا توجد طلبات بعد'}
-          </p>
-        </div>
-      )}
-    </div>
+            {detail && (
+              <Modal
+                title={`تفاصيل الطلب ${detail.number}`}
+                onClose={() => setDetail(null)}
+                footer={<button type="button" className="btn btn-outline btn-sm" onClick={() => setDetail(null)}>إغلاق</button>}
+              >
+                <div className="grid-2">
+                  <div><span className="text-xs text-muted">العميل</span><p className="font-bold">{detail.customer}</p></div>
+                  <div><span className="text-xs text-muted">التاريخ</span><p className="font-bold">{detail.date}</p></div>
+                  <div><span className="text-xs text-muted">العناصر</span><p className="font-bold">{detail.items}</p></div>
+                  <div><span className="text-xs text-muted">الإجمالي</span><p className="font-bold">{formatIQD(detail.total)}</p></div>
+                </div>
+                <div>
+                  <span className="text-xs text-muted">الحالة الحالية</span>
+                  <div className="mt-1"><StatusBadge status={detail.status} /></div>
+                </div>
+                <Field label="تحديث الحالة">
+                  <select
+                    id="modal-ord-status"
+                    className="form-control"
+                    value={detail.status}
+                    onChange={(e) => { const next = e.target.value; setStatus(detail.id, next); setDetail({ ...detail, status: next }); }}
+                  >
+                    {STATUS_OPTIONS.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </Field>
+                <p className="text-xs text-muted">سجل التغييرات التجريبي يُعرض داخل قاعدة البيانات في نسخة الإنتاج.</p>
+              </Modal>
+            )}
+          </>
+        );
+      }}
+    </DashboardModule>
   );
 }

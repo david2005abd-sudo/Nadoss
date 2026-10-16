@@ -1,75 +1,266 @@
-import { MessageCircle, Truck, CreditCard, ShieldCheck, Copy } from 'lucide-react';
+'use client';
 
-export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
+import { useState } from 'react';
+import Link from 'next/link';
+import { DashboardModule } from '@/components/nasaq/dashboard-page';
+import { Field } from '@/components/nasaq/ui';
+import { useNasaq } from '@/lib/nasaq/store';
+import { IconCheck } from '@/components/nasaq/icons';
 
-export const metadata = { title: 'الإعدادات' };
+const TABS = [
+  { id: 'project', label: 'إعدادات المشروع' },
+  { id: 'user', label: 'المستخدم والواجهة' },
+  { id: 'privacy', label: 'الخصوصية وبيانات Demo' },
+] as const;
+
+const COLOR_SWATCHES = ['#5B5CE2', '#0F766E', '#D97706', '#1E293B', '#4F46E5', '#16A34A'];
 
 export default function SettingsPage() {
-  const storeSlug: string | null = null;
+  const { setUserSettings } = useNasaq();
+  const [tab, setTab] = useState<string>('project');
 
-  const sections = [
-    {
-      icon: MessageCircle,
-      title: 'بوت واتساب',
-      desc: 'اربط رقم WhatsApp Business ليحول البوت رسائل عملائك إلى طلبات تلقائيًا. يتطلب خطة Pro + مفتاح OpenAI + حساب Meta Business.',
-      badge: 'يتطلب إعداد',
-    },
-    {
-      icon: Truck,
-      title: 'شركات التوصيل',
-      desc: 'اربط Hi Express أو Boxy أو Galina بإدخال مفاتيح API — تُشفَّر بـ AES-256 ولا تظهر لأحد.',
-      badge: 'متاح',
-    },
-    {
-      icon: CreditCard,
-      title: 'بوابات الدفع',
-      desc: 'الدفع عند الاستلام متاح دائمًا. بوابات الدفع الإلكتروني (زين كاش، FIB، كي كارد، ناس باي) تحتاج أوراق اعتماد تاجر.',
-      badge: 'متاح',
-    },
-    {
-      icon: ShieldCheck,
-      title: 'الأمان',
-      desc: 'كل بيانات التاجر محمية بـ Row Level Security على مستوى قاعدة البيانات — عزل كامل بين المتاجر.',
-      badge: 'مفعّل',
-    },
-  ];
+  function patchUser(patch: Parameters<typeof setUserSettings>[0]) {
+    setUserSettings(patch);
+  }
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">الإعدادات</h1>
-        <p className="mt-0.5 text-sm text-gray-500">إعدادات متجرك والتكاملات</p>
-      </div>
-
-      {storeSlug && (
-        <div className="rounded-xl border border-gray-100 bg-white p-5">
-          <h2 className="font-semibold text-gray-900">رابط متجرك</h2>
-          <p className="mt-1 text-sm text-gray-500">شارك هذا الرابط مع عملائك</p>
-          <div className="mt-3 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
-            <code className="flex-1 truncate font-mono text-sm text-gray-900" dir="ltr">
-              {process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com'}/store/{storeSlug}
-            </code>
-            <Copy className="h-4 w-4 shrink-0 text-gray-400" />
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {sections.map((s) => (
-          <div key={s.title} className="rounded-xl border border-gray-100 bg-white p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-nados-primary">
-                <s.icon className="h-5 w-5" />
-              </div>
-              <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
-                {s.badge}
-              </span>
+    <DashboardModule title="الإعدادات" subtitle="إعدادات المشروع، المستخدم، المنصة، والخصوصية.">
+      {({ project, patch, state }) => {
+        return (
+          <div id="settings-tab-content" className="space-y-5">
+            {/* ---------- Tabs ---------- */}
+            <div className="flex flex-wrap gap-2">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`btn btn-sm ${tab === t.id ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => setTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
-            <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-gray-600">{s.desc}</p>
+
+            {/* ---------- Project settings ---------- */}
+            {tab === 'project' && (
+              <div className="grid-2 lg:grid-cols-3">
+                <div className="card lg:col-span-2">
+                  <h2 className="mb-3 text-base font-extrabold">بيانات المشروع الأساسية</h2>
+                  <div className="grid-2">
+                    <Field label="اسم المشروع / المتجر">
+                      <input id="set-proj-name" className="form-control" value={project.name} onChange={(e) => patch({ name: e.target.value })} />
+                    </Field>
+                    <Field label="المدينة">
+                      <input id="set-proj-city" className="form-control" value={project.city} onChange={(e) => patch({ city: e.target.value })} />
+                    </Field>
+                    <Field label="رقم التواصل">
+                      <input id="set-proj-phone" className="form-control" dir="ltr" value={project.phone} onChange={(e) => patch({ phone: e.target.value })} />
+                    </Field>
+                    <Field label="البريد الإلكتروني التجريبي">
+                      <input id="set-pf-email" className="form-control" dir="ltr" value={project.email} onChange={(e) => patch({ email: e.target.value })} />
+                    </Field>
+                    <Field label="العملة">
+                      <input id="set-proj-curr" className="form-control" value={project.currency} onChange={(e) => patch({ currency: e.target.value })} />
+                    </Field>
+                    <Field label="لغة الواجهة">
+                      <input className="form-control" value={project.language} onChange={(e) => patch({ language: e.target.value })} />
+                    </Field>
+                  </div>
+                  <Field label="الوصف التجريبي">
+                    <textarea id="set-proj-desc" className="form-control" rows={3} value={project.description} onChange={(e) => patch({ description: e.target.value })} />
+                  </Field>
+                </div>
+
+                <div className="card">
+                  <h2 className="mb-3 text-base font-extrabold">الهوية واللغة</h2>
+                  <Field label="اللون الأساسي">
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {COLOR_SWATCHES.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          aria-label={`اللون ${c}`}
+                          className={`btn !h-9 !w-9 !p-0 ${project.primaryColor === c ? 'ring-2 ring-primary' : ''}`}
+                          style={{ background: c }}
+                          onClick={() => patch({ primaryColor: c })}
+                        >
+                          {project.primaryColor === c && <IconCheck size={16} />}
+                        </button>
+                      ))}
+                    </div>
+                  </Field>
+
+                  <div className="mt-3">
+                    <Field label="اللون الثانوي">
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {['#16B8A6', '#16A34A', '#D97706', '#DC2626'].map((c) => (
+                          <button
+                            key={c}
+                            type="button"
+                            aria-label={`اللون الثانوي ${c}`}
+                            className={`btn !h-9 !w-9 !p-0 ${project.secondaryColor === c ? 'ring-2 ring-primary' : ''}`}
+                            style={{ background: c }}
+                            onClick={() => patch({ secondaryColor: c })}
+                          />
+                        ))}
+                      </div>
+                    </Field>
+                  </div>
+
+                  <div className="mt-3">
+                    <Field label="الخط العربي">
+                      <select id="set-proj-color" className="form-control" value={project.fontFamily} onChange={(e) => patch({ fontFamily: e.target.value })}>
+                        {['Tajawal', 'Almarai', 'Arial / System'].map((f) => <option key={f} value={f}>{f}</option>)}
+                      </select>
+                    </Field>
+                  </div>
+
+                  <div className="mt-4 rounded-md border border-border p-3" style={{ background: 'var(--muted-surface)' }}>
+                    <span className="text-xs text-muted">الحالة التقنية</span>
+                    <p className="mt-1 text-sm font-bold">{project.siteStatus}</p>
+                    <p className="mt-1 text-xs text-muted" dir="ltr">{project.domain}</p>
+                    <span className="badge badge-muted mt-2">{project.domainStatus}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ---------- User settings ---------- */}
+            {tab === 'user' && (
+              <div className="grid-2 lg:grid-cols-3">
+                <div className="card lg:col-span-2">
+                  <h2 className="mb-3 text-base font-extrabold">المستخدم والواجهة</h2>
+                  <div className="grid-2">
+                    <Field label="اسم المالك / المستخدم">
+                      <input id="set-user-name" className="form-control" value={state.userSettings.name} onChange={(e) => patchUser({ name: e.target.value })} />
+                    </Field>
+                    <Field label="البريد الإلكتروني">
+                      <input id="set-pf-short" className="form-control" dir="ltr" value={state.userSettings.email} onChange={(e) => patchUser({ email: e.target.value })} />
+                    </Field>
+                  </div>
+
+                  <div className="mt-3 grid-2">
+                    <Field label="كثافة العناصر (spacing)">
+                      <select id="set-user-density" className="form-control" value={state.userSettings.density} onChange={(e) => patchUser({ density: e.target.value })}>
+                        {['normal', 'compact', 'spacious'].map((d) => <option key={d} value={d}>{d === 'normal' ? 'عادي' : d === 'compact' ? 'مضغوط' : 'واسع'}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="حجم الخط">
+                      <select id="set-user-fontsize" className="form-control" value={state.userSettings.fontSize} onChange={(e) => patchUser({ fontSize: e.target.value })}>
+                        {['normal', 'small', 'large'].map((f) => <option key={f} value={f}>{f === 'normal' ? 'عادي' : f === 'small' ? 'صغير' : 'كبير'}</option>)}
+                      </select>
+                    </Field>
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="checkbox" checked={state.userSettings.emailAlerts} onChange={(e) => patchUser({ emailAlerts: e.target.checked })} />
+                      تفعيل تنبيهات البريد الإلكتروني للطلبات الجديدة
+                    </label>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="checkbox" checked={state.userSettings.stockAlerts} onChange={(e) => patchUser({ stockAlerts: e.target.checked })} />
+                      تفعيل تنبيهات انخفاض المخزون
+                    </label>
+                  </div>
+                </div>
+
+                <div className="card">
+                  <h2 className="mb-3 text-base font-extrabold">المنصة (Demo)</h2>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted">اسم المنصة</span>
+                      <span className="font-bold">{state.platformSettings.brandName}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted">البريد الدعم</span>
+                      <span dir="ltr" className="font-bold">{state.platformSettings.supportEmail}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted">العملة الافتراضية</span>
+                      <span className="font-bold">{state.platformSettings.defaultCurrency}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted">وضع الصيانة</span>
+                      <span className={`badge ${state.platformSettings.maintenanceMode ? 'badge-danger' : 'badge-success'}`}>
+                        {state.platformSettings.maintenanceMode ? 'مفعّل' : 'معطّل'}
+                      </span>
+                    </div>
+                  </div>
+                  <Link className="btn btn-outline btn-sm mt-4 w-full" href="/admin/overview">
+                    فتح لوحة المالك لإدارة المنصة
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* ---------- Privacy ---------- */}
+            {tab === 'privacy' && (
+              <div className="grid-2 lg:grid-cols-3">
+                <div className="card lg:col-span-2">
+                  <h2 className="mb-3 text-base font-extrabold">الخصوصية وبيانات Demo</h2>
+                  <p className="text-sm text-muted">
+                    هذا النموذج التجريبي يعمل بالكامل داخل متصفحك. تُحفظ بيانات المشاريع والعملاء والطلبات في
+                    <span className="font-mono"> localStorage </span>
+                    تحت المفتاح التالي، ولا تُرسل إلى أي خادم خارجي:
+                  </p>
+                  <p className="mt-2 rounded-md border border-border p-2 font-mono text-xs" dir="ltr">nasaq_state_v1</p>
+
+                  <h3 className="mt-4 text-sm font-bold">ما يتم حفظه تجريبيًا</h3>
+                  <ul className="mt-2 space-y-1 text-sm">
+                    <li>✓ بيانات المشاريع والمتاجر الثلاثة المرفقة</li>
+                    <li>✓ المنتجات والوجبات والخدمات والطلبات والحجوزات</li>
+                    <li>✓ العملاء والموظفين وعروض الأسعار والفواتير</li>
+                    <li>✓ تفضيلات المستخدم واللون وحجم الخط</li>
+                    <li>× لم نحفظ أي بيانات دفع حقيقية أو مفاتيح سرية</li>
+                  </ul>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => {
+                        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'nasaq-demo-export.json';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      تصدير بيانات Demo (JSON)
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger-outline btn-sm"
+                      onClick={() => {
+                        if (window.confirm('سيتم حذف جميع بيانات هذا النموذج التجريبي والعودة للحالة الافتراضية. متابعة؟')) {
+                          window.localStorage.removeItem('nasaq_state_v1');
+                          window.location.href = '/dashboard';
+                        }
+                      }}
+                    >
+                      إعادة تعيين بيانات Demo (Reset)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="card">
+                  <h2 className="mb-3 text-base font-extrabold">إخلاء مسؤولية</h2>
+                  <p className="text-sm text-muted">
+                    الأسعار والباقات والعملاء والطلبات الظاهرة في هذه المنصة هي بيانات تجريبية لأغراض العرض فقط،
+                    وغير مرتبطة بأي عملية دفع أو اشتراك حقيقية.
+                  </p>
+                  <div className="mt-4">
+                    <span className="badge badge-success">بيانات محلية فقط</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-    </div>
+        );
+      }}
+    </DashboardModule>
   );
 }

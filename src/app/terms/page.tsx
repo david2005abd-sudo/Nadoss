@@ -1,60 +1,62 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'الشروط والأحكام' };
+export const metadata = { title: 'شروط الاستخدام' };
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-100 px-4 py-4">
-        <div className="mx-auto max-w-3xl">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-nados-primary text-xs font-bold text-white">ن</div>
-            <span className="font-bold text-gray-900">نادوس</span>
-          </Link>
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <h1 className="text-3xl font-bold text-gray-900">الشروط والأحكام</h1>
-        <div className="mt-6 space-y-5 text-sm leading-relaxed text-gray-700">
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">1. قبول الشروط</h2>
-            <p className="mt-2">
-              باستخدامك منصة نادوس، فإنك توافق على هذه الشروط والأحكام. إذا لم توافق، يرجى عدم استخدام المنصة.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">2. الحساب والمسؤولية</h2>
-            <p className="mt-2">
-              أنت مسؤول عن سرية بيانات حسابك وعن جميع النشاطات التي تحدث عبر حسابك. يجب أن تكون بيانات متجرك دقيقة وحقيقية.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">3. المحتوى والمنتجات</h2>
-            <p className="mt-2">
-              أنت المالك الوحيد لمحتوى متجرك ومنتجاتك. يُمنع بيع أي منتجات مخالفة للقانون العراقي أو الأعراف العامة.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">4. الاشتراكات والمدفوعات</h2>
-            <p className="mt-2">
-              الخطة المجانية دائمة. الخطط المدفوعة تُدفع شهريًا مقدمًا ويمكن الإلغاء في أي وقت مع بقاء الميزات حتى نهاية الفترة المدفوعة.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">5. الخصوصية</h2>
-            <p className="mt-2">
-              بيانات عملائك ملكك حصريًا — لا نستخدمها ولا نشاركها مع أي طرف ثالث. راجع سياسة الخصوصية للتفاصيل.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">6. إنهاء الخدمة</h2>
-            <p className="mt-2">
-              يمكن لأي طرف إنهاء الاتفاقية بإشعار مسبق. عند الإنهاء، ستحصل على فترة 30 يومًا لتصدير بياناتك.
-            </p>
-          </section>
-        </div>
-        <p className="mt-8 text-xs text-gray-400">آخر تحديث: أكتوبر 2026</p>
-      </main>
+    <div className="container max-w-3xl py-10">
+      <Link href="/" className="brand-logo mb-6">
+        <span className="brand-mark">ن</span>
+        <span className="font-extrabold">نَسَق</span>
+      </Link>
+
+      <h1 className="text-2xl font-extrabold">شروط الاستخدام والحدود التقنية</h1>
+      <p className="mt-2 text-sm text-muted">آخر تحديث: أكتوبر 2026</p>
+
+      <div className="card mt-6 space-y-4 text-sm leading-relaxed">
+        <section>
+          <h2 className="font-bold">1. طبيعة هذا النموذج</h2>
+          <p className="mt-1 text-muted">
+            هذه نسخة أولية (Demo) تعمل بالكامل داخل متصفحك، ولا ترتبط بأي خادم خارجي. جميع المشاريع والعملاء
+            والطلبات والمدفوعات المعروضة هي بيانات تجريبية لأغراض العرض فقط.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">2. البيانات المحلية</h2>
+          <p className="mt-1 text-muted">
+            تُحفظ تغييراتك في <span className="font-mono">localStorage</span> متصفحك فقط. مسح بيانات المتصفح يؤدي
+            إلى فقدان هذه التغييرات، ويمكنك دائمًا إعادة التعيين من الإعدادات ← الخصوصية.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">3. حدود النسخة التجريبية</h2>
+          <p className="mt-1 text-muted">
+            المساعد الذكي يعمل بردود سياقية مبرمجة مسبقًا. ربط النطاقات وبوابات الدفع وإرسال البريد و SMS غير
+            مفعّلة، وتتطلب خادمًا خلفيًا في نسخة الإنتاج.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">4. الأسعار والباقات</h2>
+          <p className="mt-1 text-muted">
+            الأسعار المعروضة هي أسعار توضيحية تجريبية قابلة للتعديل من لوحة المالك، ولا تمثل أي التزام مالي.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">5. الملكية الفكرية</h2>
+          <p className="mt-1 text-muted">
+            اسم نَسَق وشعاره وهويته البصرية ملك لأصحاب المشروع. لا يجوز إعادة استخدامها في منتج منافس دون إذن.
+          </p>
+        </section>
+      </div>
+
+      <div className="mt-6 flex gap-3">
+        <Link href="/" className="btn btn-outline btn-sm">العودة للرئيسية</Link>
+        <Link href="/privacy" className="btn btn-outline btn-sm">سياسة الخصوصية</Link>
+      </div>
     </div>
   );
 }

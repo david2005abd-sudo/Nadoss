@@ -1,27 +1,23 @@
 import type { Metadata } from 'next';
-import { Cairo } from 'next/font/google';
+import { Almarai, Tajawal } from 'next/font/google';
 import './globals.css';
+import { NasaqProvider } from '@/lib/nasaq/store';
 
-const cairo = Cairo({ subsets: ['arabic'], display: 'swap' });
+const almarai = Almarai({ weight: ['400', '700', '800'], subsets: ['arabic'], display: 'swap' });
+const tajawal = Tajawal({ weight: ['400', '500', '700', '800'], subsets: ['arabic'], display: 'swap' });
 
 export const metadata: Metadata = {
-  title: {
-    default: 'نادوس — منصة التجارة الإلكترونية العراقية',
-    template: '%s — نادوس',
-  },
+  title: 'نَسَق | منصة إنشاء المواقع وإدارة المشاريع بالذكاء الاصطناعي',
   description:
-    'متجرك الإلكتروني + إدارة المخزون + تتبع الطلبات + ربط شركات التوصيل العراقية + بوت ذكاء اصطناعي يحوّل رسائل واتساب إلى طلبات — بدون خبرة تقنية.',
-  keywords: ['متجر إلكتروني', 'العراق', 'تجارة إلكترونية', 'SaaS', 'نادوس', 'NADOS'],
+    'أنشئ موقع نشاطك التجاري في دقائق، وأدر المنتجات والطلبات والحجوزات والمشاريع من لوحة واحدة — مع مساعد ذكي يفهم لهجتك.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={cairo.className}>
-      <body className="min-h-screen bg-gray-50 antialiased">{children}</body>
+    <html lang="ar" dir="rtl" className={tajawal.className} data-font-almarai={almarai.className}>
+      <body className="min-h-screen bg-bg text-text-primary antialiased font-sans">
+        <NasaqProvider>{children}</NasaqProvider>
+      </body>
     </html>
   );
 }

@@ -4,57 +4,60 @@ export const metadata = { title: 'سياسة الخصوصية' };
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-100 px-4 py-4">
-        <div className="mx-auto max-w-3xl">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-nados-primary text-xs font-bold text-white">ن</div>
-            <span className="font-bold text-gray-900">نادوس</span>
-          </Link>
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <h1 className="text-3xl font-bold text-gray-900">سياسة الخصوصية</h1>
-        <div className="mt-6 space-y-5 text-sm leading-relaxed text-gray-700">
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">البيانات التي نجمعها</h2>
-            <p className="mt-2">
-              نجمع فقط ما نحتاجه لتشغيل المنصة: رقم هاتفك، اسم متجرك، وبيانات المنتجات والطلبات التي تضيفها بنفسك.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">عزل بيانات المتاجر</h2>
-            <p className="mt-2">
-              كل متجر معزول تقنيًا عن الآخر عبر Row Level Security على مستوى قاعدة البيانات — لا يمكن لأي تاجر رؤية بيانات تاجر آخر مهما حدث.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">بيانات عملائك</h2>
-            <p className="mt-2">
-              أسماء وأرقام هواتف عملائك ملكك حصريًا. لا نبيعها ولا نستخدمها لأي غرض تسويقي ولا نشاركها مع أطراف ثالثة.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">الذكاء الاصطناعي</h2>
-            <p className="mt-2">
-              عند تفعيل بوت الواتساب، تُعالج الرسائل عبر نماذج ذكاء اصطناعي لتحويلها إلى طلبات. التعليمات النظامية معزولة تمامًا عن محتوى الرسائل.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">الأمان</h2>
-            <p className="mt-2">
-              HTTPS إلزامي في كل الاتصالات، وبيانات اعتماد التوصيل والدفع مشفرة بـ AES-256، مع نسخ احتياطي يومي تلقائي.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900">حقوقك</h2>
-            <p className="mt-2">
-              يمكنك طلب تصدير أو حذف بياناتك في أي وقت عبر صفحة الدعم الفني داخل لوحة التحكم.
-            </p>
-          </section>
-        </div>
-        <p className="mt-8 text-xs text-gray-400">آخر تحديث: أكتوبر 2026</p>
-      </main>
+    <div className="container max-w-3xl py-10">
+      <Link href="/" className="brand-logo mb-6">
+        <span className="brand-mark">ن</span>
+        <span className="font-extrabold">نَسَق</span>
+      </Link>
+
+      <h1 className="text-2xl font-extrabold">سياسة الخصوصية والبيانات المحلية</h1>
+      <p className="mt-2 text-sm text-muted">آخر تحديث: أكتوبر 2026</p>
+
+      <div className="card mt-6 space-y-4 text-sm leading-relaxed">
+        <section>
+          <h2 className="font-bold">1. ما نجمعه</h2>
+          <p className="mt-1 text-muted">
+            في هذه النسخة التجريبية لا نجمع أي بيانات شخصية على أي خادم. كل ما تُدخله يبقى داخل متصفحك في
+            <span className="font-mono"> localStorage</span>.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">2. تسجيل الدخول</h2>
+          <p className="mt-1 text-muted">
+            عند ربط مشروع Supabase، تُعالج بيانات الدخول عبر خدمة Supabase Auth وفق سياسة الخصوصية الخاصة بها،
+            ويُخزّن رمز الجلسة في متصفحك ليبقى تسجيل دخولك فعالًا.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">3. الذكاء الاصطناعي</h2>
+          <p className="mt-1 text-muted">
+            في وضع Demo لا تُرسل أي من بياناتك إلى مزودي الذكاء الاصطناعي. في نسخة الإنتاج يُمرّ كل طلب عبر
+            خادم آمن ولا تُكشف مفاتيح المزودين للمتصفح.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">4. حذف بياناتك</h2>
+          <p className="mt-1 text-muted">
+            يمكنك حذف كل بيانات هذا النموذج في أي وقت من: الإعدادات ← الخصوصية وبيانات Demo ← إعادة تعيين، أو
+            بمسح بيانات متصفحك.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold">5. التواصل</h2>
+          <p className="mt-1 text-muted">
+            للاستفسارات المتعلقة بالخصوصية في نسخة الإنتاج، راسلنا على البريد الموضّح في لوحة المالك.
+          </p>
+        </section>
+      </div>
+
+      <div className="mt-6 flex gap-3">
+        <Link href="/" className="btn btn-outline btn-sm">العودة للرئيسية</Link>
+        <Link href="/terms" className="btn btn-outline btn-sm">شروط الاستخدام</Link>
+      </div>
     </div>
   );
 }

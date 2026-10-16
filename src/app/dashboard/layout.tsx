@@ -1,13 +1,5 @@
-import { DashboardShell } from '@/components/dashboard/dashboard-shell';
+import { DashboardShell } from '@/components/nasaq/dashboard-shell';
 
-export const metadata = {
-  title: 'لوحة التحكم',
-};
-
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return <DashboardShell>{children}</DashboardShell>;
 }

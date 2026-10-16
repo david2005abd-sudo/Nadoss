@@ -1,311 +1,502 @@
+'use client';
+
 import Link from 'next/link';
-import {
-  Store,
-  Package,
-  Truck,
-  Bot,
-  BarChart3,
-  CreditCard,
-  ShieldCheck,
-  ArrowLeft,
-  CheckCircle2,
-  MessageCircle,
-  ShoppingCart,
-} from 'lucide-react';
+import { useState } from 'react';
+import { useNasaq } from '@/lib/nasaq/store';
+import { BUSINESS_TYPES, SUPPORTED_ACTIVITIES } from '@/lib/nasaq/config';
+import { MODULE_REGISTRY } from '@/lib/nasaq/modules';
+import { getIcon } from '@/components/nasaq/icons';
+
+/* ==========================================================================
+   Static copy (verbatim from the نَسَق mockup)
+   ========================================================================== */
 
 const FEATURES = [
-  {
-    icon: Store,
-    title: 'متجر إلكتروني جاهز',
-    description: 'واجهة عربية RTL كاملة مع رابط خاص لمتجرك — شاركه على إنستغرام وواتساب وابدأ البيع فورًا.',
-  },
-  {
-    icon: Package,
-    title: 'إدارة مخزون ذكية',
-    description: 'منتجات، تصنيفات، أسعار بالدينار العراقي، وتنبيهات المخزون المنخفض تلقائيًا.',
-  },
-  {
-    icon: Truck,
-    title: 'ربط شركات التوصيل',
-    description: 'Hi Express وBoxy وGalina والمزيد — أنشئ شحنة وتتبعها من لوحة التحكم مباشرة.',
-  },
-  {
-    icon: Bot,
-    title: 'بوت يفهم العراقية',
-    description: 'ذكاء اصطناعي يحوّل رسائل واتساب باللهجة العراقية إلى طلبات منظمة تلقائيًا.',
-  },
-  {
-    icon: CreditCard,
-    title: 'دفع محلي كامل',
-    description: 'الدفع عند الاستلام + زين كاش وFIB وكي كارد وناس باي — كل ما يحتاجه التاجر العراقي.',
-  },
-  {
-    icon: BarChart3,
-    title: 'تقارير وتحليلات',
-    description: 'إيرادات، أفضل المنتجات، أفضل المحافظات، ومتوسط قيمة الطلب — بضغطة زر.',
-  },
-];
+  { title: 'موقع إلكتروني احترافي', desc: 'صفحات متجاوبة وسريعة بهوية عربية واضحة قابلة للتخصيص الفوري.', icon: 'layout' },
+  { title: 'لوحة تحكم مخصصة لنشاطك', desc: 'تتغير أقسام ومؤشرات اللوحة تلقائيًا حسب نوع مشروعك دون ازدحام.', icon: 'layers' },
+  { title: 'مساعد ذكاء اصطناعي سياقي', desc: 'يكتب أوصاف المنتجات والوجبات ويجهز عروض الأسعار ويحلل المبيعات.', icon: 'sparkle' },
+  { title: 'إدارة المنتجات والخدمات', desc: 'جداول مرنة للمنتجات، الوجبات، الخدمات، العقارات، أو قطع الغيار.', icon: 'bag' },
+  { title: 'الطلبات والحجوزات', desc: 'تتبع حالات الطلبات خطوة بخطوة وجدولة مواعيد العملاء بسهولة.', icon: 'calendar' },
+  { title: 'إدارة العملاء وسجل النشاط', desc: 'ملف متكامل لكل عميل مع إجمالي المشتريات وسجل الطلبات.', icon: 'users' },
+  { title: 'تقارير وتحليلات بصرية', desc: 'رسوم بيانية تفاعلية لمقارنة الفترات ومعرفة الأكثر مبيعًا.', icon: 'chart' },
+  { title: 'تصميم متجاوب للهاتف', desc: 'إدارة كاملة للمشروع والطلبات من الهاتف أو الحاسوب بنفس الكفاءة.', icon: 'cpu' },
+  { title: 'تخصيص وترتيب الوحدات', desc: 'أظهر أو أخفِ أو أعد ترتيب أقسام لوحة التحكم في أي لحظة.', icon: 'cog' },
+  { title: 'دعم الأنشطة المختلطة', desc: 'اجمع بين بيع المنتجات وتقديم الخدمات والحجوزات في مساحة عمل واحدة.', icon: 'grid' },
+] as const;
 
-const PLANS = [
-  {
-    name: 'مجاني',
-    slug: 'free',
-    price: '0$',
-    period: 'للأبد',
-    features: ['10 منتجات', '50 طلب شهريًا', '100 رسالة بوت', 'متجر إلكتروني', 'دعم أساسي'],
-    cta: 'ابدأ مجانًا',
-    highlighted: false,
-  },
-  {
-    name: 'المبتدئ',
-    slug: 'starter',
-    price: '19$',
-    period: 'شهريًا',
-    features: [
-      '100 منتج',
-      '500 طلب شهريًا',
-      '2000 رسالة بوت',
-      'ربط شركة توصيل',
-      'تقارير أساسية',
-    ],
-    cta: 'اختر المبتدئ',
-    highlighted: false,
-  },
-  {
-    name: 'الاحترافي',
-    slug: 'pro',
-    price: '49$',
-    period: 'شهريًا',
-    features: [
-      '1000 منتج',
-      '5000 طلب شهريًا',
-      '3000 رسالة بوت',
-      'ربط 3 شركات توصيل',
-      'بوابات دفع إلكتروني',
-      'بوت واتساب كامل',
-    ],
-    cta: 'اختر الاحترافي',
-    highlighted: true,
-  },
-  {
-    name: 'المؤسسات',
-    slug: 'enterprise',
-    price: 'تواصل معنا',
-    period: '',
-    features: ['منتجات غير محدودة', 'API مخصص', 'مدير حساب خاص', 'SLA 99.9%'],
-    cta: 'تواصل معنا',
-    highlighted: false,
-  },
-];
+const STEPS = [
+  { num: '01', title: 'اختر نوع مشروعك', desc: 'حدد نشاطك من بين المتاجر، المطاعم، الورش، الهندسة، العقارات، أو المنتجات الرقمية.' },
+  { num: '02', title: 'خصص موقعك وهيتك', desc: 'اختر القالب، الألوان، الخط العربي، وعدّل نصوص وأقسام صفحتك الرئيسية.' },
+  { num: '03', title: 'جهز لوحة التحكم', desc: 'يقترح محرك الوحدات الأقسام المناسبة لنشاطك مع حرية التفعيل أو الإخفاء.' },
+  { num: '04', title: 'راجع المعاينة الحية', desc: 'عاين موقعك على سطح المكتب والهاتف وجرّب إضافة منتجاتك وطلباتك التجريبية.' },
+  { num: '05', title: 'انشر موقعك عند ربط الخادم', desc: 'في بيئة الإنتاج الكاملة، اربط نطاقك الخاص وبوابات الدفع وانطلق رسميًا.' },
+] as const;
 
-const FAQ = [
-  {
-    q: 'هل أحتاج خبرة تقنية لاستخدام نادوس؟',
-    a: 'لا — أنشئ حسابك، أضف منتجاتك، وشارك رابط متجرك. كل شيء بواجهة عربية بسيطة.',
-  },
-  {
-    q: 'هل يدعم الدفع عند الاستلام؟',
-    a: 'نعم، الدفع عند الاستلام (COD) متاح افتراضيًا في كل المحافظات العراقية الـ18، مع دعم زين كاش وFIB وكي كارد وناس باي.',
-  },
-  {
-    q: 'كيف يعمل بوت الواتساب؟',
-    a: 'اربط رقم واتساب Business، والبوت يقرأ رسائل عملائك باللهجة العراقية ويحوّلها إلى طلبات منظمة — أنت تراجع وتؤكد فقط.',
-  },
-  {
-    q: 'هل يمكنني ربط شركة التوصيل الخاصة بي؟',
-    a: 'نعم — ندعم Hi Express وBoxy (أكثر من 15 شركة) وGalina Express. أدخل بيانات API مرة واحدة، وتُشفَّر آمنًا.',
-  },
-];
+const AI_EXAMPLES = [
+  { role: 'للمتاجر الإلكترونية', prompt: '«اكتب وصفًا تسويقيًا لعطر شرقي فاخر واقترح باقة هدايا»', output: 'يولّد وصفًا جذابًا متوافقًا مع محركات البحث ويقترح حملة كوبونات موسمية.' },
+  { role: 'للمطاعم والمقاهي', prompt: '«اقترح عرض غداء ترويجي وحسّن وصف برغر كلاسيكي»', output: 'يصيغ وصفًا شهيًا للوجبة مع اقتراح كومبو يرفع متوسط قيمة الطلب.' },
+  { role: 'للخدمات والمكاتب الهندسية', prompt: '«جهز مسودة عرض سعر لتصميم واجهة تجارية أو صيانة دورية»', output: 'يرتب بنود العرض الفني والمالي ومراحل التنفيذ بلهجة احترافية.' },
+] as const;
+
+const FAQS = [
+  { q: 'هل أحتاج إلى خبرة برمجية؟', a: 'لا إطلاقًا. صُممت المنصة لأصحاح المشاريع الصغيرة والمتوسطة لإنشاء مواقعهم وإدارة أعمالهم عبر واجهة عربية مرئية بالكامل دون كتابة سطر كود واحد.' },
+  { q: 'هل يمكن إنشاء أكثر من نوع مشروع؟', a: 'نعم! يمكنك إنشاء متجر إلكتروني، مطعم، ورشة صيانة، مكتب هندسي، أو متجر بطاقات رقمية، والتبديل بينها بضغطة زر من محدد المشاريع في الشريط العلوي.' },
+  { q: 'هل أستطيع تخصيص لوحة التحكم؟', a: 'بالتأكيد. من خلال (تخصيص الوحدات) يمكنك إظهار أو إخفاء أي قسم، إعادة ترتيب الأقسام في القائمة الجانبية، وتثبيت وحداتك المفضلة.' },
+  { q: 'هل أستطيع ربط نطاق خاص؟', a: 'في هذا النموذج الأولي يمكنك تجربة واجهة إعداد النطاقات ومعاينة حالتها، بينما يتطلب الربط الفعلي لـ DNS خادمًا خلفيًا (Backend) في بيئة الإنتاج.' },
+  { q: 'كيف يعمل الذكاء الاصطناعي؟', a: 'يقرأ المساعد الذكي سياق مشروعك الحالي (نوع النشاط والمنتجات أو الخدمات) ليقترح أوصافًا، حملات، وعروض أسعار مناسبة. في هذا الملف يعمل بوضع Demo محلي آمن، وفي الإنتاج يتصل عبر خادم آمن.' },
+  { q: 'هل أستطيع تغيير القالب؟', a: 'نعم، يمكنك تغيير القالب والألوان والخطوط وترتيب أقسام الصفحة في أي وقت من خلال (محرر الموقع) دون فقدان بيانات منتجاتك أو عملائك.' },
+  { q: 'هل أستطيع إدارة الطلبات من الهاتف؟', a: 'نعم، جميع شاشات المنصة ولوحة العميل مصممة باستجابة كاملة للهواتف الذكية والأجهزة اللوحية مع قوائم جانبية مريحة للمس.' },
+  { q: 'هل بياناتي محفوظة عند إغلاق الصفحة؟', a: 'نعم، يحفظ النموذج التجريبي تغييراتك ومشاريعك محليًا في متصفحك عبر localStorage، كما يمكنك تصفيرها كملف JSON أو إعادة تعيينها متى شئت.' },
+] as const;
+
+const NAV_LINKS = [
+  { label: 'الرئيسية', href: '#hero' },
+  { label: 'المميزات', href: '#features' },
+  { label: 'أنواع المشاريع', href: '#business-types' },
+  { label: 'معرض القوالب', href: '#templates' },
+  { label: 'الأسعار', href: '#pricing' },
+  { label: 'الأسئلة الشائعة', href: '#faq' },
+] as const;
+
+const DEMO_TABS = [
+  { id: 'store', label: 'متجر إلكتروني (متجر ندى)', projId: 'proj_store' },
+  { id: 'restaurant', label: 'مطعم ومقهى (مطعم مذاق)', projId: 'proj_restaurant' },
+  { id: 'maintenance', label: 'خدمات وصيانة (ورشة المحرك)', projId: 'proj_workshop' },
+  { id: 'engineering', label: 'مكتب هندسي (أبعاد للهندسة)', projId: 'proj_engineering' },
+  { id: 'cards', label: 'بطاقات رقمية (عالم البطاقات)', projId: 'proj_digital' },
+] as const;
+
+const FEATURED_TYPES = ['store', 'restaurant', 'maintenance', 'engineering', 'realestate', 'digital', 'cards', 'tech'] as const;
+
+/* ==========================================================================
+   Landing page
+   ========================================================================== */
 
 export default function HomePage() {
+  const { state, setActiveProject } = useNasaq();
+  const [demoTab, setDemoTab] = useState<string>('store');
+  const [openFaq, setOpenFaq] = useState<number>(0);
+  const [previewTpl, setPreviewTpl] = useState<string | null>(null);
+
+  const demoProject = state.projects.find((p) => p.id === demoTab) ?? state.projects[0];
+  const previewTemplate = state.templates.find((t) => t.id === previewTpl);
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navbar */}
-      <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-nados-primary text-sm font-bold text-white">
-              ن
-            </div>
-            <span className="text-lg font-bold text-gray-900">نادوس</span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-gray-600 md:flex">
-            <a href="#features" className="hover:text-nados-primary">الميزات</a>
-            <a href="#pricing" className="hover:text-nados-primary">الأسعار</a>
-            <a href="#faq" className="hover:text-nados-primary">الأسئلة الشائعة</a>
+    <div>
+      {/* ================= HEADER ================= */}
+      <header className="landing-header">
+        <div className="container flex h-16 items-center justify-between gap-3">
+          <a href="#hero" className="brand-logo">
+            <span className="brand-mark">ن</span>
+            <span className="font-extrabold">نَسَق</span>
+          </a>
+
+          <nav className="nav-links hidden items-center gap-6 lg:flex" aria-label="التنقل الرئيسي">
+            {NAV_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="nav-link">
+                {l.label}
+              </a>
+            ))}
           </nav>
+
           <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              دخول
+            <Link href="/admin/overview" className="btn btn-sm btn-ghost hide-sm" title="فتح لوحة المالك التجريبية">
+              لوحة المالك (Demo)
             </Link>
-            <Link
-              href="/register"
-              className="rounded-lg bg-nados-primary px-4 py-2 text-sm font-medium text-white hover:bg-nados-primary-dark"
-            >
-              أنشئ متجرك
+            <Link href="/login" className="btn btn-sm btn-outline">
+              تسجيل الدخول
+            </Link>
+            <Link href="/onboarding" className="btn btn-sm btn-primary">
+              ابدأ مجانًا
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
-        <div className="mx-auto max-w-6xl px-4 py-20 text-center md:py-28">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-medium text-blue-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-nados-secondary" />
-            صُممت خصيصًا للسوق العراقي
-          </span>
-          <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-bold leading-tight text-gray-900 md:text-6xl">
-            متجرك الإلكتروني مع <span className="text-nados-primary">ذكاء اصطناعي</span> يفهم عراقي
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-balance text-lg text-gray-600">
-            متجر + إدارة مخزون + توصيل محلي + بوت يحوّل رسائل واتساب إلى طلبات منظمة — كل ما تحتاجه
-            بدون خبرة تقنية.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 rounded-xl bg-nados-primary px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-nados-primary-dark"
-            >
-              أنشئ متجرك مجانًا
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-            <a
-              href="#features"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-7 py-3.5 text-base font-medium text-gray-700 transition hover:bg-gray-50"
-            >
-              استكشف الميزات
-            </a>
-          </div>
-          <p className="mt-4 text-xs text-gray-400">بدون بطاقة ائتمان — خطة مجانية دائمة</p>
-
-          {/* Mock dashboard preview */}
-          <div className="mx-auto mt-14 max-w-4xl rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl shadow-blue-900/5">
-            <div className="flex items-center gap-1.5 border-b border-gray-100 pb-3">
-              <span className="h-3 w-3 rounded-full bg-red-400" />
-              <span className="h-3 w-3 rounded-full bg-amber-400" />
-              <span className="h-3 w-3 rounded-full bg-green-400" />
-              <span className="mx-auto rounded-md bg-gray-50 px-3 py-0.5 text-[10px] text-gray-400">
-                app.nados.iq/dashboard
-              </span>
+      {/* ================= HERO ================= */}
+      <section id="hero" className="hero-section">
+        <div className="container hero-grid">
+          <div>
+            <span className="badge badge-primary">منصة عربية متعددة الأنشطة مدعومة بالذكاء الاصطناعي</span>
+            <h1 className="hero-title mt-3">
+              مشروعك يستحق موقعًا يدير أعماله، لا مجرد صفحة تعرضه.
+            </h1>
+            <p className="hero-desc">
+              أنشئ موقع مشروعك وأدر منتجاتك وخدماتك وعملائك من مكان واحد، مع لوحة تحكم مصممة حسب نشاطك ومساعد ذكاء
+              اصطناعي يساعدك على التطور.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link href="/onboarding" className="btn btn-lg btn-primary">
+                <span>أنشئ موقعك مجانًا</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+              </Link>
+              <a href="#interactive-demo" className="btn btn-lg btn-outline">
+                استكشف المنصة
+              </a>
+              <Link href="/dashboard" className="btn btn-lg btn-secondary">
+                دخول لوحة العميل التجريبية
+              </Link>
             </div>
-            <div className="grid grid-cols-2 gap-3 p-4 md:grid-cols-4">
-              {[
-                { label: 'الطلبات', value: '128', icon: ShoppingCart, tone: 'text-green-600 bg-green-50' },
-                { label: 'المنتجات', value: '45', icon: Package, tone: 'text-blue-600 bg-blue-50' },
-                { label: 'العملاء', value: '89', icon: MessageCircle, tone: 'text-purple-600 bg-purple-50' },
-                { label: 'الإيرادات', value: '4.2م د.ع', icon: BarChart3, tone: 'text-amber-600 bg-amber-50' },
-              ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-gray-100 p-4 text-right">
-                  <div className={`mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg ${s.tone}`}>
-                    <s.icon className="h-4 w-4" />
+            <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted">
+              <span>✓ لوحة تتكيف مع 27+ نشاطًا تجاريًا</span>
+              <span>✓ بدون خبرة برمجية</span>
+              <span>✓ محرك وحدات ذكي قابل للتخصيص</span>
+            </div>
+          </div>
+
+          <div className="hero-composition" aria-label="معاينة تفاعلية لمكونات المنصة">
+            <button type="button" className="mini-ui-card text-right" onClick={() => setActiveProject('proj_store')}>
+              <div className="flex items-center justify-between">
+                <span className="badge badge-primary">متجر إلكتروني</span>
+                <span className="badge badge-success">نشط</span>
+              </div>
+              <p className="text-xs text-muted">متجر ندى</p>
+              <p className="text-sm font-bold">عطر شرقي فاخر — 280 ر.س</p>
+              <p className="mb-2 text-xs text-muted">المخزون: 34 قطعة • 6 منتجات نشطة</p>
+              <span className="text-xs font-bold text-primary">فتح لوحة المتجر ←</span>
+            </button>
+
+            <button type="button" className="mini-ui-card text-right" onClick={() => setActiveProject('proj_restaurant')}>
+              <span className="badge badge-secondary">مطعم ومقهى</span>
+              <p className="text-xs text-muted">مطعم مذاق</p>
+              <p className="text-sm font-bold">برغر كلاسيكي مشوي — 38 ر.س</p>
+              <p className="mb-2 text-xs text-muted">المنيو الرقمي • 18 طلبًا اليوم</p>
+              <span className="text-xs font-bold text-primary">معاينة المنيو والطلبات ←</span>
+            </button>
+
+            <div className="mini-ui-card">
+              <p className="text-sm font-bold">لوحة إدارة مخصصة</p>
+              <span className="badge badge-muted">Demo KPI</span>
+              <p className="text-xl font-extrabold text-primary">24,850 ر.س</p>
+              <p className="mt-1 text-xs text-muted">مبيعات تجريبية (+18% هذا الشهر)</p>
+              <div className="flex h-8 items-end gap-1">
+                {[40, 65, 45, 80, 60].map((h, i) => (
+                  <div key={i} className="chart-bar" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+            </div>
+
+            <Link href="/ai-assistant" className="mini-ui-card text-right">
+              <span className="badge badge-primary">مساعد الذكاء الاصطناعي</span>
+              <p className="mb-2 text-xs text-muted">سياقي</p>
+              <p className="mb-2 text-xs text-muted">
+                &ldquo;لاحظت أن (عطر شرقي فاخر) يمثل 42% من المبيعات التجريبية. هل نجهز باقة هدايا لزيادة متوسط السلة؟&rdquo;
+              </p>
+              <span className="text-xs font-bold text-primary">تجربة المساعد الذكي ←</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= BUSINESS TYPES ================= */}
+      <section id="business-types" className="section-block section-block-alt">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge">تخصيص ذكي حسب القطاع</span>
+            <h2 className="section-title">منصة واحدة تتشكل حسب طبيعة نشاطك التجاري</h2>
+            <p className="section-desc">
+              لا نعرض عليك عشرات الأقسام غير المفيدة؛ بل يختار محرك الوحدات الأقسام التي يحتاجها مشروعك فعلًا مع
+              حرية التعديل الكاملة.
+            </p>
+          </div>
+
+          <div className="grid-4">
+            {FEATURED_TYPES.map((tId) => {
+              const bt = BUSINESS_TYPES.find((b) => b.id === tId);
+              if (!bt) return null;
+              return (
+                <button
+                  key={bt.id}
+                  type="button"
+                  className="card card-interactive flex-col justify-between text-right"
+                  onClick={() => {
+                    setActiveProject(bt.sampleProject);
+                    window.location.href = `/dashboard`;
+                  }}
+                >
+                  <div>
+                    <div className="icon-box mb-2">{getIcon(bt.icon, { size: 22 })}</div>
+                    <h3 className="mb-1 text-base">{bt.name}</h3>
+                    <p className="mb-3 text-xs text-muted">{bt.shortDesc}</p>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{s.value}</p>
-                  <p className="text-[10px] text-gray-400">{s.label}</p>
-                </div>
+                  <div className="flex items-center justify-between border-t border-muted-surface pt-2">
+                    <span className="text-xs font-bold text-primary">معاينة النشاط واللوحة ←</span>
+                    <span className="badge badge-muted">تفاعلي</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="card mt-4" style={{ background: 'var(--muted-surface)' }}>
+            <div className="mb-2 text-center text-sm font-bold">
+              ندعم أكثر من 27 نشاطًا تجاريًا متخصصًا ومختلطًا:
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {SUPPORTED_ACTIVITIES.map((act) => (
+                <span key={act} className="activity-pill">{act}</span>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="bg-gray-50 py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">كل ما يحتاجه التاجر العراقي</h2>
-            <p className="mx-auto mt-3 max-w-xl text-gray-600">
-              منصة واحدة تجمع المتجر والمخزون والتوصيل والدفع والذكاء الاصطناعي
+      {/* ================= INTERACTIVE DEMO ================= */}
+      <section id="interactive-demo" className="section-block">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge section-badge-secondary">معاينة تفاعلية فورية</span>
+            <h2 className="section-title">جرّب بنفسك كيف يتغير الموقع ولوحة التحكم بتغيير النشاط</h2>
+            <p className="section-desc">
+              بدّل بين الأنشطة أدناه لترى كيف تتغير وحدات لوحة العميل ومعاينة الموقع ومقترحات الذكاء الاصطناعي فورًا.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+          {demoProject && (
+            <>
+              <div className="demo-tabs-bar mb-4 flex flex-wrap justify-center gap-2">
+                {DEMO_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`demo-tab-btn ${demoTab === t.id ? 'active' : ''}`}
+                    onClick={() => setDemoTab(t.id)}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid-2">
+                <div className="card" style={{ background: 'var(--muted-surface)' }}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="badge badge-primary">الأقسام المفعلة في لوحة العميل</span>
+                    <span className="text-xs text-muted">تتغير تلقائيًا حسب النشاط</span>
+                  </div>
+                  <h3 className="mb-2 text-lg">{demoProject.name} — ({demoProject.city})</h3>
+                  <p className="mb-3 text-sm text-muted">{demoProject.description}</p>
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {demoProject.enabledModules.map((mId) => (
+                      <span
+                        key={mId}
+                        className="badge badge-secondary"
+                        style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                      >
+                        {MODULE_REGISTRY[mId]?.name ?? mId}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link href="/dashboard" className="btn btn-primary btn-sm" onClick={() => setActiveProject(demoProject.id)}>
+                      افتح لوحة تحكم هذا المشروع ←
+                    </Link>
+                    <Link href="/builder" className="btn btn-outline btn-sm" onClick={() => setActiveProject(demoProject.id)}>
+                      افتح محرر موقع المشروع
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="card">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="badge badge-secondary">معاينة حية لموقع المشروع</span>
+                    <span className="text-xs text-muted">{demoProject.domain}</span>
+                  </div>
+                  <div
+                    className="rounded-lg border border-border p-4"
+                    style={{ background: `linear-gradient(180deg, ${demoProject.primaryColor}12 0%, #FFFFFF 100%)` }}
+                  >
+                    <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                      <span className="font-extrabold" style={{ color: demoProject.primaryColor }}>
+                        {demoProject.builder.logoText}
+                      </span>
+                      <span className="badge badge-muted">قالب متجاوب</span>
+                    </div>
+                    <h4 className="mb-1 text-base">{demoProject.builder.heroTitle}</h4>
+                    <p className="mb-3 text-xs text-muted">{demoProject.builder.heroSubtitle}</p>
+                    <div className="mb-2 text-xs font-bold">أقسام الصفحة المفعلة لهذا النشاط:</div>
+                    <div className="flex flex-wrap gap-1">
+                      {demoProject.builder.sections.filter((s) => s.visible).map((s) => (
+                        <span key={s.id} className="badge badge-muted">{s.title}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* ================= FEATURES ================= */}
+      <section id="features" className="section-block section-block-alt">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge">مميزات المنصة</span>
+            <h2 className="section-title">كل ما يحتاجه مشروعك للنمو في مكان واحد</h2>
+            <p className="section-desc">
+              جمعنا أدوات بناء المواقع، وإدارة العمليات اليومية، والذكاء الاصطناعي في تجربة عربية سلسة.
+            </p>
+          </div>
+          <div className="grid-3">
             {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-2xl border border-gray-100 bg-white p-6 transition-shadow hover:shadow-lg hover:shadow-gray-200/50"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-nados-primary">
-                  <f.icon className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">{f.description}</p>
+              <div key={f.title} className="card">
+                <div className="icon-box mb-2">{getIcon(f.icon, { size: 22 })}</div>
+                <h3 className="mb-1 text-base">{f.title}</h3>
+                <p className="text-sm text-muted">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">ابدأ البيع في 3 خطوات</h2>
+      {/* ================= HOW IT WORKS ================= */}
+      <section id="how-it-works" className="section-block">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge section-badge-secondary">خطوات واضحة</span>
+            <h2 className="section-title">كيف يعمل نَسَق في 5 خطوات؟</h2>
+            <p className="section-desc">رحلة إعداد سريعة تنقلك من الفكرة إلى موقع ولوحة إدارة جاهزة للعمل.</p>
           </div>
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-            {[
-              { n: '1', title: 'أنشئ حسابك', desc: 'سجّل برقم هاتفك العراقي — متجرك يُنشأ تلقائيًا مع خطة مجانية.' },
-              { n: '2', title: 'أضف منتجاتك', desc: 'الصور والأسعار والمخزون — بواجهة عربية بسيطة ودعم كامل للدينار.' },
-              { n: '3', title: 'شارك واستقبل الطلبات', desc: 'رابط متجرك على واتساب وإنستغرام — والبوت يستقبل الطلبات عنك.' },
-            ].map((s) => (
-              <div key={s.n} className="relative text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-nados-primary text-xl font-bold text-white">
-                  {s.n}
-                </div>
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">{s.title}</h3>
-                <p className="mx-auto mt-2 max-w-xs text-sm text-gray-600">{s.desc}</p>
+          <div className="grid-3">
+            {STEPS.map((s) => (
+              <div key={s.num} className="card">
+                <span className="badge badge-primary mb-2">الخطوة {s.num}</span>
+                <h3 className="mb-1 text-base">{s.title}</h3>
+                <p className="text-sm text-muted">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="bg-gray-50 py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">أسعار بسيطة وشفافة</h2>
-            <p className="mt-3 text-gray-600">ابدأ مجانًا وارتقِ عندما ينمو متجرك</p>
+      {/* ================= AI SHOWCASE ================= */}
+      <section id="ai-showcase" className="section-block section-block-alt">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge">ذكاء اصطناعي يفهم نشاطك</span>
+            <h2 className="section-title">مساعد ذكي مدمج في كل خطوة، وليس مجرد زر زخرفي</h2>
+            <p className="section-desc">
+              يتعرف المساعد على نوع مشروعك ويقترح أوصاف المنتجات، خطط التسويق، عروض الأسعار، وتحليل البيانات التجريبية.
+            </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {PLANS.map((p) => (
-              <div
-                key={p.slug}
-                className={`relative flex flex-col rounded-2xl border p-6 ${
-                  p.highlighted
-                    ? 'border-nados-primary bg-white shadow-xl shadow-blue-600/10'
-                    : 'border-gray-200 bg-white'
-                }`}
-              >
-                {p.highlighted && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-nados-primary px-3 py-1 text-xs font-medium text-white">
-                    الأكثر شيوعًا
-                  </span>
-                )}
-                <h3 className="text-lg font-bold text-gray-900">{p.name}</h3>
-                <div className="mt-3">
-                  <span className="text-3xl font-bold text-gray-900">{p.price}</span>
-                  {p.period && <span className="text-sm text-gray-500"> / {p.period}</span>}
+
+          <div className="grid-3">
+            {AI_EXAMPLES.map((ex) => (
+              <div key={ex.prompt} className="card">
+                <span className="badge badge-secondary mb-2">{ex.role}</span>
+                <div className="mb-2 text-sm font-bold">{ex.prompt}</div>
+                <p className="text-xs text-muted">{ex.output}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="card mt-4" style={{ background: 'var(--light-purple)' }}>
+            <span className="badge badge-warning mb-1">تنبيه الشفافية التقنية</span>
+            <p className="font-bold">وضع تجريبي محلي (Demo AI Mode)</p>
+            <p className="mt-1 text-sm text-muted">
+              في هذا النموذج الأولي يعمل المساعد بردود سياقية مبرمجة مسبقًا دون إرسال بياناتك لأي خادم خارجي. عند
+              الربط بالإنتاج يتم الاتصال عبر Backend آمن.
+            </p>
+            <Link href="/ai-assistant" className="btn btn-primary mt-3">
+              افتح المساعد الذكي الآن
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= TEMPLATES ================= */}
+      <section id="templates" className="section-block">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge section-badge-secondary">معرض القوالب</span>
+            <h2 className="section-title">قوالب عربية احترافية مصممة لكل قطاع</h2>
+            <p className="section-desc">
+              اختر القالب الأنسب لنشاطك وعدّل ألوانه وأقسامه ومحتواه في أي وقت من محرر الموقع.
+            </p>
+          </div>
+          <div className="grid-3">
+            {state.templates.map((tpl) => (
+              <div key={tpl.id} className="card flex-col justify-between">
+                <div>
+                  <div
+                    className="mb-3 flex flex-col justify-between p-3"
+                    style={{
+                      height: 120,
+                      borderRadius: 8,
+                      background: `linear-gradient(135deg, ${tpl.accent}24, ${tpl.accent}08)`,
+                      border: `1px solid ${tpl.accent}33`,
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="badge" style={{ background: tpl.accent, color: '#fff' }}>
+                        {tpl.businessLabel}
+                      </span>
+                      <span className="text-xs font-bold" style={{ color: tpl.accent }}>RTL Ready</span>
+                    </div>
+                    <div>
+                      <div style={{ height: 8, width: '70%', background: tpl.accent, borderRadius: 4, marginBottom: 6, opacity: 0.75 }} />
+                      <div style={{ height: 6, width: '45%', background: tpl.accent, borderRadius: 4, opacity: 0.4 }} />
+                    </div>
+                  </div>
+                  <h3 className="mb-1 text-base">{tpl.name}</h3>
+                  <p className="mb-3 text-xs text-muted">{tpl.desc}</p>
                 </div>
-                <ul className="mt-5 flex-1 space-y-2.5">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-nados-secondary" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/register"
-                  className={`mt-6 rounded-lg py-2.5 text-center text-sm font-medium transition ${
-                    p.highlighted
-                      ? 'bg-nados-primary text-white hover:bg-nados-primary-dark'
-                      : 'border border-gray-200 text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {p.cta}
+                <div className="flex items-center gap-2">
+                  <button type="button" className="btn btn-sm btn-outline" style={{ flex: 1 }} onClick={() => setPreviewTpl(tpl.id)}>
+                    معاينة القالب
+                  </button>
+                  <Link
+                    href="/onboarding"
+                    className="btn btn-sm btn-primary"
+                    style={{ flex: 1 }}
+                    onClick={() => window.localStorage.setItem('nasaq_pending_template', JSON.stringify({ businessType: tpl.businessType, templateId: tpl.id }))}
+                  >
+                    اختيار القالب
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= PRICING ================= */}
+      <section id="pricing" className="section-block section-block-alt">
+        <div className="container">
+          <div className="section-header">
+            <span className="badge badge-warning mb-2">أسعار توضيحية تجريبية قابلة للتعديل</span>
+            <h2 className="section-title">باقات مرنة تنمو مع حجم أعمالك</h2>
+            <p className="section-desc">
+              الأسعار المعروضة أدناه هي أسعار توضيحية للنموذج التجريبي فقط، ويمكنك تعديلها وإدارتها مباشرة من لوحة
+              المالك (Super Admin).
+            </p>
+          </div>
+          <div className="grid-3">
+            {state.plans.filter((p) => p.status === 'نشطة').map((pl) => (
+              <div
+                key={pl.id}
+                className="card flex-col justify-between"
+                style={{ borderWidth: pl.popular ? 2 : 1, borderColor: pl.popular ? 'var(--primary)' : 'var(--border)' }}
+              >
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-lg font-extrabold">{pl.nameAr}</span>
+                    {pl.popular ? <span className="badge badge-primary">الأكثر اختيارًا</span> : <span className="badge badge-muted">خطة تجريبية</span>}
+                  </div>
+                  <div className="my-3">
+                    <span className="text-3xl font-extrabold text-primary">{pl.price}</span>
+                    <span className="text-sm text-muted"> ر.س / {pl.period}</span>
+                  </div>
+                  <ul className="mb-4 flex-col gap-2 text-sm">
+                    <li>✓ الحد الأقصى للمشاريع: <strong>{pl.maxProjects}</strong></li>
+                    <li>✓ عدد الصفحات: <strong>حتى {pl.maxPages} صفحة</strong></li>
+                    <li>✓ حصة الذكاء الاصطناعي: <strong>{pl.aiLimit}</strong></li>
+                    <li>✓ التخزين التجريبي: <strong>{pl.storage}</strong></li>
+                    <li>✓ الوحدات: <strong>{pl.availableModules}</strong></li>
+                  </ul>
+                </div>
+                <Link href="/onboarding" className={`btn ${pl.popular ? 'btn-primary' : 'btn-outline'}`} style={{ width: '100%' }}>
+                  ابدأ بهذه الباقة تجريبيًا
                 </Link>
               </div>
             ))}
@@ -313,69 +504,124 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="bg-white py-20">
-        <div className="mx-auto max-w-3xl px-4">
-          <h2 className="text-center text-3xl font-bold text-gray-900 md:text-4xl">الأسئلة الشائعة</h2>
-          <div className="mt-10 space-y-4">
-            {FAQ.map((item) => (
-              <details
-                key={item.q}
-                className="group rounded-xl border border-gray-100 bg-gray-50/50 p-5"
-              >
-                <summary className="flex cursor-pointer items-center justify-between font-medium text-gray-900">
-                  {item.q}
-                  <span className="text-nados-primary transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600">{item.a}</p>
-              </details>
+      {/* ================= FAQ ================= */}
+      <section id="faq" className="section-block">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge">الأسئلة الشائعة</span>
+            <h2 className="section-title">إجابات واضحة وصريحة حول المنصة</h2>
+          </div>
+          <div className="mx-auto max-w-3xl space-y-3">
+            {FAQS.map((item, idx) => (
+              <div key={item.q} className="faq-item">
+                <button
+                  type="button"
+                  className="faq-question"
+                  aria-expanded={openFaq === idx}
+                  onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
+                >
+                  <span>{item.q}</span>
+                  <span className="font-extrabold text-primary">{openFaq === idx ? '−' : '+'}</span>
+                </button>
+                {openFaq === idx && <div className="faq-answer text-sm">{item.a}</div>}
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-nados-dark py-16">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <ShieldCheck className="mx-auto h-10 w-10 text-blue-400" />
-          <h2 className="mt-4 text-3xl font-bold text-white md:text-4xl">
-            جاهز تنقل متجرك لمستوى جديد؟
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-gray-300">
-            انضم لمئات التجار العراقيين الذين يديرون أعمالهم بنادوس — ابدأ مجانًا اليوم.
-          </p>
-          <Link
-            href="/register"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-nados-primary px-8 py-4 text-base font-semibold text-white transition hover:bg-blue-500"
-          >
-            أنشئ متجرك مجانًا
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-100 bg-white py-10">
-        <div className="mx-auto max-w-6xl px-4 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-nados-primary text-xs font-bold text-white">
-              ن
+      {/* ================= FOOTER ================= */}
+      <footer className="border-t border-border bg-surface py-10">
+        <div className="container">
+          <div className="grid-2 lg:grid-cols-4">
+            <div>
+              <div className="brand-logo mb-3">
+                <span className="brand-mark">ن</span>
+                <span className="font-extrabold">نَسَق</span>
+              </div>
+              <p className="text-sm text-muted">
+                منصة SaaS عربية متعددة الأنشطة لإنشاء المواقع الإلكترونية وإدارة المشاريع الصغيرة والمتوسطة
+                بالذكاء الاصطناعي (نموذج تفاعلي متكامل).
+              </p>
             </div>
-            <span className="font-bold text-gray-900">نادوس</span>
+
+            <div>
+              <h3 className="mb-3 text-sm font-bold">روابط سريعة</h3>
+              <ul className="space-y-2 text-sm text-muted">
+                <li><a href="#hero" className="hover:text-primary">نبذة عن المنصة</a></li>
+                <li><a href="#features" className="hover:text-primary">المميزات</a></li>
+                <li><a href="#pricing" className="hover:text-primary">الأسعار التجريبية</a></li>
+                <li><a href="#templates" className="hover:text-primary">معرض القوالب</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-bold">تجارب النموذج الأولي</h3>
+              <ul className="space-y-2 text-sm text-muted">
+                <li><Link href="/onboarding" className="hover:text-primary">معالج إنشاء مشروع (6 خطوات)</Link></li>
+                <li><Link href="/dashboard" className="hover:text-primary">لوحة تحكم العميل</Link></li>
+                <li><Link href="/builder" className="hover:text-primary">محرر المواقع التفاعلي</Link></li>
+                <li><Link href="/admin/overview" className="hover:text-primary">لوحة مالك المنصة (Super Admin)</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-bold">المساعدة والسياسات</h3>
+              <ul className="space-y-2 text-sm text-muted">
+                <li>مركز المساعدة والدعم التجريبي</li>
+                <li>سياسة الخصوصية والبيانات المحلية</li>
+                <li>شروط الاستخدام والحدود التقنية</li>
+                <li>معلومات التواصل التجريبية</li>
+              </ul>
+            </div>
           </div>
-          <p className="mt-2 text-sm text-gray-500">
-            New Age Digital Online Service — صُنع بفخر في العراق 🇮🇶
-          </p>
-          <div className="mt-4 flex items-center justify-center gap-5 text-xs text-gray-400">
-            <Link href="/terms" className="hover:text-nados-primary">الشروط</Link>
-            <Link href="/privacy" className="hover:text-nados-primary">الخصوصية</Link>
-            <Link href="/dashboard" className="hover:text-nados-primary">حالة النظام</Link>
+
+          <div className="mt-8 border-t border-border pt-5 text-center text-xs text-muted">
+            <p>© 2026 نَسَق — جميع الحقوق محفوظة (نموذج أولي تفاعلي يعمل محليًا داخل المتصفح).</p>
+            <p className="mt-1">الوضع النهاري القياسي • RTL • متوافق مع الهواتف والشاشات الواسعة</p>
           </div>
-          <p className="mt-4 text-xs text-gray-400">
-            © {new Date().getFullYear()} نادوس — جميع الحقوق محفوظة
-          </p>
         </div>
       </footer>
+
+      {/* ================= TEMPLATE PREVIEW MODAL ================= */}
+      {previewTemplate && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true" onClick={() => setPreviewTpl(null)}>
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="text-base font-bold">{previewTemplate.name}</h2>
+              <button type="button" className="btn btn-ghost !px-2" onClick={() => setPreviewTpl(null)} aria-label="إغلاق">✕</button>
+            </div>
+            <div className="modal-body">
+              <div
+                className="flex h-44 flex-col justify-between rounded-lg border border-border p-4"
+                style={{ background: `linear-gradient(135deg, ${previewTemplate.accent}1A, #FFFFFF)` }}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="badge" style={{ background: previewTemplate.accent, color: '#fff' }}>
+                    {previewTemplate.businessLabel}
+                  </span>
+                  <span className="text-xs font-bold" style={{ color: previewTemplate.accent }}>RTL Ready</span>
+                </div>
+                <div>
+                  <div style={{ height: 12, width: '72%', background: previewTemplate.accent, borderRadius: 6, marginBottom: 8, opacity: 0.8 }} />
+                  <div style={{ height: 8, width: '50%', background: previewTemplate.accent, borderRadius: 4, opacity: 0.45 }} />
+                </div>
+              </div>
+              <p className="text-sm text-muted">{previewTemplate.desc}</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-outline btn-sm" onClick={() => setPreviewTpl(null)}>إغلاق</button>
+              <Link
+                href="/onboarding"
+                className="btn btn-primary btn-sm"
+                onClick={() => window.localStorage.setItem('nasaq_pending_template', JSON.stringify({ businessType: previewTemplate.businessType, templateId: previewTemplate.id }))}
+              >
+                اختيار القالب
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

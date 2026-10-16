@@ -1,186 +1,193 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { DashboardModule } from '@/components/nasaq/dashboard-page';
+import { EmptyState, Field, Modal, StatusBadge, TableToolbar, ToastContainer } from '@/components/nasaq/ui';
+import { IconPlus } from '@/components/nasaq/icons';
 import { formatIQD } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
-import { useStore } from '@/lib/supabase/use-store';
-import { Package, Plus, Search } from 'lucide-react';
+import type { Product } from '@/lib/nasaq/seed';
 
-type Product = {
-  id: string;
-  name_ar: string;
-  name: string;
-  price_iqd: number;
-  stock: number;
-  is_active: boolean;
-  is_featured: boolean;
-};
+const FILTERS = [
+  { v: '', l: 'الكل' },
+  { v: 'active', l: 'نشط' },
+  { v: 'low', l: 'منخفض المخزون' },
+] as const;
 
-export default function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; status?: string }>;
-}) {
-  const store = useStore();
-  const [params, setParams] = useState<{ q?: string; status?: string }>({});
-  const [products, setProducts] = useState<Product[]>([]);
-  const [error, setError] = useState<string | null>(null);
+const BLANK: Partial<Product> = { name: '', category: '', price: 0, stock: 0 };
 
-  useEffect(() => {
-    void searchParams.then(setParams);
-  }, [searchParams]);
+export default function ProductsPage() {
+  const [q, setQ] = useState('');
+  const [filter, setFilter] = useState('');
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [form, setForm] = useState<Partial<Product>>(BLANK);
+  const [open, setOpen] = useState(false);
 
-  const { q, status } = params;
+  function startNew(project: { categories: { name: string }[] }) {
+    setEditing(null);
+    setForm({ ...BLANK, category: project.categories[0]?.name ?? 'غير مصنف' });
+    setOpen(true);
+  }
 
-  useEffect(() => {
-    if (!store.tenantId) return;
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const supabase = createClient();
-        let query = supabase
-          .from('products')
-          .select('id, name_ar, name, price_iqd, stock, is_active, is_featured')
-          .eq('tenant_id', store.tenantId!)
-          .is('deleted_at', null)
-          .order('created_at', { ascending: false });
-
-        if (q) query = query.or(`name_ar.ilike.%${q}%,name.ilike.%${q}%`);
-        if (status === 'active') query = query.eq('is_active', true);
-        if (status === 'inactive') query = query.eq('is_active', false);
-        if (status === 'low') query = query.lte('stock', 5);
-
-        const { data, error: qError } = await query.limit(100);
-        if (cancelled) return;
-        if (qError) setError(qError.message);
-        else setProducts(data ?? []);
-      } catch {
-        if (!cancelled) setError('تعذر تحميل المنتجات');
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [store.tenantId, q, status]);
-
-  const FILTERS = [
-    { v: '', l: 'الكل' },
-    { v: 'active', l: 'نشط' },
-    { v: 'inactive', l: 'معطّل' },
-    { v: 'low', l: 'مخزون منخفض' },
-  ];
+  function startEdit(p: Product) {
+    setEditing(p);
+    setForm(p);
+    setOpen(true);
+  }
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">المنتجات</h1>
-          <p className="mt-0.5 text-sm text-gray-500">
-            {store.loading ? 'جارٍ التحميل...' : `${products.length} منتج`}
-          </p>
-        </div>
-        <Link
-          href="/dashboard/products/new"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-nados-primary px-4 py-2 text-sm font-medium text-white hover:bg-nados-primary-dark"
-        >
-          <Plus className="h-4 w-4" />
-          منتج جديد
-        </Link>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <form className="relative flex-1 sm:max-w-xs">
-          <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="ابحث عن منتج..."
-            className="w-full rounded-lg border border-gray-200 py-2 pr-9 pl-3 text-sm focus:border-nados-primary focus:outline-none"
-          />
-        </form>
-        <div className="flex gap-1">
-          {FILTERS.map((f) => (
-            <Link
-              key={f.v}
-              href={`/dashboard/products${f.v ? `?status=${f.v}` : ''}`}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                (status ?? '') === f.v
-                  ? 'bg-nados-primary text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              {f.l}
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
+    <DashboardModule
+      title="المنتجات"
+      subtitle="إدارة المنتجات والأسعار والمخزون وحالة العرض."
+      actions={({ project }) => (
+        <button type="button" className="btn btn-primary btn-sm" onClick={() => startNew(project)}>
+          <IconPlus size={16} /> منتج جديد
+        </button>
       )}
+    >
+      {({ project, patch }) => {
+        const filtered = project.products.filter((p) => {
+          const matchQ = !q || (p.name ?? '').includes(q);
+          const matchStatus =
+            !filter ? true : filter === 'active' ? p.status === 'نشط' : p.stock <= (p.minStock || 5);
+          return matchQ && matchStatus;
+        });
 
-      {products.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-xs text-gray-500">
-              <tr>
-                <th className="px-4 py-3 text-right font-medium">المنتج</th>
-                <th className="px-4 py-3 text-right font-medium">السعر</th>
-                <th className="px-4 py-3 text-right font-medium">المخزون</th>
-                <th className="px-4 py-3 text-right font-medium">الحالة</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {products.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50/50">
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-gray-900">{p.name_ar || p.name}</p>
-                    {p.is_featured && <span className="text-xs text-amber-600">مميز</span>}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
-                    {formatIQD(p.price_iqd)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        p.stock === 0
-                          ? 'bg-red-50 text-red-700'
-                          : p.stock <= 5
-                            ? 'bg-amber-50 text-amber-700'
-                            : 'bg-green-50 text-green-700'
-                      }`}
-                    >
-                      {p.stock} قطعة
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        p.is_active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {p.is_active ? 'نشط' : 'معطّل'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-gray-200 bg-white py-20 text-center">
-          <Package className="mx-auto h-12 w-12 text-gray-300" />
-          <p className="mt-3 text-gray-500">
-            {q || status ? 'لا توجد منتجات مطابقة' : 'لم تضف أي منتجات بعد'}
-          </p>
-        </div>
-      )}
-    </div>
+        const categories = Array.from(new Set(project.products.map((p) => p.category)));
+
+        function save() {
+          const name = (form.name ?? '').trim();
+          if (!name) return;
+          if (editing) {
+            patch({
+              products: project.products.map((p) => (p.id === editing.id ? ({ ...p, ...form, name } as Product) : p)),
+            });
+          } else {
+            const item: Product = {
+              id: `p_${Date.now().toString(36)}`,
+              name,
+              category: form.category ?? project.categories[0]?.name ?? 'غير مصنف',
+              price: Number(form.price ?? 0),
+              stock: Number(form.stock ?? 0),
+              minStock: 5,
+              sales: 0,
+              status: 'نشط',
+            };
+            patch({ products: [item, ...project.products] });
+          }
+          setOpen(false);
+        }
+
+        function remove(id: string) {
+          patch({ products: project.products.filter((p) => p.id !== id) });
+        }
+
+        return (
+          <>
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {categories.map((c) => (
+                  <span key={c} className="badge badge-muted">{c}</span>
+                ))}
+              </div>
+            )}
+
+            <TableToolbar
+              search={q}
+              onSearchChange={setQ}
+              searchPlaceholder="ابحث عن منتج..."
+              filters={FILTERS as unknown as { v: string; l: string }[]}
+              activeFilter={filter}
+              onFilterChange={setFilter}
+            />
+
+            {filtered.length > 0 ? (
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>المنتج</th>
+                      <th>الفئة</th>
+                      <th>السعر</th>
+                      <th>المخزون</th>
+                      <th>المبيعات</th>
+                      <th>الحالة</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((p) => (
+                      <tr key={p.id}>
+                        <td>
+                          <p className="font-bold text-text-primary">{p.name}</p>
+                          {p.featured && <span className="badge badge-warning mt-1">مميز</span>}
+                        </td>
+                        <td><span className="badge badge-muted">{p.category}</span></td>
+                        <td className="font-bold">{formatIQD(p.price)}</td>
+                        <td>
+                          <span className={`badge ${p.stock === 0 ? 'badge-danger' : p.stock <= (p.minStock || 5) ? 'badge-warning' : 'badge-success'}`}>
+                            {p.stock} قطعة
+                          </span>
+                        </td>
+                        <td>{p.sales}</td>
+                        <td><StatusBadge status={p.status} /></td>
+                        <td>
+                          <div className="flex flex-wrap gap-1">
+                            <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(p)}>تعديل</button>
+                            <button type="button" className="btn btn-danger-outline btn-sm" onClick={() => remove(p.id)}>حذف</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="table-wrap">
+                <EmptyState
+                  title={q || filter ? 'لا توجد منتجات مطابقة' : 'لم تضف أي منتجات بعد'}
+                  description="أضف منتجك الأول لبدء البيع التجريبي في لوحة المشروع."
+                />
+              </div>
+            )}
+
+            {open && (
+              <Modal
+                title={editing ? 'تعديل منتج' : 'منتج جديد'}
+                onClose={() => setOpen(false)}
+                footer={
+                  <>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={() => setOpen(false)}>إلغاء</button>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={save}>حفظ المنتج</button>
+                  </>
+                }
+              >
+                <Field label="اسم المنتج">
+                  <input id="modal-prod-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="مثال: عطر شرقي فاخر" />
+                </Field>
+                <Field label="الفئة">
+                  <select id="modal-prod-cat" className="form-control" value={form.category ?? ''} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
+                    <option value="">غير مصنف</option>
+                    {project.categories.map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                </Field>
+                <div className="grid-2">
+                  <Field label="السعر (رقم)">
+                    <input id="modal-prod-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
+                  </Field>
+                  <Field label="المخزون">
+                    <input id="modal-prod-stock" type="number" className="form-control" value={form.stock ?? 0} onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))} />
+                  </Field>
+                </div>
+                <p className="text-xs text-muted">
+                  ملاحظة: الأسعار هنا للتجربة فقط، وليست مرتبطة بأي بوابة دفع في النموذج الأولي.
+                </p>
+              </Modal>
+            )}
+          </>
+        );
+      }}
+    </DashboardModule>
   );
 }

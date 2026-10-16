@@ -2,18 +2,497 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =====================================================================
+   نَسَق — design tokens (ported from the original mockup)
+   ===================================================================== */
 :root {
-  --nados-primary: #1a56db;
-  --nados-secondary: #0e9f6e;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #172033;
+  --text-secondary: #667085;
+  --primary: #5b5ce2;
+  --primary-hover: #4b4cc4;
+  --secondary: #16b8a6;
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --warning: #d97706;
+  --warning-bg: #fef3c7;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --border: #e6eaf0;
+  --muted-surface: #f1f5f9;
+  --light-purple: #eeeeff;
+
+  --base-font-size: 15px;
+  --card-padding: 20px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-xs: 0 1px 2px rgba(23, 32, 51, 0.04);
+  --shadow-sm: 0 2px 6px rgba(23, 32, 51, 0.06);
+  --shadow-md: 0 8px 24px rgba(23, 32, 51, 0.08);
+
+  --sidebar-width: 265px;
+  --sidebar-collapsed-width: 74px;
+  --topbar-height: 64px;
+  --transition: 0.18s ease;
+}
+
+/* user-adjustable density + font size (Settings ← المستخدم والواجهة) */
+body[data-density='compact'] {
+  --card-padding: 14px;
+}
+body[data-density='spacious'] {
+  --card-padding: 26px;
+}
+body[data-fontsize='small'] {
+  --base-font-size: 14px;
+}
+body[data-fontsize='large'] {
+  --base-font-size: 16.5px;
+}
+
+html {
+  font-size: var(--base-font-size);
 }
 
 body {
+  @apply bg-bg text-text-primary antialiased;
   direction: rtl;
   text-align: right;
+  font-family: 'Tajawal', 'Almarai', Arial, system-ui, sans-serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Arabic web fonts (same loading strategy as the mockup: non-blocking) */
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* =====================================================================
+   Layout primitives
+   ===================================================================== */
+@layer components {
+  .container {
+    @apply mx-auto w-full max-w-container px-5;
   }
+
+  .grid-2 {
+    @apply grid gap-5 sm:grid-cols-2;
+  }
+  .grid-3 {
+    @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .grid-4 {
+    @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  /* ---------------- Cards ---------------- */
+  .card {
+    @apply rounded-lg border border-border bg-surface p-card shadow-xs;
+  }
+  .card-interactive {
+    @apply card transition hover:shadow-md;
+  }
+
+  .kpi-card {
+    @apply card flex items-start justify-between gap-4;
+  }
+  .kpi-value {
+    @apply mt-1 text-2xl font-extrabold text-text-primary;
+  }
+
+  .icon-box {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-md;
+  }
+  .icon-box-teal {
+    @apply icon-box bg-teal-50 text-secondary;
+  }
+  .icon-box-green {
+    @apply icon-box bg-success-bg text-success;
+  }
+  .icon-box-amber {
+    @apply icon-box bg-warning-bg text-warning;
+  }
+  .icon-box-purple {
+    @apply icon-box bg-light-purple text-primary;
+  }
+
+  .demo-banner {
+    @apply flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900;
+  }
+
+  /* ---------------- Buttons ---------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-sm {
+    @apply btn px-3 py-1.5 text-xs;
+  }
+  .btn-lg {
+    @apply btn h-12 px-8 text-base;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover;
+  }
+  .btn-secondary {
+    @apply btn bg-secondary text-white hover:bg-teal-700;
+  }
+  .btn-outline {
+    @apply btn border border-border bg-surface text-text-primary hover:bg-muted-surface;
+  }
+  .btn-success {
+    @apply btn bg-success text-white hover:bg-green-700;
+  }
+  .btn-danger {
+    @apply btn bg-danger text-white hover:bg-red-700;
+  }
+  .btn-danger-outline {
+    @apply btn border border-danger/40 bg-surface text-danger hover:bg-danger-bg;
+  }
+  .btn-ghost {
+    @apply btn text-text-secondary hover:bg-muted-surface hover:text-text-primary;
+  }
+
+  /* ---------------- Badges ---------------- */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .badge-primary {
+    @apply badge bg-light-purple text-primary;
+  }
+  .badge-secondary {
+    @apply badge bg-teal-50 text-secondary;
+  }
+  .badge-success {
+    @apply badge bg-success-bg text-success;
+  }
+  .badge-warning {
+    @apply badge bg-warning-bg text-warning;
+  }
+  .badge-danger {
+    @apply badge bg-danger-bg text-danger;
+  }
+  .badge-muted {
+    @apply badge bg-muted-surface text-text-secondary;
+  }
+
+  /* ---------------- Typography helpers ---------------- */
+  .text-muted {
+    @apply text-text-secondary;
+  }
+  .text-primary {
+    @apply text-primary;
+  }
+  .text-success {
+    @apply text-success;
+  }
+  .text-warning {
+    @apply text-warning;
+  }
+  .text-danger {
+    @apply text-danger;
+  }
+
+  .section-header {
+    @apply mx-auto mb-10 max-w-2xl text-center;
+  }
+  .section-badge {
+    @apply mb-3 inline-block rounded-full bg-light-purple px-3 py-1 text-xs font-bold text-primary;
+  }
+  .section-badge-secondary {
+    @apply bg-teal-50 text-secondary;
+  }
+  .section-block-alt {
+    @apply bg-surface;
+  }
+  .section-title {
+    @apply text-2xl font-extrabold text-text-primary sm:text-3xl;
+  }
+  .section-desc {
+    @apply mt-3 text-sm leading-relaxed text-text-secondary;
+  }
+
+  /* ---------------- Tables ---------------- */
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg border border-border bg-surface;
+  }
+  .data-table {
+    @apply w-full text-right text-sm;
+  }
+  .data-table thead {
+    @apply bg-muted-surface text-xs text-text-secondary;
+  }
+  .data-table thead th {
+    @apply whitespace-nowrap px-4 py-3 font-medium;
+  }
+  .data-table tbody tr {
+    @apply border-t border-border;
+  }
+  .data-table tbody tr:hover {
+    @apply bg-muted-surface/50;
+  }
+  .data-table tbody td {
+    @apply px-4 py-3 align-middle;
+  }
+  .table-empty {
+    @apply px-5 py-12 text-center text-sm text-text-secondary;
+  }
+
+  /* ---------------- Forms ---------------- */
+  .form-group {
+    @apply space-y-1.5;
+  }
+  .form-label {
+    @apply block text-sm font-medium text-text-primary;
+  }
+  .form-control {
+    @apply w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary transition placeholder:text-text-secondary/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+  .form-help {
+    @apply text-xs text-text-secondary;
+  }
+
+  /* ---------------- App shell ---------------- */
+  .app-shell {
+    @apply min-h-screen;
+  }
+  .app-sidebar {
+    @apply fixed right-0 top-0 z-40 hidden h-screen w-sidebar flex-col border-l border-border bg-surface lg:flex;
+  }
+  .app-sidebar.collapsed {
+    @apply w-sidebar-collapsed;
+  }
+  .sidebar-header {
+    @apply flex h-16 shrink-0 items-center gap-2 border-b border-border px-6;
+  }
+  .sidebar-nav {
+    @apply flex-1 space-y-1 overflow-y-auto p-3;
+  }
+  .sidebar-section-title {
+    @apply px-3 pb-1 pt-3 text-[11px] font-bold uppercase tracking-wide text-text-secondary;
+  }
+  .sidebar-item {
+    @apply flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-text-secondary transition hover:bg-muted-surface hover:text-text-primary;
+  }
+  .sidebar-item.active {
+    @apply bg-light-purple text-primary;
+  }
+  .sidebar-item-main {
+    @apply sidebar-item font-extrabold text-text-primary;
+  }
+  .sidebar-footer {
+    @apply shrink-0 border-t border-border p-3;
+  }
+
+  .app-main-wrap {
+    @apply min-h-screen;
+  }
+  .app-topbar {
+    @apply sticky top-0 z-30 flex h-topbar items-center gap-3 border-b border-border bg-surface/80 px-4 backdrop-blur lg:px-6;
+  }
+  .app-content {
+    @apply p-4 lg:p-6;
+  }
+  .breadcrumbs {
+    @apply mb-4 flex flex-wrap items-center gap-2 text-xs text-text-secondary;
+  }
+
+  /* ---------------- Onboarding wizard ---------------- */
+  .wizard-progress {
+    @apply mb-5 grid grid-cols-3 gap-2 lg:grid-cols-6;
+  }
+  .wizard-step-pill {
+    @apply rounded-md border border-border bg-surface px-2 py-2 text-center text-xs font-medium text-text-secondary transition;
+  }
+  .wizard-step-pill.active {
+    @apply border-primary bg-light-purple text-primary;
+  }
+  .wizard-step-pill.done {
+    @apply border-success/40 bg-success-bg text-success;
+  }
+  .choice-card {
+    @apply card cursor-pointer text-right transition hover:border-primary/50 hover:shadow-md;
+  }
+  .choice-card.selected {
+    @apply border-primary ring-2 ring-primary/25;
+  }
+
+  /* ---------------- Website builder ---------------- */
+  .builder-layout {
+    @apply grid gap-5 lg:grid-cols-[370px_1fr];
+  }
+  .builder-controls {
+    @apply card space-y-5 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto;
+  }
+  .builder-canvas-wrap {
+    @apply rounded-lg border border-border bg-muted-surface p-4;
+  }
+  .builder-preview-frame {
+    @apply mx-auto overflow-hidden rounded-lg border border-border bg-surface;
+  }
+  .builder-preview-frame.mobile-frame {
+    @apply max-w-[390px] border-[6px] border-slate-700;
+    border-radius: 26px;
+  }
+
+  /* ---------------- Landing ---------------- */
+  .landing-header {
+    @apply sticky top-0 z-30 border-b border-border/60 bg-surface/85 backdrop-blur;
+  }
+  .brand-logo {
+    @apply flex items-center gap-2;
+  }
+  .brand-mark {
+    @apply flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-base font-extrabold text-white;
+  }
+  .nav-link {
+    @apply text-sm font-medium text-text-secondary transition hover:text-text-primary;
+  }
+  .hero-section {
+    @apply bg-gradient-to-b from-surface to-bg py-14 lg:py-20;
+  }
+  .hero-grid {
+    @apply grid items-center gap-10 lg:grid-cols-2;
+  }
+  .hero-title {
+    @apply text-3xl font-extrabold leading-tight text-text-primary sm:text-4xl lg:text-[2.75rem];
+  }
+  .hero-desc {
+    @apply mt-4 text-base leading-relaxed text-text-secondary;
+  }
+  .hero-composition {
+    @apply grid gap-4 sm:grid-cols-2;
+  }
+  .mini-ui-card {
+    @apply card space-y-2 p-4;
+  }
+  .mini-ui-card.span-2 {
+    @apply sm:col-span-2;
+  }
+  .section-block {
+    @apply py-14 lg:py-16;
+  }
+  .activity-pill {
+    @apply rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary;
+  }
+  .demo-tabs-bar {
+    @apply flex flex-wrap gap-2;
+  }
+  .demo-tab-btn {
+    @apply rounded-md border border-border bg-surface px-3 py-2 text-xs font-medium text-text-secondary transition hover:border-primary/40;
+  }
+  .demo-tab-btn.active {
+    @apply border-primary bg-light-purple text-primary;
+  }
+  .faq-item {
+    @apply card overflow-hidden p-0;
+  }
+  .faq-question {
+    @apply flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-sm font-bold text-text-primary;
+  }
+  .faq-answer {
+    @apply border-t border-border px-5 py-4 text-sm leading-relaxed text-text-secondary;
+  }
+
+  /* ---------------- Popovers / modals / toasts ---------------- */
+  .popover-panel {
+    @apply absolute left-0 top-full z-50 mt-2 w-[min(92vw,22rem)] rounded-lg border border-border bg-surface p-4 shadow-md;
+  }
+  .modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 py-10;
+  }
+  .modal-dialog {
+    @apply mx-auto w-full max-w-lg rounded-lg border border-border bg-surface shadow-md;
+  }
+  .modal-header {
+    @apply flex items-center justify-between gap-4 border-b border-border px-5 py-4;
+  }
+  .modal-body {
+    @apply space-y-4 px-5 py-5;
+  }
+  .modal-footer {
+    @apply flex flex-wrap items-center justify-end gap-2 border-t border-border px-5 py-4;
+  }
+  .toast-container {
+    @apply fixed bottom-4 left-4 z-[60] space-y-2;
+  }
+  .toast-item {
+    @apply rounded-md border px-4 py-3 text-sm shadow-md;
+  }
+  .toast-item.success {
+    @apply border-success/30 bg-success-bg text-success;
+  }
+  .toast-item.warning {
+    @apply border-warning/30 bg-warning-bg text-warning;
+  }
+  .toast-item.danger {
+    @apply border-danger/30 bg-danger-bg text-danger;
+  }
+
+  /* ---------------- Charts ---------------- */
+  .chart-box {
+    @apply card;
+  }
+  .chart-bar-col {
+    @apply flex flex-1 flex-col items-center gap-2;
+  }
+  .chart-bar {
+    @apply w-full rounded-t-md bg-primary;
+  }
+  .chart-bar.secondary {
+    @apply bg-secondary;
+  }
+
+  /* ---------------- AI drawer ---------------- */
+  .ai-drawer {
+    @apply fixed bottom-0 left-0 right-0 z-50 flex max-h-[85vh] flex-col rounded-t-2xl border border-border bg-surface shadow-md transition-transform duration-200 lg:left-auto lg:right-6 lg:bottom-6 lg:top-auto lg:h-[min(38rem,85vh)] lg:w-[26rem] lg:rounded-lg;
+  }
+  .ai-drawer.closed {
+    @apply translate-y-full lg:translate-y-[calc(100%+3rem)];
+  }
+  .ai-msg {
+    @apply max-w-[85%] rounded-lg px-3 py-2 text-sm leading-relaxed;
+  }
+  .ai-msg.assistant {
+    @apply self-start bg-muted-surface text-text-primary;
+  }
+  .ai-msg.user {
+    @apply self-end bg-primary text-white;
+  }
+}
+
+/* RTL sidebar on mobile: slide in from the right */
+@media (max-width: 1023px) {
+  .app-sidebar {
+    @apply translate-x-full transition-transform;
+    box-shadow: var(--shadow-md);
+  }
+  .app-sidebar.mobile-open {
+    @apply translate-x-0;
+  }
+  .sidebar-overlay {
+    @apply pointer-events-none fixed inset-0 z-30 bg-slate-900/40 opacity-0 transition;
+  }
+  .sidebar-overlay.open {
+    @apply pointer-events-auto opacity-100;
+  }
+}
+
+.hide-sm {
+  @apply hidden sm:inline;
 }
