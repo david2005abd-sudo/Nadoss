@@ -15,3 +15,5 @@
 - CI dependency audit currently reports no critical issues but does report high-severity transitive dependencies; the dependency upgrade/override pass is being validated before production.
 
 - The latest dependency override experiment caused npm's dependency resolver to fail, so those overrides were reverted. Keep the known-green dependency set and review high-severity dev-tool findings separately before production.
+
+- The next audit pass tests Sentry 11 separately from PostCSS upgrades to avoid npm resolver errors seen when both were changed together.
