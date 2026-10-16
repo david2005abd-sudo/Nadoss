@@ -7,6 +7,7 @@ import {
   registerSchema,
   forgotPasswordSchema,
   otpSchema,
+  resetPasswordSchema,
   normalizeIraqiPhone,
 } from '@/lib/validations/auth';
 
@@ -120,6 +121,7 @@ export async function verifyOtpAction(
   const raw = {
     phone: String(formData.get('phone') ?? ''),
     token: String(formData.get('token') ?? ''),
+    flow: String(formData.get('flow') ?? ''),
   };
 
   const parsed = otpSchema.safeParse(raw);
@@ -139,6 +141,10 @@ export async function verifyOtpAction(
 
   if (error || !data.user) {
     return { error: 'رمز التحقق غير صحيح أو منتهي الصلاحية' };
+  }
+
+  if (raw.flow === 'recovery') {
+    redirect('/reset-password');
   }
 
   redirect('/dashboard');
@@ -161,15 +167,46 @@ export async function forgotPasswordAction(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.resetPasswordForEmail(
-    `${parsed.data.phone.replace('+', '')}@phone.nados.iq`,
-    { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/reset-password` }
-  );
+  // Phone-based accounts do not have an email address for resetPasswordForEmail.
+  // Send an SMS OTP without creating accounts; always continue to the same screen to
+  // avoid revealing whether the phone number exists.
+  await supabase.auth.signInWithOtp({
+    phone: parsed.data.phone,
+    options: { shouldCreateUser: false },
+  });
 
-  // Always return success to avoid phone enumeration
-  return {
-    success: 'إذا كان الرقم مسجلًا، ستصلك رسالة لإعادة تعيين كلمة المرور',
-  };
+  redirect(`/verify-otp?phone=${encodeURIComponent(parsed.data.phone)}&flow=recovery`);
+}
+
+export async function resetPasswordAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const parsed = resetPasswordSchema.safeParse({
+    password: String(formData.get('password') ?? ''),
+    confirmPassword: String(formData.get('confirmPassword') ?? ''),
+  });
+
+  if (!parsed.success) {
+    return {
+      fieldErrors: flattenZodErrors(parsed.error.flatten().fieldErrors),
+    };
+  }
+
+  const supabase = await createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: 'انتهت جلسة التحقق. اطلب رمزًا جديدًا ثم حاول مرة أخرى.' };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    return { error: 'تعذر تغيير كلمة المرور. أعد التحقق من الرمز وحاول مرة أخرى.' };
+  }
+
+  await supabase.auth.signOut();
+  redirect('/login?passwordReset=success');
 }
 
 export async function logoutAction() {
