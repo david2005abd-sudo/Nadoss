@@ -94,17 +94,26 @@ async function applyPaymentUpdate(event: {
           ? 'failed'
           : 'pending';
 
+  // Do not let delayed callbacks regress a paid/refunded order to pending or failed.
+  if (order.payment_status === 'paid' && newPaymentStatus !== 'refunded') {
+    return getPublicOrderContext(admin, order);
+  }
+  if (order.payment_status === 'refunded' && newPaymentStatus !== 'refunded') {
+    return getPublicOrderContext(admin, order);
+  }
+  if (order.payment_status === 'failed' && newPaymentStatus === 'pending') {
+    return getPublicOrderContext(admin, order);
+  }
+  if (order.payment_status === newPaymentStatus && ['paid', 'refunded', 'failed'].includes(newPaymentStatus)) {
+    return getPublicOrderContext(admin, order);
+  }
+
   // Never mark an order paid unless the verified provider amount matches our database total.
   if (
     newPaymentStatus === 'paid' &&
     (event.amount == null || Math.round(event.amount) !== order.total_iqd)
   ) {
     throw new Error('Verified payment amount does not match order total');
-  }
-
-  // Idempotency: do not reapply stats/audit for a repeated paid callback.
-  if (order.payment_status === 'paid' && newPaymentStatus === 'paid') {
-    return getPublicOrderContext(admin, order);
   }
 
   const newOrderStatus =
