@@ -1,5 +1,5 @@
 # نادوس NADOS
-منصة تجارة إلكترونية عربية RTL موجهة للتاجر العراقي، مبنية على Next.js 14 وTypeScript وTailwind وSupabase.
+منصة تجارة إلكترونية عربية RTL موجهة للتاجر العراقي، مبنية على Next.js 15.5.28 وTypeScript وTailwind وSupabase.
 
 ## الوحدات الموجودة في المستودع
 - المصادقة وإعداد حساب/متجر التاجر.
@@ -14,7 +14,7 @@
 - 18 migration أساسية في supabase/migrations وملفات E2E أولية.
 
 ## إعداد محلي
-1. استخدم Node.js 20.
+1. استخدم Node.js 20 or newer.
 2. انسخ .env.local.example إلى .env.local وأكمل مفاتيحك محليًا.
 3. لا ترفع أي مفاتيح أو ملف .env إلى GitHub.
 4. ثبّت الحزم عبر npm install.

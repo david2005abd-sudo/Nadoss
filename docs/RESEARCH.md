@@ -1,6 +1,6 @@
 # البحث والمراجع
 ## قرارات تقنية
-- Next.js 14.2.35 هو الإصدار المصحح ضمن سلسلة 14.2 لإصلاح ثغرات Server Components المعلنة في ديسمبر 2025. المصدر: https://github.com/advisories/GHSA-5j59-xgg2-r9c4
+- Next.js 15.5.28 + React 19.3.1 هي الإصدارات المعتمدة حاليًا في المشروع لتشغيل useActionState مع تضمين تحديثات الأمان الحديثة. المصدر: https://nextjs.org/blog/nextjs-security-update-september-22-2026nents المعلنة في ديسمبر 2025. المصدر: https://github.com/advisories/GHSA-5j59-xgg2-r9c4
 - Supabase RLS يجب أن يكون طبقة العزل الأساسية للبيانات متعددة المستأجرين.
 - WhatsApp Cloud API يتطلب access token وphone number ID وإعداد webhooks؛ لا تُرسل رسائل حقيقية دون موافقة المستخدم والتهيئة.
 ## السوق العراقي
