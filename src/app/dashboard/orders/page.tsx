@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { formatIQD } from '@/lib/utils';
 import { ShoppingCart, Search } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
 
 export const metadata = { title: 'الطلبات' };
 
@@ -39,7 +39,7 @@ const STATUS_FILTERS = [
   { v: 'cancelled', l: 'ملغي' },
 ];
 
-export default function OrdersPage({
+export default async function OrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string; q?: string }>;

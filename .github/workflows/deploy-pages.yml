@@ -1,4 +1,4 @@
-name: Deploy Preview to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Static Preview
+    name: Build Static Site
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,11 +29,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build static site
-        run: |
-          mv src/middleware.ts src/middleware.ts.disabled
-          cp scripts/static-actions-stub.ts "src/app/(auth)/actions.ts"
-          rm -rf src/app/dashboard src/app/store src/app/api
+      # Middleware is unsupported by `output: 'export'`; park it during build.
+      - name: Park middleware for static export
+        run: mv src/middleware.ts src/middleware.ts.disabled
+
+      # Browser-side Supabase auth needs the public URL + anon key baked into
+      # the client bundle. The key is public by design; see scripts/gen-env.js.
+      - name: Generate .env.local for the static build
+        run: node scripts/gen-env.js
 
       - name: Run next build
         run: npx next build

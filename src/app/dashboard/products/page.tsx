@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { formatIQD } from '@/lib/utils';
 import { Package, Plus, Search } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
 
 export const metadata = { title: 'المنتجات' };
 
-export default function ProductsPage({
+export default async function ProductsPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; status?: string }>;

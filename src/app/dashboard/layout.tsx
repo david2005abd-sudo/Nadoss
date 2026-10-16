@@ -1,7 +1,7 @@
 import { DashboardSidebar } from '@/components/dashboard/sidebar';
 import { DashboardHeader } from '@/components/dashboard/header';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
 
 export const metadata = {
   title: 'لوحة التحكم',

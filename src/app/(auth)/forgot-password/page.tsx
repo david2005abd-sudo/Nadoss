@@ -1,16 +1,17 @@
 'use client';
 
-
-import { useFormState } from 'react-dom';
 import Link from 'next/link';
-import { forgotPasswordAction, type ActionState } from '../actions';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 
-const initialState: ActionState = {};
-
 export default function ForgotPasswordPage() {
-  const [state, formAction, isPending] = useFormState(forgotPasswordAction, initialState);
+  const [success, setSuccess] = useState(false);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSuccess(true);
+  }
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
@@ -19,19 +20,13 @@ export default function ForgotPasswordPage() {
         أدخل رقم هاتفك وسنساعدك في استعادة حسابك
       </p>
 
-      {state.success && (
+      {success && (
         <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {state.success}
+          إذا كان الرقم مسجلًا، سيتواصل معك فريق الدعم لإعادة تعيين كلمة المرور
         </div>
       )}
 
-      {state.error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {state.error}
-        </div>
-      )}
-
-      <form action={formAction} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           label="رقم الهاتف"
           name="phone"
@@ -39,10 +34,9 @@ export default function ForgotPasswordPage() {
           inputMode="tel"
           placeholder="07XXXXXXXXX"
           required
-          errors={state.fieldErrors?.phone}
         />
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'جارٍ الإرسال...' : 'استعادة كلمة المرور'}
+        <Button type="submit" className="w-full">
+          استعادة كلمة المرور
         </Button>
       </form>
 

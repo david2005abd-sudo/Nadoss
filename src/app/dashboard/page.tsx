@@ -11,17 +11,19 @@ import {
   Sparkles,
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
 
 export default function DashboardPage() {
   const tenantId: string | null = null;
   const membershipError = false;
   const showSetup = false;
 
+  // Static preview: no server-side data is loaded, the layout below
+  // renders empty state cards. Connect the live deploy to Supabase for
+  // real figures.
   const productsCount = 0;
   const ordersCount = 0;
   const customersCount = 0;
-  const totalRevenue = 0;
   const recentOrders: {
     id: string;
     order_number: string;
@@ -29,62 +31,7 @@ export default function DashboardPage() {
     status: string;
     created_at: string;
   }[] = [];
-
-  let productsCount = 0;
-  let ordersCount = 0;
-  let customersCount = 0;
-  let totalRevenue = 0;
-  let recentOrders: {
-    id: string;
-    order_number: string;
-    total_iqd: number;
-    status: string;
-    created_at: string;
-  }[] = [];
-
-  if (tenantId) {
-    try {
-      const [{ count: pc }, { count: oc }, { count: cc }, { data: orders }, { data: revenue }] =
-        await Promise.all([
-          supabase
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .eq('tenant_id', tenantId)
-            .is('deleted_at', null),
-          supabase
-            .from('orders')
-            .select('*', { count: 'exact', head: true })
-            .eq('tenant_id', tenantId)
-            .is('deleted_at', null),
-          supabase
-            .from('customers')
-            .select('*', { count: 'exact', head: true })
-            .eq('tenant_id', tenantId)
-            .is('deleted_at', null),
-          supabase
-            .from('orders')
-            .select('id, order_number, total_iqd, status, created_at')
-            .eq('tenant_id', tenantId)
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(5),
-          supabase
-            .from('orders')
-            .select('total_iqd')
-            .eq('tenant_id', tenantId)
-            .eq('status', 'delivered')
-            .is('deleted_at', null),
-        ]);
-
-      productsCount = pc ?? 0;
-      ordersCount = oc ?? 0;
-      customersCount = cc ?? 0;
-      totalRevenue = (revenue ?? []).reduce((sum, o) => sum + (o.total_iqd ?? 0), 0);
-      recentOrders = orders ?? [];
-    } catch {
-      // Tables not migrated yet
-    }
-  }
+  const totalRevenue = 0;
 
   const stats = [
     { label: 'المنتجات', value: String(productsCount), icon: Package, tone: 'text-blue-600 bg-blue-50' },

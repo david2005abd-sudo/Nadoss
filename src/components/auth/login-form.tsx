@@ -1,18 +1,22 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { useFormState } from 'react-dom';
-import { loginAction, type ActionState } from '@/app/(auth)/actions';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
-
-const initialState: ActionState = {};
+import { useClientAuth } from '@/lib/supabase/client-auth';
 
 function InnerLoginForm() {
-  const [state, formAction, isPending] = useFormState(loginAction, initialState);
+  const { state, signIn } = useClientAuth();
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered') === '1';
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    void signIn(String(form.get('phone') ?? ''), String(form.get('password') ?? ''));
+  }
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
@@ -25,13 +29,19 @@ function InnerLoginForm() {
         </div>
       )}
 
+      {state.success && !state.error && (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {state.success}
+        </div>
+      )}
+
       {state.error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       )}
 
-      <form action={formAction} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           label="رقم الهاتف"
           name="phone"
@@ -53,21 +63,21 @@ function InnerLoginForm() {
         />
 
         <div className="flex justify-end">
-          <a href="/forgot-password" className="text-xs text-nados-primary hover:underline">
+          <Link href="/forgot-password" className="text-xs text-nados-primary hover:underline">
             نسيت كلمة المرور؟
-          </a>
+          </Link>
         </div>
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'جارٍ تسجيل الدخول...' : 'تسجيل الدخول'}
+        <Button type="submit" className="w-full" disabled={state.loading}>
+          {state.loading ? 'جارٍ تسجيل الدخول...' : 'تسجيل الدخول'}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-600">
         ليس لديك حساب؟{' '}
-        <a href="/register" className="font-medium text-nados-primary hover:underline">
+        <Link href="/register" className="font-medium text-nados-primary hover:underline">
           أنشئ متجرك الآن
-        </a>
+        </Link>
       </p>
     </div>
   );

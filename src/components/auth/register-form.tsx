@@ -1,15 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { useFormState } from 'react-dom';
-import { registerAction, type ActionState } from '@/app/(auth)/actions';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
-
-const initialState: ActionState = {};
+import { useClientAuth } from '@/lib/supabase/client-auth';
 
 export default function RegisterForm() {
-  const [state, formAction, isPending] = useFormState(registerAction, initialState);
+  const { state, signUp } = useClientAuth();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    void signUp({
+      fullName: String(form.get('fullName') ?? ''),
+      storeName: String(form.get('storeName') ?? ''),
+      phone: String(form.get('phone') ?? ''),
+      password: String(form.get('password') ?? ''),
+    });
+  }
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
@@ -18,13 +26,19 @@ export default function RegisterForm() {
         مجانًا — بدون بطاقة ائتمان، تبدأ البيع في دقائق
       </p>
 
+      {state.success && !state.error && (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {state.success}
+        </div>
+      )}
+
       {state.error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       )}
 
-      <form action={formAction} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           label="الاسم الكامل"
           name="fullName"
@@ -63,18 +77,9 @@ export default function RegisterForm() {
           autoComplete="new-password"
           errors={state.fieldErrors?.password}
         />
-        <FormField
-          label="تأكيد كلمة المرور"
-          name="confirmPassword"
-          type="password"
-          placeholder="••••••••"
-          required
-          autoComplete="new-password"
-          errors={state.fieldErrors?.confirmPassword}
-        />
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'جارٍ إنشاء الحساب...' : 'إنشاء الحساب'}
+        <Button type="submit" className="w-full" disabled={state.loading}>
+          {state.loading ? 'جارٍ إنشاء الحساب...' : 'إنشاء الحساب'}
         </Button>
       </form>
 

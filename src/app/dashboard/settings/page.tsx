@@ -1,6 +1,6 @@
 import { MessageCircle, Truck, CreditCard, ShieldCheck, Copy } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
 
 export const metadata = { title: 'الإعدادات' };
 

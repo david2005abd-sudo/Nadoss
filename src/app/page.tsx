@@ -369,7 +369,7 @@ export default function HomePage() {
           <div className="mt-4 flex items-center justify-center gap-5 text-xs text-gray-400">
             <Link href="/terms" className="hover:text-nados-primary">الشروط</Link>
             <Link href="/privacy" className="hover:text-nados-primary">الخصوصية</Link>
-            <a href="/api/health" className="hover:text-nados-primary">حالة النظام</a>
+            <Link href="/dashboard" className="hover:text-nados-primary">حالة النظام</Link>
           </div>
           <p className="mt-4 text-xs text-gray-400">
             © {new Date().getFullYear()} نادوس — جميع الحقوق محفوظة
