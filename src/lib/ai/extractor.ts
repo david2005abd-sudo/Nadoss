@@ -2,9 +2,12 @@ import OpenAI from 'openai';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { aiExtractionSchema, type AiExtraction } from './schemas';
 import { buildSystemPrompt } from './prompt';
-import type { ShipmentStatus } from '../delivery/types'; // unused, keep minimal
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+function getOpenAIClient(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('AI service is not configured: OPENAI_API_KEY is missing.');
+  return new OpenAI({ apiKey });
+}
 
 const EXTRACTION_TOOL = {
   type: 'function' as const,
@@ -36,6 +39,7 @@ export async function extractOrderFromMessage(
 ): Promise<ExtractionResult> {
   const start = Date.now();
 
+  const openai = getOpenAIClient();
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     temperature: 0.1,
