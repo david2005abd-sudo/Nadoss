@@ -259,8 +259,8 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.create_store_order(TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.create_store_order(TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT, TEXT, TEXT, JSONB) TO anon, authenticated;
+REVOKE ALL ON FUNCTION public.create_store_order(TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_store_order(TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT, TEXT, TEXT, JSONB) TO service_role;
 
 -- Release stock if the payment provider cannot create a payment session.
 CREATE OR REPLACE FUNCTION public.cancel_unpaid_store_order(p_order_id UUID)
