@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { useStore } from '@/lib/supabase/use-store';
 
-export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
-
 export default function DashboardPage() {
   const store = useStore();
 

@@ -7,10 +7,6 @@ import { createClient } from '@/lib/supabase/client';
 import { useStore } from '@/lib/supabase/use-store';
 import { Package, Plus, Search } from 'lucide-react';
 
-export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
-
-export const metadata = { title: 'المنتجات' };
-
 type Product = {
   id: string;
   name_ar: string;
