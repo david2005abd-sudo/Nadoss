@@ -63,7 +63,7 @@ CREATE POLICY categories_select_public
     AND deleted_at IS NULL
     AND EXISTS (
       SELECT 1
-      FROM public.tenants t
+      FROM public.public_storefronts t
       WHERE t.id = categories.tenant_id
         AND t.is_active IS TRUE
     )
@@ -80,7 +80,7 @@ CREATE POLICY service_categories_public_read
     AND deleted_at IS NULL
     AND EXISTS (
       SELECT 1
-      FROM public.tenants t
+      FROM public.public_storefronts t
       WHERE t.id = service_categories.tenant_id
         AND t.is_active IS TRUE
     )
@@ -95,8 +95,25 @@ CREATE POLICY staff_members_public_read
     is_active IS TRUE
     AND EXISTS (
       SELECT 1
-      FROM public.tenants t
+      FROM public.public_storefronts t
       WHERE t.id = staff_members.tenant_id
+        AND t.is_active IS TRUE
+    )
+  );
+
+-- Products are public only when their active tenant is visible through the restricted view.
+DROP POLICY IF EXISTS products_select_public ON public.products;
+CREATE POLICY products_select_public
+  ON public.products
+  FOR SELECT
+  TO anon, authenticated
+  USING (
+    is_active IS TRUE
+    AND deleted_at IS NULL
+    AND EXISTS (
+      SELECT 1
+      FROM public.public_storefronts t
+      WHERE t.id = products.tenant_id
         AND t.is_active IS TRUE
     )
   );
