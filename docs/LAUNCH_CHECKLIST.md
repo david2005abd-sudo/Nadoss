@@ -1,0 +1,12 @@
+# Launch checklist
+- [ ] Production build, typecheck and lint pass.
+- [ ] Required environment variables configured only in deployment secrets.
+- [ ] Auth signup, login and recovery tested.
+- [ ] RLS and cross-tenant negative tests pass.
+- [ ] Rate limiting and webhook signature verification enabled.
+- [ ] Payment and delivery sandbox flows verified if enabled.
+- [ ] Privacy policy and terms published.
+- [ ] Error monitoring and backups configured.
+- [ ] No secrets in Git history.
+- [ ] Mobile RTL, keyboard and accessibility checks completed.
+- [ ] Health and readiness checks verified.
