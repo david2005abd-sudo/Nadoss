@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const PUBLIC_PATHS = ['/', '/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/terms', '/privacy'];
-const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
+const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/verify-otp'];
 const PUBLIC_PREFIXES = ['/store/', '/api/webhooks/', '/api/store/'];
 
 function isPublic(pathname: string): boolean {
