@@ -1,12 +1,11 @@
-# SECURITY — NADOS
-- Never commit .env files, API keys, access tokens or customer data.
-- Never expose Supabase service-role credentials to browser code.
-- Enable RLS for every tenant-owned table before connecting UI data.
-- Derive tenant identity from trusted auth state and validate membership server-side.
-- Validate all external input with Zod.
-- Rate-limit public endpoints and verify webhook signatures.
-- Use idempotency for order/payment callbacks where appropriate.
-- Verify payment server-to-server; never trust a browser redirect as proof of payment.
-- Record sensitive actions in audit logs without storing secrets.
-- Test cross-tenant access denial before launch.
-- Avoid returning stack traces or credentials in client-facing errors.
+# Security baseline — NADOS
+- RLS مطلوب لكل جدول يحتوي بيانات tenant.
+- لا تثق بمدخلات العميل أو role في الواجهة؛ التحقق الأساسي على قاعدة البيانات.
+- لا تستخدم service role key في العميل أو أي متغير يبدأ بـ NEXT_PUBLIC_.
+- المصادقة عبر Supabase Auth، والجلسة عبر cookies يحدّثها middleware.
+- RPC إنشاء المتجر يستخدم auth.uid() ويرفض الطلب غير المصادق ويولّد slug داخليًا.
+- كلمات المرور يديرها Supabase Auth.
+- صفحات لوحة التحكم والمنتجات تتطلب جلسة وعضوية tenant.
+- حذف المنتج ناعم عبر deleted_at؛ بيانات الطلبات تبقى مرتبطة بسجلاتها.
+- قبل الإنتاج: فعّل حماية كلمات المرور، راجع redirect URLs، طبّق migrations على staging، واختبر منع مستخدم متجر A من قراءة/تعديل بيانات متجر B.
+- لا تُفعّل بوابات دفع أو WhatsApp أو شركات توصيل حتى تتحقق من الوثائق الرسمية ومفاتيح الحساب.
