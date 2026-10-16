@@ -2,7 +2,6 @@ import { getOpenAIClient } from './client';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { aiExtractionSchema, type AiExtraction } from './schemas';
 import { buildSystemPrompt } from './prompt';
-import type { ShipmentStatus } from '../delivery/types'; // unused, keep minimal
 
 const EXTRACTION_TOOL = {
   type: 'function' as const,
