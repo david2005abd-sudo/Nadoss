@@ -118,9 +118,21 @@ export async function placeOrderAction(
     return { error: 'تعذر بدء عملية الدفع. لم يتم تأكيد الدفع؛ اختر طريقة أخرى أو تواصل مع المتجر.' };
   }
 
+  // Persist the provider reference server-side; never trust a query-string payment ID.
+  const admin = createAdminClient();
+  const { error: referenceError } = await admin
+    .from('orders')
+    .update({ payment_reference: payment.id })
+    .eq('id', order.id)
+    .eq('tenant_id', order.tenant_id);
+
+  if (referenceError) {
+    return { error: 'تم إنشاء عملية الدفع لكن تعذر حفظ مرجعها. لا تكرر الدفع؛ تواصل مع المتجر.' };
+  }
+
   // Audit is server-only and must not block a valid payment redirect.
   try {
-    await createAdminClient().from('audit_log').insert({
+    await admin.from('audit_log').insert({
       tenant_id: order.tenant_id,
       action: 'payment.initiated',
       entity_type: 'order',
@@ -140,5 +152,5 @@ export async function placeOrderAction(
   }
 
   // FIB: no redirect, show QR page.
-  redirect(`/store/${slug}/order/${order.id}/pay?paymentId=${encodeURIComponent(payment.id)}&token=${encodeURIComponent(order.public_access_token)}`);
+  redirect(`/store/${slug}/order/${order.id}/pay?token=${encodeURIComponent(order.public_access_token)}`);
 }
