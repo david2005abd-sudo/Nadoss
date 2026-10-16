@@ -8,6 +8,7 @@
       (يجب أن تُرجع صفر صفوف)
 - [ ] `service_role` key غير مكشوف في العميل
 - [ ] `SUPABASE_POOLED_URL` مُعيّن ومستخدم في serverless
+- [ ] `public_storefronts` لا يعرض إلا الأعمدة العامة، وكل طلب عام محمي بـ public_access_token
 - [ ] النسخ الاحتياطي اليومي (PITR) مفعّل على Supabase Pro
 - [ ] قيود الشبكة (Network Restrictions) مُعدّة على IP معروفة
 - [ ] Custom domain مُعدّ لـ Supabase API
@@ -16,6 +17,7 @@
 - [ ] Email/SMS templates مُخصّصة بالعربية + شعار المتجر
 - [ ] Rate limiting على `/api/auth/*`
 - [ ] Supabase Auth: Confirm phone للإنتاج
+- [ ] اختبار SMS OTP لاستعادة كلمة المرور، والتأكد من عدم كشف وجود الحساب
 - [ ] RLS على `auth.users` (غير مطلوب — Supabase يتكفل)
 
 ### الدفع
@@ -23,6 +25,8 @@
 - [ ] Webhook URLs مُسجّلة عند كل بوابة
 - [ ] اختبار دفع حقيقي بقيمة صغيرة لكل بوابة
 - [ ] Idempotency على `/api/payments/callback`
+- [ ] اختبار رفض المبلغ المفقود/غير المطابق، والـ callbacks المتأخرة، والطلبات الملغاة
+- [ ] اختبار rollback ذري للمخزون عند فشل إنشاء الطلب، واختبار استرجاع المخزون عند إلغاء طلب غير مدفوع
 
 ### الأمان
 - [ ] HTTPS إلزامي (Vercel افتراضي)
@@ -74,7 +78,7 @@
 ## 📋 خطوات النشر
 
 1. [ ] إنشاء مشروع Supabase إنتاجي منفصل
-2. [ ] تطبيق كل migrations: `supabase db push`
+2. [ ] تطبيق migrations 00001–00020: `supabase db push`
 3. [ ] تطبيق seed يدويًا للـ demo tenant
 4. [ ] إنشاء مشروع Sentry + نسخ DSN
 5. [ ] إنشاء مشروع Vercel + ربط GitHub

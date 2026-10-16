@@ -32,25 +32,44 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
           SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          CREDENTIALS_ENCRYPTION_KEY: test-encryption-key-32-chars-mini
+          OPENAI_API_KEY: sk-ci-placeholder
+          WHATSAPP_ACCESS_TOKEN: test
+          WHATSAPP_PHONE_NUMBER_ID: test
+          WHATSAPP_BUSINESS_ACCOUNT_ID: test
+          WHATSAPP_VERIFY_TOKEN: test
+          WHATSAPP_APP_SECRET: test
+          CRON_SECRET: test
 
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: lint-and-typecheck
     if: github.event_name == 'pull_request'
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: nados_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+    env:
+      CREDENTIALS_ENCRYPTION_KEY: test-encryption-key-32-chars-mini
+      OPENAI_API_KEY: sk-test
+      WHATSAPP_ACCESS_TOKEN: test
+      WHATSAPP_PHONE_NUMBER_ID: test
+      WHATSAPP_BUSINESS_ACCOUNT_ID: test
+      WHATSAPP_VERIFY_TOKEN: test
+      WHATSAPP_APP_SECRET: test
+      ZAINCASH_SECRET: test
+      FIB_CLIENT_ID: test
+      FIB_CLIENT_SECRET: test
+      QICARD_USERNAME: test
+      QICARD_PASSWORD: test
+      QICARD_TERMINAL_ID: test
+      NASSPAY_TOKEN: test
+      WAYL_API_KEY: test
+      WAYL_WEBHOOK_SECRET: test
+      CRON_SECRET: test
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_ENVIRONMENT: test
+      NEXT_PUBLIC_APP_VERSION: ci
+      USD_IQD_RATE: '1480'
+      SAAS_CAC_USD: '0'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,36 +88,32 @@ jobs:
       - name: Start Supabase local
         run: supabase start
 
-      - name: Run migrations
+      - name: Export local Supabase credentials
+        shell: bash
+        run: |
+          supabase status --output json > /tmp/supabase-status.json
+          echo "NEXT_PUBLIC_SUPABASE_URL=$(jq -r '.API_URL' /tmp/supabase-status.json)" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(jq -r '.ANON_KEY' /tmp/supabase-status.json)" >> "$GITHUB_ENV"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$(jq -r '.SERVICE_ROLE_KEY' /tmp/supabase-status.json)" >> "$GITHUB_ENV"
+          echo "SUPABASE_POOLED_URL=$(jq -r '.DB_URL' /tmp/supabase-status.json)" >> "$GITHUB_ENV"
+
+      - name: Run migrations and seed
         run: supabase db reset --local
 
-      - name: Apply seed
-        run: psql "$(supabase status --output json | jq -r .DB_URL)" -f supabase/seed.sql
+      - name: Create E2E merchant account
+        run: node scripts/seed-e2e-user.mjs
+        env:
+          E2E_OWNER_PHONE: '07701234567'
+          E2E_OWNER_PASSWORD: 'Test123456'
 
       - name: Build Next.js
         run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ env.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY }}
-          CREDENTIALS_ENCRYPTION_KEY: test-encryption-key-32-chars-mini
-          OPENAI_API_KEY: sk-test
-          WHATSAPP_VERIFY_TOKEN: test
-          CRON_SECRET: test
 
       - name: Start server
-        run: npm run start &
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ env.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY }}
-          CREDENTIALS_ENCRYPTION_KEY: test-encryption-key-32-chars-mini
-          OPENAI_API_KEY: sk-test
-          WHATSAPP_VERIFY_TOKEN: test
-          CRON_SECRET: test
+        run: npm run start > /tmp/nados-next.log 2>&1 &
 
       - name: Wait for server
-        run: npx wait-on http://localhost:3000/api/health --timeout 60000
+        run: npx wait-on tcp:localhost:3000 --timeout 60000
 
       - name: Run E2E tests
         run: npx playwright test

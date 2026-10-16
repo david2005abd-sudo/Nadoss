@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server';
 import { checkoutSchema, cartPayloadSchema } from '@/lib/validations/checkout';
 import { createPayment } from '@/lib/payments/iraqpay';
 
@@ -16,12 +16,20 @@ interface ActionInput {
   cartItems: { productId: string; quantity: number }[];
 }
 
+interface CreatedOrder {
+  id: string;
+  order_number: string;
+  public_access_token: string;
+  total_iqd: number;
+  tenant_id: string;
+  tenant_slug: string;
+}
+
 export async function placeOrderAction(
   _prev: CheckoutState,
   { slug, formData, cartItems }: ActionInput
 ): Promise<CheckoutState> {
-  // 1. Validate checkout fields
-  const raw = {
+  const parsed = checkoutSchema.safeParse({
     customerName: String(formData.get('customerName') ?? ''),
     customerPhone: String(formData.get('customerPhone') ?? ''),
     governorateId: formData.get('governorateId'),
@@ -29,207 +37,120 @@ export async function placeOrderAction(
     address: String(formData.get('address') ?? ''),
     notes: String(formData.get('notes') ?? ''),
     paymentMethod: String(formData.get('paymentMethod') ?? 'cod'),
-  };
+  });
 
-  const parsed = checkoutSchema.safeParse(raw);
   if (!parsed.success) {
     const flat = parsed.error.flatten().fieldErrors;
-    const out: Record<string, string[]> = {};
-    for (const [k, v] of Object.entries(flat)) if (v && v.length) out[k] = v;
-    return { fieldErrors: out };
+    const fieldErrors: Record<string, string[]> = {};
+    for (const [key, value] of Object.entries(flat)) {
+      if (value?.length) fieldErrors[key] = value;
+    }
+    return { fieldErrors };
   }
-  const input = parsed.data;
 
-  // 2. Validate cart
   const cartParsed = cartPayloadSchema.safeParse(cartItems);
   if (!cartParsed.success) {
     return { error: 'السلة فارغة أو غير صالحة' };
   }
 
-  const supabase = await createClient();
-
-  // 3. Resolve tenant
-  const { data: tenant } = await supabase
-    .from('tenants')
-    .select('id, slug')
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .maybeSingle();
-
-  if (!tenant) return { error: 'المتجر غير موجود' };
-
-  // 4. Fetch authoritative product prices from DB (never trust client)
-  const productIds = cartParsed.data.map((i) => i.productId);
-  const { data: products, error: productsErr } = await supabase
-    .from('products')
-    .select('id, name_ar, name, price_iqd, stock, is_active, deleted_at, tenant_id')
-    .in('id', productIds)
-    .eq('tenant_id', tenant.id)
-    .eq('is_active', true)
-    .is('deleted_at', null);
-
-  if (productsErr || !products || products.length === 0) {
-    return { error: 'تعذر التحقق من المنتجات' };
-  }
-
-  const byId = new Map(products.map((p) => [p.id, p]));
-  const lines = cartParsed.data.map((line) => {
-    const p = byId.get(line.productId);
-    if (!p) throw new Error('PRODUCT_NOT_FOUND');
-    if (p.stock < line.quantity) throw new Error(`INSUFFICIENT_STOCK:${p.name_ar ?? p.name}`);
-    return {
-      product: p,
-      quantity: line.quantity,
-      unitPrice: p.price_iqd,
-      total: p.price_iqd * line.quantity,
-    };
+  // This database function validates the store, authoritative prices, governorate,
+  // stock and customer data, then creates the customer/order/items and reserves
+  // inventory atomically. Client-provided prices are never accepted.
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.rpc('create_store_order', {
+    p_slug: slug,
+    p_customer_name: parsed.data.customerName,
+    p_customer_phone: parsed.data.customerPhone,
+    p_governorate_id: parsed.data.governorateId,
+    p_city: parsed.data.city,
+    p_address: parsed.data.address,
+    p_notes: parsed.data.notes || null,
+    p_payment_method: parsed.data.paymentMethod,
+    p_items: cartParsed.data,
   });
 
-  // 5. Governorate → delivery fee
-  const { data: gov } = await supabase
-    .from('iraq_governorates')
-    .select('id, name_ar, delivery_fee_iqd')
-    .eq('id', input.governorateId)
-    .maybeSingle();
-
-  if (!gov) return { error: 'المحافظة غير صالحة' };
-
-  const deliveryFee = gov.delivery_fee_iqd ?? 0;
-  const subtotal = lines.reduce((s, l) => s + l.total, 0);
-  const total = subtotal + deliveryFee;
-
-  // 6. Upsert customer
-  const { data: existingCustomer } = await supabase
-    .from('customers')
-    .select('id, total_orders, total_spent_iqd')
-    .eq('tenant_id', tenant.id)
-    .eq('phone', input.customerPhone)
-    .is('deleted_at', null)
-    .maybeSingle();
-
-  let customerId: string;
-  if (existingCustomer) {
-    customerId = existingCustomer.id;
-    await supabase
-      .from('customers')
-      .update({
-        name: input.customerName,
-        governorate_id: input.governorateId,
-        city: input.city,
-        address: input.address,
-      })
-      .eq('id', customerId);
-  } else {
-    const { data: newCustomer, error: custErr } = await supabase
-      .from('customers')
-      .insert({
-        tenant_id: tenant.id,
-        name: input.customerName,
-        phone: input.customerPhone,
-        governorate_id: input.governorateId,
-        city: input.city,
-        address: input.address,
-      })
-      .select('id')
-      .single();
-
-    if (custErr || !newCustomer) return { error: 'تعذر إنشاء حساب العميل' };
-    customerId = newCustomer.id;
+  if (error || !data) {
+    const message = error?.message ?? '';
+    if (message.includes('INSUFFICIENT_STOCK')) {
+      return { error: 'إحدى المنتجات لم تعد متوفرة بالكمية المطلوبة. حدّث السلة وحاول مجددًا.' };
+    }
+    if (message.includes('PRODUCT_NOT_FOUND')) {
+      return { error: 'أحد المنتجات لم يعد متاحًا في هذا المتجر.' };
+    }
+    if (message.includes('INVALID_GOVERNORATE')) {
+      return { error: 'المحافظة غير صالحة أو غير متاحة للتوصيل.' };
+    }
+    if (message.includes('STORE_NOT_FOUND')) {
+      return { error: 'المتجر غير موجود أو غير نشط.' };
+    }
+    if (message.includes('INVALID_CUSTOMER_DETAILS')) {
+      return { error: 'تحقق من بيانات العميل والعنوان ورقم الهاتف.' };
+    }
+    return { error: 'تعذر إنشاء الطلب. تحقق من البيانات وحاول مرة أخرى.' };
   }
 
-  // 7. Create order
-  const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 1000)}`;
-  const initialStatus = input.paymentMethod === 'cod' ? 'confirmed' : 'pending';
-
-  const { data: order, error: orderErr } = await supabase
-    .from('orders')
-    .insert({
-      tenant_id: tenant.id,
-      customer_id: customerId,
-      order_number: orderNumber,
-      status: initialStatus,
-      payment_method: input.paymentMethod,
-      payment_status: 'pending',
-      subtotal_iqd: subtotal,
-      delivery_fee_iqd: deliveryFee,
-      total_iqd: total,
-      governorate_id: input.governorateId,
-      city: input.city,
-      address: input.address,
-      notes: input.notes || null,
-      source: 'store',
-    })
-    .select('id, order_number, total_iqd')
-    .single();
-
-  if (orderErr || !order) return { error: 'تعذر إنشاء الطلب' };
-
-  // 8. Create order items
-  const { error: itemsErr } = await supabase.from('order_items').insert(
-    lines.map((l) => ({
-      tenant_id: tenant.id,
-      order_id: order.id,
-      product_id: l.product.id,
-      product_name: l.product.name_ar ?? l.product.name,
-      quantity: l.quantity,
-      unit_price_iqd: l.unitPrice,
-      total_price_iqd: l.total,
-    }))
-  );
-
-  if (itemsErr) return { error: 'تعذر إضافة عناصر الطلب' };
-
-  // 9. Decrement stock (best-effort, race-safe via RPC in production)
-  for (const l of lines) {
-    await supabase.rpc('decrement_stock', {
-      p_tenant_id: tenant.id,
-      p_product_id: l.product.id,
-      p_quantity: l.quantity,
-    });
+  const order = data as unknown as CreatedOrder;
+  if (!order.id || !order.order_number || !order.public_access_token || !Number.isFinite(Number(order.total_iqd))) {
+    return { error: 'تعذر تأكيد الطلب. حاول مرة أخرى.' };
   }
 
-  // 10. Payment flow
-  if (input.paymentMethod === 'cod') {
-    redirect(`/store/${slug}/order/${order.id}?new=1`);
+  if (parsed.data.paymentMethod === 'cod') {
+    redirect(`/store/${slug}/order/${order.id}?new=1&token=${encodeURIComponent(order.public_access_token)}`);
   }
 
-  // Electronic payment: create gateway session
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  // Do not put redirect() inside the try/catch: Next.js implements redirect by throwing.
+  let payment: Awaited<ReturnType<typeof createPayment>>;
   try {
-    const payment = await createPayment({
-      gateway: input.paymentMethod,
-      amount: total,
+    payment = await createPayment({
+      gateway: parsed.data.paymentMethod,
+      amount: Number(order.total_iqd),
       orderId: order.id,
-      description: `طلب ${order.order_number} من ${tenant.slug}`,
-      callbackUrl: `${origin}/api/payments/callback`,
+      description: `طلب ${order.order_number} من ${order.tenant_slug}`,
+      callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/api/payments/callback`,
     });
+  } catch {
+    // Release reserved stock if the gateway failed before creating a usable payment session.
+    try {
+      await createAdminClient().rpc('cancel_unpaid_store_order', { p_order_id: order.id });
+    } catch {
+      // Reconciliation can handle a failed cancellation RPC.
+    }
+    return { error: 'تعذر بدء عملية الدفع. لم يتم تأكيد الدفع؛ اختر طريقة أخرى أو تواصل مع المتجر.' };
+  }
 
-    // Store payment intent info
-    await supabase.from('audit_log').insert({
-      tenant_id: tenant.id,
+  // Persist the provider reference server-side; never trust a query-string payment ID.
+  const admin = createAdminClient();
+  const { error: referenceError } = await admin
+    .from('orders')
+    .update({ payment_reference: payment.id })
+    .eq('id', order.id)
+    .eq('tenant_id', order.tenant_id);
+
+  if (referenceError) {
+    return { error: 'تم إنشاء عملية الدفع لكن تعذر حفظ مرجعها. لا تكرر الدفع؛ تواصل مع المتجر.' };
+  }
+
+  // Audit is server-only and must not block a valid payment redirect.
+  try {
+    await admin.from('audit_log').insert({
+      tenant_id: order.tenant_id,
       action: 'payment.initiated',
       entity_type: 'order',
       entity_id: order.id,
       new_values: {
-        gateway: input.paymentMethod,
+        gateway: parsed.data.paymentMethod,
         paymentId: payment.id,
-        amount: total,
+        amount: Number(order.total_iqd),
       },
     });
-
-    if (payment.redirectUrl) {
-      redirect(payment.redirectUrl);
-    }
-
-    // FIB: no redirect, show QR page
-    redirect(`/store/${slug}/order/${order.id}/pay?paymentId=${payment.id}`);
-  } catch (err) {
-    // Order remains pending — merchant can collect manually
-    await supabase
-      .from('orders')
-      .update({ status: 'pending' })
-      .eq('id', order.id);
-
-    return { error: 'تعذر بدء عملية الدفع، حاول مرة أخرى أو اختر الدفع عند الاستلام' };
+  } catch {
+    // Payment creation succeeded; audit availability is monitored separately.
   }
+
+  if (payment.redirectUrl) {
+    redirect(payment.redirectUrl);
+  }
+
+  // FIB: no redirect, show QR page.
+  redirect(`/store/${slug}/order/${order.id}/pay?token=${encodeURIComponent(order.public_access_token)}`);
 }

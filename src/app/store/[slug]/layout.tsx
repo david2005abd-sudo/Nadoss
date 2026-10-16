@@ -8,7 +8,7 @@ import { CartDrawer } from '@/components/store/cart-drawer';
 async function getTenant(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase
-    .from('tenants')
+    .from('public_storefronts')
     .select('id, name, slug, logo_url, phone, address, is_active')
     .eq('slug', slug)
     .eq('is_active', true)

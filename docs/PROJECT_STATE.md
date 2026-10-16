@@ -1,18 +1,37 @@
 # PROJECT_STATE.md — نادوس (NADOS)
 
 ## الحالة الحالية
-- **المرحلة:** 10 — التطوير المستمر (الجزء 3 مكتمل)
+- **المرحلة:** 10 — إصلاحات ما قبل التحقق.
 - **التاريخ:** 2026-10-16
-- **الإنجاز الحالي:** نظام حجز مواعيد كامل (UI + Server Actions + صفحة عامة + تقويم + إدارة الخدمات والموظفين)
+- **الفرع:** fix/ci-supabase-validation
+- **الحالة:** العمل نُقل إلى فرع fix/ci-supabase-validation-v2 لتجنب تعارضه مع تحديثات main. نتائج CI لهذا الفرع لم تُؤكد بعد.
+- **Baseline:** نسخة main السابقة اجتازت TypeScript وESLint وbuild؛ فحوص هذا الفرع يجب أن تعاد بعد الدمج.
 
-## ما تم إنجازه (المرحلة 10 — الجزء 3)
-- ✅ `src/lib/validations/booking.ts`: schemas + state machine + labels
-- ✅ `src/app/dashboard/bookings/actions.ts`: 9 Server Actions (services, staff, bookings، public booking)
-- ✅ `src/lib/whatsapp/sender.ts`: outbound-only sender قابل لإعادة الاستخدام
-- ✅ صفحات: `/dashboard/bookings` (list + filters)، `/new`، `/[id]` (detail + status + reschedule)، `/services`، `/staff`، `/calendar`
-- ✅ مكونات: BookingForm، BookingStatusBadge، BookingStatusUpdater، RescheduleForm، ServiceCategoryCreateForm، ServiceCategoryRowActions، StaffCreateForm، BookingCalendar (grid week view 8am-10pm)
-- ✅ صفحة عامة: `/store/[slug]/book` (Wizard 3 خطوات) + `/book/success`
-- ✅ إشعار تلقائي للتاجر عبر WhatsApp عند حجز جديد من الويب
-- ✅ تحديث Sidebar بقسم "الحجوزات"
+## إصلاحات التدقيق
+- إصلاح خطأ SQL في migration 00005.
+- إضافة supabase/config.toml وتفعيل custom access-token hook محليًا.
+- جعل hook يعمل بصلاحيات محددة مع search_path ثابت.
+- إضافة مستخدم E2E محلي والتحقق من عضويته.
+- إصلاح GitHub Actions لتصدير مفاتيح Supabase وتشغيل migrations/seed والانتظار الصحيح للخادم.
+- استعادة كلمة مرور الهاتف عبر SMS OTP.
+- جعل WhatsApp webhook يفشل بأمان في الإنتاج عند غياب سر التوقيع.
+- رفض payment callbacks ذات gateway غير مدعوم أو مبلغ غير مطابق.
+- إضافة migration 00019 لـ RLS على الجداول العامة وview آمنة لبيانات المتاجر والكتالوج والحجوزات.
+- إضافة migration 00020 لإنشاء الطلب وعناصره وخصم المخزون في معاملة واحدة، وحصر RPCs الحساسة في server/service_role.
+- استخدام view محدودة للمتاجر العامة، وتحديث صفحات المتجر والطلب والدفع.
+- تحويل إنشاء الحجز العام إلى admin client داخل Server Action بعد التحقق من المتجر والخدمة والموظف.
 
-- CI validation: TypeScript and ESLint passed; the production build passed after wrapping login search params in Suspense. Dependency audit still needs final review.
+## الوحدات الموجودة
+- مصادقة الهاتف/OTP، إدارة الحسابات والمتاجر.
+- متجر عام، منتجات، سلة، checkout، طلبات ودفع.
+- إدارة المنتجات والتصنيفات والطلبات والعملاء والتقارير.
+- تكاملات توصيل، WhatsApp، AI extraction، اشتراكات وفوترة وحدود استخدام.
+- دعم فني وقاعدة معرفة، مقاييس SaaS، مهام cron ومراقبة.
+- نظام حجوزات وخدمات وموظفين وتقويم.
+- 20 migration في supabase/migrations.
+
+## القيود الحالية
+- لا يوجد تأكيد بأن typecheck/lint/build/E2E نجحت؛ يجب مراجعة Actions.
+- لا توجد migrations مطبقة على قاعدة إنتاجية في هذه الخطوة.
+- الدفع وWhatsApp والتوصيل بحاجة staging ومفاتيح رسمية واختبار لكل مزود.
+- لا يُنصح بالإنتاج قبل إكمال docs/TODO.md وdocs/LAUNCH_CHECKLIST.md.
