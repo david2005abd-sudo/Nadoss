@@ -1,17 +1,20 @@
 # Security baseline — NADOS
+
 - لا ترفع مفاتيح API أو ملفات .env إلى GitHub.
-- SUPABASE_SERVICE_ROLE_KEY يُستخدم على الخادم فقط.
-- RLS مطلوب لكل بيانات tenant؛ اختبر محاولة مستخدم متجر A الوصول إلى متجر B.
+- SUPABASE_SERVICE_ROLE_KEY يُستخدم على الخادم فقط، ويُستخدم في CI مع Supabase محلي مؤقت فقط.
+- RLS مطلوب لكل بيانات tenant، وكذلك جداول المرجع العامة؛ اختبر محاولة مستخدم متجر A الوصول إلى متجر B.
 - تحقق من توقيع webhooks ومصادر callbacks قبل تعديل حالة دفع/طلب.
+- لا يُعتمد callback على أنه paid إذا كان المبلغ مفقودًا أو لا يطابق total_iqd المسجل للطلب.
+- رفض قيم gateway غير المسموح بها قبل تمرير callback إلى SDK.
+- WhatsApp webhook يفشل مغلقًا في production إذا لم يتوفر WHATSAPP_APP_SECRET؛ التحقق من التوقيع يستخدم raw request body.
+- استعادة كلمة مرور الهاتف تعتمد على SMS OTP؛ لا يُستخدم بريد مُصطنع ولا يُكشف وجود الحساب عبر استجابة forgot-password.
 - استخدم idempotency للمدفوعات والطلبات، ولا تثق ببيانات المبلغ القادمة من المتصفح.
 - مفاتيح cron يجب أن تكون قوية وسرية.
 - لا تسجل access tokens أو بيانات شخصية أو محتوى رسائل حساس في logs.
 - راجع سياسات موافقة العملاء والاحتفاظ برسائل WhatsApp والبيانات الشخصية.
-- تم تحديث Next.js إلى 15.5.28 وReact إلى 19.3.1 لدعم useActionState وتضمين تحديثات الأمان الحديثة.
+- تم ضبط Next.js على 14.2.35 بعد أن أظهر CI أن 14.2.28 يحمل تحذيرًا أمنيًا.
+- Custom access-token hook يعمل كـ SECURITY DEFINER مع search_path ثابت، وتُمنح صلاحية schema المطلوبة لدور Supabase Auth فقط؛ لا يُمنح دور العميل صلاحية تنفيذ hook.
+- حساب E2E والمفاتيح الوهمية مخصصة لبيئة CI المحلية فقط ولا يجوز إعادة استخدامها في الإنتاج.
 - قبل الإنتاج: اختبارات RLS، E2E، backup/restore، redirects، headers، rate limits، ومراجعة كل integration.
 
-- استعادة كلمة المرور للحسابات الهاتفية تتم عبر SMS OTP ثم updateUser؛ لا يُستخدم بريد إلكتروني اصطناعي مبني على رقم الهاتف.
-
-- CI dependency audit currently reports no critical issues but does report high-severity transitive dependencies; the dependency upgrade/override pass is being validated before production.
-
-- The latest dependency override experiment caused npm's dependency resolver to fail, so those overrides were reverted. Keep the known-green dependency set and review high-severity dev-tool findings separately before production.
+- تدقيق npm في آخر تحديث أظهر عدم وجود ثغرات حرجة، لكنه أظهر تبعيات عابرة عالية الخطورة؛ أعد تدقيق كامل الاعتماديات واعتماديات الإنتاج بعد كل تحديث قبل النشر.
