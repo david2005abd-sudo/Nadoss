@@ -15,7 +15,11 @@ export async function GET(request: NextRequest) {
   // ZainCash sends JWT token in query string
   const url = new URL(request.url);
   const token = url.searchParams.get('token');
-  const gateway = (url.searchParams.get('gateway') ?? 'zaincash') as PaymentGateway;
+  const gatewayValue = url.searchParams.get('gateway') ?? 'zaincash';
+  if (!['zaincash', 'fib', 'qicard', 'nasspay'].includes(gatewayValue)) {
+    return NextResponse.json({ error: 'Unsupported payment gateway' }, { status: 400 });
+  }
+  const gateway = gatewayValue as PaymentGateway;
 
   if (!token) {
     return NextResponse.json({ error: 'Missing token' }, { status: 400 });
@@ -41,7 +45,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const gateway = (request.headers.get('x-gateway') ?? 'fib') as PaymentGateway;
+  const gatewayValue = request.headers.get('x-gateway') ?? 'fib';
+  if (!['zaincash', 'fib', 'qicard', 'nasspay'].includes(gatewayValue)) {
+    return NextResponse.json({ error: 'Unsupported payment gateway' }, { status: 400 });
+  }
+  const gateway = gatewayValue as PaymentGateway;
 
   try {
     const event = await verifyCallback(body, gateway);
@@ -80,6 +88,14 @@ async function applyPaymentUpdate(event: {
           ? 'failed'
           : 'pending';
 
+  // Never mark an order paid unless the verified provider amount matches our database total.
+  if (
+    newPaymentStatus === 'paid' &&
+    (event.amount == null || Math.round(event.amount) !== order.total_iqd)
+  ) {
+    throw new Error('Verified payment amount does not match order total');
+  }
+
   // Idempotency: skip if already paid
   if (order.payment_status === 'paid' && newPaymentStatus === 'paid') return;
 
@@ -88,13 +104,17 @@ async function applyPaymentUpdate(event: {
       ? 'confirmed'
       : order.status;
 
-  await admin
+  const { error: updateError } = await admin
     .from('orders')
     .update({
       payment_status: newPaymentStatus,
       status: newOrderStatus,
     })
     .eq('id', order.id);
+
+  if (updateError) {
+    throw new Error('Unable to persist verified payment status');
+  }
 
   // Audit
   await admin.from('audit_log').insert({
