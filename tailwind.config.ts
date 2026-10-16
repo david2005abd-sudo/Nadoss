@@ -1,21 +1,27 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
-      fontFamily: { arabic: ["Arial", "Tahoma", "sans-serif"] },
+      fontFamily: {
+        arabic: ['Cairo', 'Tajawal', 'system-ui', 'sans-serif'],
+      },
       colors: {
         nados: {
-          ink: "#142033",
-          navy: "#172b4d",
-          terracotta: "#c56b4b",
-          paper: "#f7f7f4",
-          muted: "#6b7280"
-        }
-      }
-    }
+          primary: '#1a56db',
+          secondary: '#0e9f6e',
+          danger: '#e02424',
+          warning: '#d03801',
+        },
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };
+
 export default config;

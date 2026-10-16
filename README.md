@@ -1,16 +1,32 @@
 # نادوس NADOS
+منصة تجارة إلكترونية عربية RTL موجهة للتاجر العراقي، مبنية على Next.js 14 وTypeScript وTailwind وSupabase.
 
-منصة عربية RTL لإدارة المتاجر والمنتجات والطلبات والمخزون للتاجر العراقي.
+## الوحدات الموجودة في المستودع
+- المصادقة وإعداد حساب/متجر التاجر.
+- واجهة متجر عامة ومنتجات وسلة وcheckout.
+- لوحة تحكم للمنتجات والتصنيفات والطلبات والعملاء والتقارير.
+- تكاملات توصيل عبر adapters قابلة للتكوين.
+- WhatsApp webhooks ومعالجة الرسائل واستخراج تفاصيل الطلبات بالذكاء الاصطناعي.
+- اشتراكات وفوترة وحدود استخدام.
+- الدعم الفني وقاعدة المعرفة.
+- مؤشرات SaaS، مهام cron، ومراقبة Sentry.
+- نظام حجوزات وخدمات وموظفين وتقويم.
+- 18 migration أساسية في supabase/migrations وملفات E2E أولية.
 
-## الحالة الحالية
-المرحلة الحالية تتضمن واجهة تعريفية، تسجيل ودخول Supabase Auth، إنشاء متجر للمستخدم، لوحة تحكم تقرأ الأرقام من قاعدة البيانات، وصفحة إضافة المنتجات وأرشفتها. لا تعتبر المنصة جاهزة للإنتاج: يلزم تطبيق SQL migrations واختبار RLS وتشغيل CI، كما أن إدارة الطلبات والعملاء والتوصيل والدفع وWhatsApp ما زالت غير مكتملة.
+## إعداد محلي
+1. استخدم Node.js 20.
+2. انسخ .env.local.example إلى .env.local وأكمل مفاتيحك محليًا.
+3. لا ترفع أي مفاتيح أو ملف .env إلى GitHub.
+4. ثبّت الحزم عبر npm install.
+5. أنشئ مشروع Supabase تجريبيًا ثم طبّق migrations بالترتيب عبر Supabase CLI.
+6. نفّذ npm run typecheck ثم npm run lint ثم npm run build.
+7. شغّل npm run dev.
 
-## التشغيل المحلي
-1. ثبّت Node.js 20 أو أحدث.
-2. انسخ .env.example إلى .env.local.
-3. املأ NEXT_PUBLIC_SUPABASE_URL وNEXT_PUBLIC_SUPABASE_ANON_KEY من إعدادات مشروع Supabase.
-4. شغّل migration 00001 ثم 00002 من مجلد supabase/migrations عبر SQL Editor في بيئة تجريبية.
-5. نفّذ npm install ثم npm run typecheck وnpm run lint وnpm run build.
-6. شغّل npm run dev وافتح http://localhost:3000.
+## مهم قبل الإنتاج
+الكود المرفوع لا يعني أن حسابات الدفع أو WhatsApp أو شركات التوصيل أصبحت متصلة. أضف بيانات الاعتماد الرسمية في إعدادات الاستضافة، وطبّق migrations على staging، واختبر عزل المتاجر (RLS) وتدفقات الدفع والويب هوكس. راجع docs/LAUNCH_CHECKLIST.md.
 
-لا تضف مفاتيح حقيقية إلى GitHub ولا تضع SUPABASE_SERVICE_ROLE_KEY في المتصفح. راجع docs/LAUNCH_CHECKLIST.md قبل النشر.
+## فحوصات
+- npm run typecheck
+- npm run lint
+- npm run build
+- npm run test:e2e

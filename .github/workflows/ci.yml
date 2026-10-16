@@ -1,18 +1,110 @@
 name: CI
+
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  validate:
+  lint-and-typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20.19.0'
       - run: npm install
-      - run: npm run typecheck
+      - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: lint-and-typecheck
+    if: github.event_name == 'pull_request'
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nados_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+      - run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase local
+        run: supabase start
+
+      - name: Run migrations
+        run: supabase db reset --local
+
+      - name: Apply seed
+        run: psql "$(supabase status --output json | jq -r .DB_URL)" -f supabase/seed.sql
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY }}
+          CREDENTIALS_ENCRYPTION_KEY: test-encryption-key-32-chars-mini
+          OPENAI_API_KEY: sk-test
+          WHATSAPP_VERIFY_TOKEN: test
+          CRON_SECRET: test
+
+      - name: Start server
+        run: npm run start &
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY }}
+          CREDENTIALS_ENCRYPTION_KEY: test-encryption-key-32-chars-mini
+          OPENAI_API_KEY: sk-test
+          WHATSAPP_VERIFY_TOKEN: test
+          CRON_SECRET: test
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000/api/health --timeout 60000
+
+      - name: Run E2E tests
+        run: npx playwright test
+        env:
+          E2E_BASE_URL: http://localhost:3000
+          E2E_OWNER_PHONE: '07701234567'
+          E2E_OWNER_PASSWORD: 'Test123456'
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

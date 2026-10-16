@@ -1,37 +1,122 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { ArrowLeft, Boxes, ClipboardList, PackagePlus, Store, Truck, Users, LogOut } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
-import { signOutAction } from "@/app/auth/actions";
+import { createClient } from '@/lib/supabase/server';
+import { formatIQD } from '@/lib/utils';
+import { ShoppingCart, Package, Users, TrendingUp } from 'lucide-react';
 
-export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
- const supabase=await createClient();
- const {data:{user}}=await supabase.auth.getUser();
- if(!user)redirect("/login");
- const {data:membership}=await supabase.from("memberships").select("tenant_id,role").eq("user_id",user.id).limit(1).maybeSingle();
- if(!membership)redirect("/onboarding");
- const tenantId=membership.tenant_id;
- const [{data:store},{count:productCount},{count:orderCount},{count:customerCount},{data:orders}] = await Promise.all([
-  supabase.from("tenants").select("name").eq("id",tenantId).single(),
-  supabase.from("products").select("id",{count:"exact",head:true}).eq("tenant_id",tenantId).is("deleted_at",null),
-  supabase.from("orders").select("id",{count:"exact",head:true}).eq("tenant_id",tenantId).is("deleted_at",null),
-  supabase.from("customers").select("id",{count:"exact",head:true}).eq("tenant_id",tenantId).is("deleted_at",null),
-  supabase.from("orders").select("id,order_number,status,total_iqd,created_at").eq("tenant_id",tenantId).is("deleted_at",null).order("created_at",{ascending:false}).limit(6)
- ]);
- const modules=[
-  {icon:ClipboardList,title:"الطلبات",description:"إدارة الطلبات ومتابعة مراحلها",href:"/dashboard/orders",value:orderCount??0,unit:"طلب حقيقي"},
-  {icon:Boxes,title:"المنتجات والمخزون",description:"الكتالوج والكميات والأسعار",href:"/dashboard/products",value:productCount??0,unit:"منتج"},
-  {icon:Users,title:"العملاء",description:"بيانات العملاء وسجل الطلبات",href:"/dashboard/customers",value:customerCount??0,unit:"عميل"},
-  {icon:Truck,title:"التوصيل",description:"تجهيز تكاملات الشحن لاحقًا",href:"#delivery",value:"—",unit:"غير مربوط بعد"}
- ];
- const statuses:Record<string,string>={draft:"مسودة",pending:"طلب جديد",confirmed:"مؤكد",preparing:"قيد التجهيز",ready:"جاهز للشحن",shipped:"قيد التوصيل",delivered:"تم التسليم",cancelled:"ملغي",returned:"مرتجع"};
- return <main className="min-h-screen bg-nados-paper">
-  <header className="border-b border-stone-200 bg-white"><div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-4"><Link href="/" className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-nados-navy text-white"><Store size={20}/></span><span className="font-black">نادوس <span className="text-nados-terracotta">NADOS</span></span></Link><div className="flex items-center gap-3"><span className="hidden text-sm text-slate-500 sm:inline">{user.email}</span><form action={signOutAction}><button className="flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-2 text-sm font-bold"><LogOut size={15}/> خروج</button></form></div></div></header>
-  <div className="mx-auto max-w-7xl px-5 py-10"><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="text-sm font-bold text-nados-terracotta">مساحة التاجر</p><h1 className="mt-2 text-3xl font-black">أهلًا بك في {store?.name??"متجرك"}</h1><p className="mt-2 text-slate-600">هذه لوحة بيانات متجرك الفعلية من قاعدة البيانات.</p></div><Link href="/dashboard/products" className="inline-flex w-fit items-center gap-2 rounded-xl bg-nados-terracotta px-5 py-3 font-bold text-white"><PackagePlus size={18}/> إضافة منتج</Link></div>
-  <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{modules.map(({icon:Icon,title,description,href,value,unit})=><Link key={title} href={href} className="rounded-2xl border border-stone-200 bg-white p-5 transition hover:-translate-y-1 hover:shadow-md"><div className="flex items-center justify-between"><span className="grid h-11 w-11 place-items-center rounded-xl bg-[#f5e8e1] text-nados-terracotta"><Icon size={21}/></span><span className="text-2xl font-black">{value}</span></div><h2 className="mt-5 font-extrabold">{title}</h2><p className="mt-1 text-sm text-slate-500">{description}</p><p className="mt-3 text-xs text-slate-400">{unit}</p></Link>)}</div>
-  <section id="orders" className="mt-8 rounded-2xl border border-stone-200 bg-white p-6"><div className="flex items-center justify-between"><div><h2 className="text-lg font-extrabold">آخر الطلبات</h2><p className="mt-1 text-sm text-slate-500">طلبات محفوظة في قاعدة البيانات</p></div><ClipboardList className="text-nados-terracotta"/></div>
-  {!orders?.length?<p className="py-10 text-center text-sm text-slate-500">لا توجد طلبات بعد. ستظهر هنا عند تسجيلها.</p>:<div className="mt-4 divide-y divide-stone-100">{orders.map(order=><div key={order.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><p className="font-bold">{order.order_number}</p><p className="mt-1 text-xs text-slate-400">{new Date(order.created_at).toLocaleDateString("ar-IQ")}</p></div><span className="rounded-full bg-nados-paper px-3 py-1 text-xs font-bold">{statuses[order.status]??order.status}</span><strong>{Number(order.total_iqd).toLocaleString("ar-IQ")} د.ع</strong></div>)}</div>}</section>
-  <div className="mt-8 rounded-2xl border border-stone-200 bg-white p-5 text-sm leading-7 text-slate-600">المتجر مرتبط بحسابك ويستخدم عزل البيانات عبر RLS. تكاملات الدفع والتوصيل وواتساب غير مفعلة إلى أن تُربط بمفاتيح موثقة وتُختبر على بيئة تجريبية.</div>
-  </div></main>;
+  const supabase = await createClient();
+
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('tenant_id')
+    .limit(1)
+    .single();
+
+  const tenantId = membership?.tenant_id;
+
+  const [{ count: productsCount }, { count: ordersCount }, { count: customersCount }, { data: recentOrders }] =
+    await Promise.all([
+      supabase.from('products').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId!).is('deleted_at', null),
+      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId!).is('deleted_at', null),
+      supabase.from('customers').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId!).is('deleted_at', null),
+      supabase
+        .from('orders')
+        .select('id, order_number, total_iqd, status, created_at, customers(name, phone)')
+        .eq('tenant_id', tenantId!)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(5),
+    ]);
+
+  const { data: revenueData } = await supabase
+    .from('orders')
+    .select('total_iqd')
+    .eq('tenant_id', tenantId!)
+    .eq('status', 'delivered')
+    .is('deleted_at', null);
+
+  const totalRevenue = (revenueData ?? []).reduce((sum, o) => sum + (o.total_iqd ?? 0), 0);
+
+  const stats = [
+    { label: 'المنتجات', value: productsCount ?? 0, icon: Package, color: 'text-blue-600 bg-blue-50' },
+    { label: 'الطلبات', value: ordersCount ?? 0, icon: ShoppingCart, color: 'text-green-600 bg-green-50' },
+    { label: 'العملاء', value: customersCount ?? 0, icon: Users, color: 'text-purple-600 bg-purple-50' },
+    { label: 'الإيرادات', value: formatIQD(totalRevenue), icon: TrendingUp, color: 'text-amber-600 bg-amber-50' },
+  ];
+
+  const statusLabels: Record<string, string> = {
+    draft: 'مسودة',
+    pending: 'قيد الانتظار',
+    confirmed: 'مؤكد',
+    preparing: 'قيد التحضير',
+    ready: 'جاهز',
+    shipped: 'تم الشحن',
+    delivered: 'تم التوصيل',
+    cancelled: 'ملغي',
+    returned: 'مرتجع',
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">نظرة عامة</h1>
+        <p className="text-sm text-gray-500 mt-1">ملخص أداء متجرك اليوم</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                </div>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-100">
+        <div className="px-5 py-4 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-900">آخر الطلبات</h2>
+        </div>
+        {recentOrders && recentOrders.length > 0 ? (
+          <div className="divide-y divide-gray-50">
+            {recentOrders.map((order) => {
+              const customer = order.customers as unknown as { name: string | null; phone: string } | null;
+              return (
+                <div key={order.id} className="flex items-center justify-between px-5 py-3.5">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {order.order_number}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {customer?.name ?? customer?.phone ?? '—'}
+                    </p>
+                  </div>
+                  <div className="text-left shrink-0 mr-4">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {formatIQD(order.total_iqd)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {statusLabels[order.status] ?? order.status}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="px-5 py-12 text-center text-sm text-gray-400">
+            لا توجد طلبات بعد
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

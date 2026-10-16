@@ -1,6 +1,0 @@
-"use client";
-import { useFormState, useFormStatus } from "react-dom";
-import { completeStoreAction, type AuthState } from "@/app/onboarding/actions";
-const initialState: AuthState = {};
-function SubmitButton(){const {pending}=useFormStatus();return <button disabled={pending} className="w-full rounded-xl bg-nados-terracotta px-4 py-3 font-bold text-white disabled:opacity-60">{pending?"جارٍ تجهيز المتجر…":"إنشاء المتجر"}</button>}
-export default function OnboardingPage(){const [state,action]=useFormState(completeStoreAction,initialState);return <main className="min-h-screen bg-nados-paper px-5 py-12"><section className="mx-auto max-w-lg rounded-3xl border border-stone-200 bg-white p-8"><h1 className="text-3xl font-black">باقي خطوة واحدة</h1><p className="mt-3 leading-7 text-slate-600">تم تسجيل الدخول، لكن لا يوجد متجر مرتبط بالحساب. أدخل اسم متجرك لإكمال الإعداد.</p><form action={action} className="mt-6 space-y-4"><label className="block text-sm font-bold">اسم المتجر<input name="storeName" minLength={2} maxLength={80} required className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3 font-normal"/></label>{state?.error&&<p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}<SubmitButton/></form></section></main>}

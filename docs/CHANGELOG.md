@@ -1,8 +1,13 @@
-# CHANGELOG — NADOS
-## 2026-10-16 — المرحلة 3
-- أضيفت مصادقة Supabase وتدفق إنشاء المتجر بعد تسجيل الدخول أو تأكيد البريد.
-- تحولت لوحة التحكم إلى قراءة أعداد المنتجات والطلبات والعملاء وآخر الطلبات من Supabase.
-- أضيفت صفحة المنتجات مع إضافة منتج وأرشفة آمنة ضمن tenant الحالي.
-- أضيفت صفحة onboarding للحساب الذي لا يملك متجرًا بعد.
-- أضيفت migration لأسطر الطلب، مع قيد فريد مركب للطلبات حتى تعمل علاقة tenant-scoped.
-- لم يُؤكد بعد build أو CI أو تشغيل migration على قاعدة فعلية.
+## [0.1.2] — 2026-10-16
+### أُضيف
+- `src/lib/validations/booking.ts` — schemas + state machine
+- `src/app/dashboard/bookings/actions.ts` — 9 server actions
+- `src/lib/whatsapp/sender.ts` — outbound-only WhatsApp sender
+- صفحات لوحة التحكم: bookings list, new, detail, services, staff, calendar
+- مكونات: BookingForm, BookingStatusBadge, BookingStatusUpdater, RescheduleForm, BookingCalendar, ServiceCategoryCreateForm, ServiceCategoryRowActions, StaffCreateForm
+- صفحة عامة: `/store/[slug]/book` (Wizard 3 خطوات) + success
+- إشعار WhatsApp للتاجر عند حجز جديد
+- تحديث sidebar بقسم "الحجوزات"
+
+## [0.1.1] — 2026-10-16
+- WhatsApp Cost Tracker + Wayl Integration (المرحلة 10 — الجزء 2)

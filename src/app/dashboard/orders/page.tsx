@@ -1,37 +1,198 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createOrderAction, updateOrderStatusAction } from "./actions";
+import Link from 'next/link';
+import { ShoppingCart, Plus, Search } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
+import { formatIQD } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { OrderStatusBadge } from '@/components/dashboard/order-status-badge';
 
-export const dynamic = "force-dynamic";
-const labels: Record<string,string> = { draft:"مسودة",pending:"جديد",confirmed:"مؤكد",preparing:"قيد التجهيز",ready:"جاهز",shipped:"قيد التوصيل",delivered:"تم التسليم",cancelled:"ملغي",returned:"مرتجع" };
-const statuses = Object.keys(labels);
-export default async function OrdersPage({searchParams}:{searchParams:{created?:string}}) {
- const supabase=await createClient();
- const {data:{user}}=await supabase.auth.getUser(); if(!user) redirect("/login");
- const {data:membership}=await supabase.from("memberships").select("tenant_id").eq("user_id",user.id).limit(1).maybeSingle(); if(!membership) redirect("/onboarding");
- const [{data:products},{data:orders,error},{data:governorates}] = await Promise.all([
-  supabase.from("products").select("id,name_ar,price_iqd,stock").eq("tenant_id",membership.tenant_id).eq("is_active",true).is("deleted_at",null).order("name_ar"),
-  supabase.from("orders").select("id,order_number,status,total_iqd,created_at,customers(name,phone)").eq("tenant_id",membership.tenant_id).is("deleted_at",null).order("created_at",{ascending:false}).limit(100),
-  supabase.from("iraq_governorates").select("id,name_ar,default_delivery_fee_iqd").eq("is_active",true).order("id")
- ]);
- return <main className="min-h-screen bg-nados-paper"><header className="border-b border-stone-200 bg-white"><div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><Link href="/dashboard" className="font-black">نادوس NADOS</Link><Link href="/dashboard" className="text-sm text-nados-terracotta">العودة للوحة التحكم ←</Link></div></header>
- <div className="mx-auto max-w-6xl px-5 py-9"><p className="text-sm font-bold text-nados-terracotta">المبيعات</p><h1 className="mt-2 text-3xl font-black">إدارة الطلبات</h1><p className="mt-2 text-sm text-slate-500">إنشاء الطلب يحفظ العميل والطلب وعناصره ويخصم المخزون ذريًا داخل قاعدة البيانات.</p>
- {searchParams.created==="1"&&<p role="status" className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">تم إنشاء الطلب بنجاح.</p>}
- <section className="mt-7 rounded-2xl border border-stone-200 bg-white p-5 sm:p-7"><h2 className="text-lg font-extrabold">إنشاء طلب يدوي</h2>
- {!products?.length?<p className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">أضف منتجًا متوفرًا بالمخزون أولًا من <Link href="/dashboard/products" className="font-bold underline">صفحة المنتجات</Link>.</p>:
- <form action={createOrderAction} className="mt-5 grid gap-4 sm:grid-cols-2">
- <label className="text-sm font-bold">اسم العميل *<input name="customerName" required minLength={2} maxLength={120} className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-3 font-normal"/></label>
- <label className="text-sm font-bold">رقم الهاتف *<input name="phone" required minLength={7} maxLength={30} autoComplete="tel" className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-3 font-normal" placeholder="07xxxxxxxxx"/></label>
- <label className="text-sm font-bold">المنتج *<select name="productId" required className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-3 py-3 font-normal">{products.map(p=><option key={p.id} value={p.id} disabled={p.stock<1}>{p.name_ar} — {Number(p.price_iqd).toLocaleString("ar-IQ")} د.ع (المتوفر {p.stock})</option>)}</select></label>
- <label className="text-sm font-bold">الكمية *<input name="quantity" type="number" min="1" max="10000" step="1" defaultValue="1" required className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-3 font-normal"/></label>
- <label className="text-sm font-bold">المحافظة<select name="governorateId" defaultValue="" className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-3 py-3 font-normal"><option value="">اختيار لاحقًا</option>{governorates?.map(g=><option key={g.id} value={g.id}>{g.name_ar} — توصيل {Number(g.default_delivery_fee_iqd).toLocaleString("ar-IQ")} د.ع</option>)}</select></label>
- <label className="text-sm font-bold">المدينة<input name="city" maxLength={120} className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-3 font-normal"/></label>
- <label className="text-sm font-bold sm:col-span-2">العنوان<input name="address" maxLength={500} className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-3 font-normal"/></label>
- <label className="text-sm font-bold sm:col-span-2">ملاحظات<textarea name="notes" maxLength={2000} rows={2} className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-3 font-normal"/></label>
- <button className="rounded-xl bg-nados-terracotta px-5 py-3 font-bold text-white sm:col-span-2">حفظ الطلب وخصم المخزون</button></form>}</section>
- <section className="mt-7 overflow-hidden rounded-2xl border border-stone-200 bg-white"><div className="border-b border-stone-100 p-5"><h2 className="font-extrabold">سجل الطلبات</h2><p className="mt-1 text-sm text-slate-500">{orders?.length??0} طلبًا حديثًا</p></div>
- {error?<p role="alert" className="p-5 text-sm text-red-700">تعذر تحميل الطلبات. تحقق من migrations وRLS.</p>:!orders?.length?<p className="p-8 text-center text-sm text-slate-500">لا توجد طلبات مسجلة بعد.</p>:
- <div className="divide-y divide-stone-100">{orders.map(o=>{const customer=Array.isArray(o.customers)?o.customers[0]:o.customers;return <article key={o.id} className="flex flex-wrap items-center justify-between gap-4 p-5"><div><h3 className="font-bold">{o.order_number}</h3><p className="mt-1 text-sm text-slate-600">{customer?.name??"عميل"} · {customer?.phone??"—"}</p><p className="mt-1 text-xs text-slate-400">{new Date(o.created_at).toLocaleDateString("ar-IQ")}</p></div><strong>{Number(o.total_iqd).toLocaleString("ar-IQ")} د.ع</strong><form action={updateOrderStatusAction} className="flex items-center gap-2"><input type="hidden" name="orderId" value={o.id}/><select name="status" defaultValue={o.status} className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm">{statuses.map(s=><option key={s} value={s}>{labels[s]}</option>)}</select><button className="rounded-lg bg-nados-navy px-3 py-2 text-xs font-bold text-white">تحديث</button></form></article>})}</div>}</section>
- </div></main>;
+const STATUS_FILTERS = [
+  { v: '', l: 'الكل' },
+  { v: 'pending', l: 'بانتظار' },
+  { v: 'confirmed', l: 'مؤكد' },
+  { v: 'preparing', l: 'يُحضَّر' },
+  { v: 'shipped', l: 'مشحون' },
+  { v: 'delivered', l: 'مُسلَّم' },
+  { v: 'cancelled', l: 'ملغي' },
+];
+
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; q?: string }>;
+}) {
+  const { status, q } = await searchParams;
+  const supabase = await createClient();
+
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('tenant_id')
+    .limit(1)
+    .single();
+
+  const tenantId = membership!.tenant_id;
+
+  let query = supabase
+    .from('orders')
+    .select(
+      'id, order_number, status, payment_method, payment_status, total_iqd, source, created_at, customers(name, phone), iraq_governorates(name_ar)'
+    )
+    .eq('tenant_id', tenantId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false });
+
+  if (status) query = query.eq('status', status);
+  if (q) query = query.ilike('order_number', `%${q}%`);
+
+  const { data: orders } = await query.limit(100);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">الطلبات</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            متابعة وإدارة جميع الطلبات
+          </p>
+        </div>
+        <Link href="/dashboard/orders/new">
+          <Button>
+            <Plus className="h-4 w-4" />
+            طلب يدوي
+          </Button>
+        </Link>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <form className="flex-1 min-w-60">
+          {status && <input type="hidden" name="status" value={status} />}
+          <div className="relative">
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="search"
+              name="q"
+              defaultValue={q ?? ''}
+              placeholder="ابحث برقم الطلب..."
+              className="w-full rounded-lg border border-gray-300 bg-white pr-9 pl-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-nados-primary"
+            />
+          </div>
+        </form>
+
+        <div className="flex gap-1 text-sm flex-wrap">
+          {STATUS_FILTERS.map((opt) => (
+            <Link
+              key={opt.v}
+              href={
+                opt.v
+                  ? `/dashboard/orders?status=${opt.v}${q ? `&q=${q}` : ''}`
+                  : `/dashboard/orders${q ? `?q=${q}` : ''}`
+              }
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                (status ?? '') === opt.v
+                  ? 'bg-nados-primary text-white'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              {opt.l}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {orders && orders.length > 0 ? (
+        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-500 text-xs">
+                <tr>
+                  <th className="px-4 py-3 text-right font-medium">رقم الطلب</th>
+                  <th className="px-4 py-3 text-right font-medium">العميل</th>
+                  <th className="px-4 py-3 text-right font-medium">المحافظة</th>
+                  <th className="px-4 py-3 text-right font-medium">الدفع</th>
+                  <th className="px-4 py-3 text-right font-medium">الإجمالي</th>
+                  <th className="px-4 py-3 text-right font-medium">الحالة</th>
+                  <th className="px-4 py-3 text-right font-medium">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {orders.map((o) => {
+                  const customer = o.customers as unknown as { name: string | null; phone: string } | null;
+                  const gov = o.iraq_governorates as unknown as { name_ar: string } | null;
+                  return (
+                    <tr key={o.id} className="hover:bg-gray-50/50">
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/dashboard/orders/${o.id}`}
+                          className="font-medium text-gray-900 hover:text-nados-primary"
+                        >
+                          {o.order_number}
+                        </Link>
+                        {o.source !== 'manual' && (
+                          <span className="mr-2 rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700">
+                            {o.source === 'store' ? 'متجر' : o.source}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-gray-900">{customer?.name ?? '—'}</p>
+                        <p className="text-xs text-gray-500">{customer?.phone}</p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">{gov?.name_ar ?? '—'}</td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-gray-600">
+                          {paymentLabel(o.payment_method)}
+                        </span>
+                        <span
+                          className={`mr-2 inline-block rounded-full px-2 py-0.5 text-xs ${
+                            o.payment_status === 'paid'
+                              ? 'bg-green-50 text-green-700'
+                              : o.payment_status === 'failed'
+                                ? 'bg-red-50 text-red-700'
+                                : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {paymentStatusLabel(o.payment_status)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">
+                        {formatIQD(o.total_iqd)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <OrderStatusBadge status={o.status} />
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+                        {new Date(o.created_at).toLocaleDateString('ar-IQ', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-gray-200 bg-white py-20 text-center">
+          <ShoppingCart className="mx-auto h-12 w-12 text-gray-300" />
+          <p className="mt-3 text-gray-500">
+            {status || q ? 'لا توجد طلبات مطابقة' : 'لا توجد طلبات بعد'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function paymentLabel(m: string) {
+  return (
+    { cod: 'COD', zaincash: 'زين كاش', fib: 'FIB', qicard: 'كي كارد', nasspay: 'ناس باي' } as Record<string, string>
+  )[m] ?? m;
+}
+
+function paymentStatusLabel(s: string) {
+  return (
+    { pending: 'معلّق', paid: 'مدفوع', failed: 'فشل', refunded: 'مُرجَع' } as Record<string, string>
+  )[s] ?? s;
 }

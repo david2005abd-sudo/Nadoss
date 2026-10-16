@@ -1,14 +1,10 @@
-# API and server actions — NADOS
-## Authentication
-- signInAction: تسجيل الدخول والتحقق من عضوية المستخدم؛ ينشئ المتجر عبر RPC إن كانت بيانات اسم المتجر محفوظة في user metadata.
-- signUpAction: ينشئ حسابًا ويحفظ الاسم واسم المتجر في metadata؛ بعد تأكيد البريد ينشئ المتجر عند أول دخول.
-- signOutAction: إنهاء الجلسة.
-- completeStoreAction: استكمال إنشاء متجر للحسابات التي لا تحمل اسم متجر.
-## Products
-- createProductAction: يتحقق من الاسم والسعر والمخزون وSKU ثم يضيف المنتج في tenant المستخدم.
-- deleteProductAction: يؤرشف المنتج ولا يحذفه نهائيًا.
-## Database RPC
-- create_store_for_current_user(p_store_name): يتطلب مستخدمًا مصادقًا وينشئ tenant وعضوية owner ذريًا.
-## Gaps
-- لا توجد بعد API عامة للطلبات أو webhooks أو متجر عام.
-- لا تمرر مفتاح service role إلى المتصفح.
+# API — NADOS
+تتوزع الواجهات بين Server Actions وRoute Handlers.
+- Auth: تسجيل/دخول/OTP/استعادة كلمة المرور في src/app/(auth)/actions.ts.
+- Checkout: إنشاء الطلب وتأكيد المخزون في src/app/store/[slug]/checkout/actions.ts.
+- Payment callbacks: src/app/api/payments/callback/route.ts وsrc/app/api/billing/callback/route.ts.
+- Webhooks: WhatsApp في src/app/api/webhooks/whatsapp/route.ts، والتوصيل في src/app/api/webhooks/delivery/[provider]/route.ts.
+- Health: /api/health.
+- Cron: تجديد الفوترة، SLA، تنظيف المسودات، حساب metrics.
+- RPCs والقيود والـ RLS موثقة في migrations 00001–00018.
+كل تكامل خارجي يحتاج إعداد credentials الرسمية، ويجب ألا يُعد فعّالًا حتى يُختبر callback/webhook على staging.
