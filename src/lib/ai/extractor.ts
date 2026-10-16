@@ -1,10 +1,8 @@
-import OpenAI from 'openai';
+import { getOpenAIClient } from './client';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { aiExtractionSchema, type AiExtraction } from './schemas';
 import { buildSystemPrompt } from './prompt';
 import type { ShipmentStatus } from '../delivery/types'; // unused, keep minimal
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 const EXTRACTION_TOOL = {
   type: 'function' as const,
@@ -36,7 +34,7 @@ export async function extractOrderFromMessage(
 ): Promise<ExtractionResult> {
   const start = Date.now();
 
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAIClient().chat.completions.create({
     model: 'gpt-4o-mini',
     temperature: 0.1,
     messages: [
