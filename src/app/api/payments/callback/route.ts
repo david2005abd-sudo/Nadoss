@@ -94,6 +94,10 @@ async function applyPaymentUpdate(event: {
           ? 'failed'
           : 'pending';
 
+  if (order.status === 'cancelled' && newPaymentStatus === 'paid') {
+    throw new Error('Paid callback received for a cancelled order; manual reconciliation is required');
+  }
+
   // Do not let delayed callbacks regress a paid/refunded order to pending or failed.
   if (order.payment_status === 'paid' && newPaymentStatus !== 'refunded') {
     return getPublicOrderContext(admin, order);
