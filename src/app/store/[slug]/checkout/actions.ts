@@ -19,6 +19,7 @@ interface ActionInput {
 interface CreatedOrder {
   id: string;
   order_number: string;
+  public_access_token: string;
   total_iqd: number;
   tenant_id: string;
   tenant_slug: string;
@@ -89,12 +90,12 @@ export async function placeOrderAction(
   }
 
   const order = data as unknown as CreatedOrder;
-  if (!order.id || !order.order_number || !Number.isFinite(Number(order.total_iqd))) {
+  if (!order.id || !order.order_number || !order.public_access_token || !Number.isFinite(Number(order.total_iqd))) {
     return { error: 'تعذر تأكيد الطلب. حاول مرة أخرى.' };
   }
 
   if (parsed.data.paymentMethod === 'cod') {
-    redirect(`/store/${slug}/order/${order.id}?new=1`);
+    redirect(`/store/${slug}/order/${order.id}?new=1&token=${encodeURIComponent(order.public_access_token)}`);
   }
 
   // Do not put redirect() inside the try/catch: Next.js implements redirect by throwing.
@@ -139,5 +140,5 @@ export async function placeOrderAction(
   }
 
   // FIB: no redirect, show QR page.
-  redirect(`/store/${slug}/order/${order.id}/pay?paymentId=${encodeURIComponent(payment.id)}`);
+  redirect(`/store/${slug}/order/${order.id}/pay?paymentId=${encodeURIComponent(payment.id)}&token=${encodeURIComponent(order.public_access_token)}`);
 }
