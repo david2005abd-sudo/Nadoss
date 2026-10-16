@@ -1,12 +1,8 @@
-# CHANGELOG
-## 0.1.1 — 2026-10-16
-- Added initial multi-tenant PostgreSQL schema and Iraqi governorate seed.
-- Added RLS membership helper functions designed to avoid recursive membership policies.
-- Added GitHub Actions validation workflow and launch checklist.
-- Documented implementation status and outstanding integration/testing work.
-
-## 0.1.0 — 2026-10-16
-- Bootstrapped Next.js 14 + TypeScript + Tailwind.
-- Added Arabic RTL landing page and dashboard preview.
-- Added core project docs and environment template.
-- Clearly marked sample dashboard metrics as illustrative, not live business data.
+# CHANGELOG — NADOS
+## 2026-10-16 — المرحلة 3
+- أضيفت مصادقة Supabase وتدفق إنشاء المتجر بعد تسجيل الدخول أو تأكيد البريد.
+- تحولت لوحة التحكم إلى قراءة أعداد المنتجات والطلبات والعملاء وآخر الطلبات من Supabase.
+- أضيفت صفحة المنتجات مع إضافة منتج وأرشفة آمنة ضمن tenant الحالي.
+- أضيفت صفحة onboarding للحساب الذي لا يملك متجرًا بعد.
+- أضيفت migration لأسطر الطلب، مع قيد فريد مركب للطلبات حتى تعمل علاقة tenant-scoped.
+- لم يُؤكد بعد build أو CI أو تشغيل migration على قاعدة فعلية.
