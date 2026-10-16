@@ -81,7 +81,7 @@ DECLARE
   v_item_count INTEGER;
   v_distinct_count INTEGER;
 BEGIN
-  IF p_payment_method NOT IN ('cod', 'zaincash', 'fib', 'qicard', 'nasspay') THEN
+  IF p_payment_method IS NULL OR p_payment_method NOT IN ('cod', 'zaincash', 'fib', 'qicard', 'nasspay') THEN
     RAISE EXCEPTION 'INVALID_PAYMENT_METHOD';
   END IF;
 
@@ -112,7 +112,7 @@ BEGIN
   IF NOT FOUND THEN
     RAISE EXCEPTION 'INVALID_GOVERNORATE';
   END IF;
-  v_delivery_fee := COALESCE(v_governorate.delivery_fee_iqd, 0);
+  v_delivery_fee := GREATEST(0, COALESCE(v_governorate.delivery_fee_iqd, 0));
 
   IF p_items IS NULL OR jsonb_typeof(p_items) <> 'array' THEN
     RAISE EXCEPTION 'INVALID_CART';
@@ -123,7 +123,7 @@ BEGIN
     RAISE EXCEPTION 'INVALID_CART';
   END IF;
 
-  SELECT COUNT(DISTINCT value->>'productId')
+  SELECT COUNT(DISTINCT (value->>'productId')::UUID)
   INTO v_distinct_count
   FROM jsonb_array_elements(p_items) AS items(value);
 
@@ -261,3 +261,52 @@ $$;
 
 REVOKE ALL ON FUNCTION public.create_store_order(TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.create_store_order(TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT, TEXT, TEXT, JSONB) TO anon, authenticated;
+
+-- Release stock if the payment provider cannot create a payment session.
+CREATE OR REPLACE FUNCTION public.cancel_unpaid_store_order(p_order_id UUID)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_order public.orders%ROWTYPE;
+  v_item RECORD;
+BEGIN
+  SELECT * INTO v_order
+  FROM public.orders
+  WHERE id = p_order_id
+  FOR UPDATE;
+
+  IF NOT FOUND OR v_order.payment_status <> 'pending' OR v_order.status <> 'pending' THEN
+    RETURN FALSE;
+  END IF;
+
+  FOR v_item IN
+    SELECT product_id, quantity
+    FROM public.order_items
+    WHERE order_id = v_order.id
+      AND tenant_id = v_order.tenant_id
+      AND product_id IS NOT NULL
+  LOOP
+    UPDATE public.products
+    SET stock = stock + v_item.quantity,
+        updated_at = NOW()
+    WHERE id = v_item.product_id
+      AND tenant_id = v_order.tenant_id;
+  END LOOP;
+
+  UPDATE public.orders
+  SET status = 'cancelled',
+      payment_status = 'failed',
+      updated_at = NOW()
+  WHERE id = v_order.id
+    AND payment_status = 'pending'
+    AND status = 'pending';
+
+  RETURN FOUND;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.cancel_unpaid_store_order(UUID) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.cancel_unpaid_store_order(UUID) TO service_role;
