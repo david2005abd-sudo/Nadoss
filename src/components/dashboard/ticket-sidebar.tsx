@@ -121,7 +121,7 @@ export function TicketSidebar({
               <input type="hidden" name="newStatus" value="resolved" />
               <Button type="submit" variant="secondary" className="w-full" disabled={isPending}>
                 {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-                وضع علامة "تم الحل"
+                وضع علامة &quot;تم الحل&quot;
               </Button>
             </form>
             <form action={formAction}>

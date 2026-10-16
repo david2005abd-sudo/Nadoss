@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+type SupabaseCookieOptions = { domain?: string; expires?: Date; httpOnly?: boolean; maxAge?: number; path?: string; sameSite?: boolean | 'lax' | 'strict' | 'none'; secure?: boolean; priority?: 'low' | 'medium' | 'high'; partitioned?: boolean };
+
 const PUBLIC_PATHS = ['/', '/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/terms', '/privacy'];
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/verify-otp'];
 const PUBLIC_PREFIXES = ['/store/', '/api/webhooks/', '/api/store/'];
@@ -25,7 +27,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
+        setAll(cookiesToSet: Array<{ name: string; value: string; options?: SupabaseCookieOptions }>) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
