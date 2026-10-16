@@ -87,7 +87,7 @@ body {
    Layout primitives
    ===================================================================== */
 @layer components {
-  .container {
+  .nasaq-container {
     @apply mx-auto w-full max-w-container px-5;
   }
 
@@ -162,7 +162,7 @@ body {
     @apply btn bg-danger text-white hover:bg-red-700;
   }
   .btn-danger-outline {
-    @apply btn border border-danger/40 bg-surface text-danger hover:bg-danger-bg;
+    @apply btn border border-danger bg-surface text-danger hover:bg-danger-bg;
   }
   .btn-ghost {
     @apply btn text-text-secondary hover:bg-muted-surface hover:text-text-primary;
@@ -261,7 +261,7 @@ body {
     @apply block text-sm font-medium text-text-primary;
   }
   .form-control {
-    @apply w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary transition placeholder:text-text-secondary/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+    @apply w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary transition placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary;
   }
   .form-help {
     @apply text-xs text-text-secondary;
@@ -326,10 +326,10 @@ body {
     @apply border-success/40 bg-success-bg text-success;
   }
   .choice-card {
-    @apply card cursor-pointer text-right transition hover:border-primary/50 hover:shadow-md;
+    @apply card cursor-pointer text-right transition hover:border-primary hover:shadow-md;
   }
   .choice-card.selected {
-    @apply border-primary ring-2 ring-primary/25;
+    @apply border-primary ring-2 ring-primary;
   }
 
   /* ---------------- Website builder ---------------- */
@@ -394,7 +394,7 @@ body {
     @apply flex flex-wrap gap-2;
   }
   .demo-tab-btn {
-    @apply rounded-md border border-border bg-surface px-3 py-2 text-xs font-medium text-text-secondary transition hover:border-primary/40;
+    @apply rounded-md border border-border bg-surface px-3 py-2 text-xs font-medium text-text-secondary transition hover:border-primary;
   }
   .demo-tab-btn.active {
     @apply border-primary bg-light-purple text-primary;
@@ -435,13 +435,13 @@ body {
     @apply rounded-md border px-4 py-3 text-sm shadow-md;
   }
   .toast-item.success {
-    @apply border-success/30 bg-success-bg text-success;
+    @apply border-success bg-success-bg text-success;
   }
   .toast-item.warning {
-    @apply border-warning/30 bg-warning-bg text-warning;
+    @apply border-warning bg-warning-bg text-warning;
   }
   .toast-item.danger {
-    @apply border-danger/30 bg-danger-bg text-danger;
+    @apply border-danger bg-danger-bg text-danger;
   }
 
   /* ---------------- Charts ---------------- */

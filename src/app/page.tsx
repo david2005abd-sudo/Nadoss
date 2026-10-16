@@ -85,7 +85,7 @@ export default function HomePage() {
     <div>
       {/* ================= HEADER ================= */}
       <header className="landing-header">
-        <div className="container flex h-16 items-center justify-between gap-3">
+        <div className="nasaq-container flex h-16 items-center justify-between gap-3">
           <a href="#hero" className="brand-logo">
             <span className="brand-mark">ن</span>
             <span className="font-extrabold">نَسَق</span>
@@ -115,7 +115,7 @@ export default function HomePage() {
 
       {/* ================= HERO ================= */}
       <section id="hero" className="hero-section">
-        <div className="container hero-grid">
+        <div className="nasaq-container hero-grid">
           <div>
             <span className="badge badge-primary">منصة عربية متعددة الأنشطة مدعومة بالذكاء الاصطناعي</span>
             <h1 className="hero-title mt-3">
@@ -190,7 +190,7 @@ export default function HomePage() {
 
       {/* ================= BUSINESS TYPES ================= */}
       <section id="business-types" className="section-block section-block-alt">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge">تخصيص ذكي حسب القطاع</span>
             <h2 className="section-title">منصة واحدة تتشكل حسب طبيعة نشاطك التجاري</h2>
@@ -243,7 +243,7 @@ export default function HomePage() {
 
       {/* ================= INTERACTIVE DEMO ================= */}
       <section id="interactive-demo" className="section-block">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge section-badge-secondary">معاينة تفاعلية فورية</span>
             <h2 className="section-title">جرّب بنفسك كيف يتغير الموقع ولوحة التحكم بتغيير النشاط</h2>
@@ -329,7 +329,7 @@ export default function HomePage() {
 
       {/* ================= FEATURES ================= */}
       <section id="features" className="section-block section-block-alt">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge">مميزات المنصة</span>
             <h2 className="section-title">كل ما يحتاجه مشروعك للنمو في مكان واحد</h2>
@@ -351,7 +351,7 @@ export default function HomePage() {
 
       {/* ================= HOW IT WORKS ================= */}
       <section id="how-it-works" className="section-block">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge section-badge-secondary">خطوات واضحة</span>
             <h2 className="section-title">كيف يعمل نَسَق في 5 خطوات؟</h2>
@@ -371,7 +371,7 @@ export default function HomePage() {
 
       {/* ================= AI SHOWCASE ================= */}
       <section id="ai-showcase" className="section-block section-block-alt">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge">ذكاء اصطناعي يفهم نشاطك</span>
             <h2 className="section-title">مساعد ذكي مدمج في كل خطوة، وليس مجرد زر زخرفي</h2>
@@ -406,7 +406,7 @@ export default function HomePage() {
 
       {/* ================= TEMPLATES ================= */}
       <section id="templates" className="section-block">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge section-badge-secondary">معرض القوالب</span>
             <h2 className="section-title">قوالب عربية احترافية مصممة لكل قطاع</h2>
@@ -462,7 +462,7 @@ export default function HomePage() {
 
       {/* ================= PRICING ================= */}
       <section id="pricing" className="section-block section-block-alt">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="badge badge-warning mb-2">أسعار توضيحية تجريبية قابلة للتعديل</span>
             <h2 className="section-title">باقات مرنة تنمو مع حجم أعمالك</h2>
@@ -506,7 +506,7 @@ export default function HomePage() {
 
       {/* ================= FAQ ================= */}
       <section id="faq" className="section-block">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="section-header">
             <span className="section-badge">الأسئلة الشائعة</span>
             <h2 className="section-title">إجابات واضحة وصريحة حول المنصة</h2>
@@ -532,7 +532,7 @@ export default function HomePage() {
 
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-border bg-surface py-10">
-        <div className="container">
+        <div className="nasaq-container">
           <div className="grid-2 lg:grid-cols-4">
             <div>
               <div className="brand-logo mb-3">

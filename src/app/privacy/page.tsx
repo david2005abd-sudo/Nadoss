@@ -4,7 +4,7 @@ export const metadata = { title: 'سياسة الخصوصية' };
 
 export default function PrivacyPage() {
   return (
-    <div className="container max-w-3xl py-10">
+    <div className="nasaq-container max-w-3xl py-10">
       <Link href="/" className="brand-logo mb-6">
         <span className="brand-mark">ن</span>
         <span className="font-extrabold">نَسَق</span>
