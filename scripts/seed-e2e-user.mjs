@@ -10,7 +10,7 @@ if (!url || !serviceRoleKey) {
 }
 
 function normalizeIraqiPhone(value) {
-  const digits = value.replace(/[\\s\\-()]/g, '');
+  const digits = value.replace(/[\s\-()]/g, '');
   if (digits.startsWith('+964')) return digits;
   if (digits.startsWith('964')) return `+${digits}`;
   if (digits.startsWith('0')) return `+964${digits.slice(1)}`;
