@@ -12,10 +12,10 @@
 
 - استعادة كلمة المرور للحسابات الهاتفية تتم عبر SMS OTP ثم updateUser؛ لا يُستخدم بريد إلكتروني اصطناعي مبني على رقم الهاتف.
 
-- CI dependency audit currently reports no critical issues but does report high-severity transitive dependencies; the dependency upgrade/override pass is being validated before production.
+- آخر CI: لا توجد ثغرات حرجة، لكن npm audit سجّل 36 مشكلة إجمالًا (11 عالية) و6 عالية ضمن تدقيق production. لا تعتبر المنصة جاهزة للإنتاج حتى تُعالج هذه النتائج أو يُوثق قبول مخاطرها.
 
 - The latest dependency override experiment caused npm's dependency resolver to fail, so those overrides were reverted. Keep the known-green dependency set and review high-severity dev-tool findings separately before production.
 
-- The next audit pass tests Sentry 11 separately from PostCSS upgrades to avoid npm resolver errors seen when both were changed together.
+- محاولة Sentry 11 سببت فشل npm dependency resolution؛ تم الرجوع إلى نسخة Sentry 9 التي تثبت وتبني بنجاح. يلزم ترقية متوافقة لاحقًا.
 
-- Sentry 11 caused npm's dependency resolver to fail in the current Node/npm environment; the project retains the Sentry 9 set that passed clean install and build. High-severity audit findings remain documented.
+
