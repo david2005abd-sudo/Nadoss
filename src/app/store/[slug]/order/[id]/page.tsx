@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CheckCircle2, Package, MapPin, Phone } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { formatIQD } from '@/lib/utils';
 
 export default async function OrderConfirmationPage({
@@ -9,22 +9,24 @@ export default async function OrderConfirmationPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
-  searchParams: Promise<{ new?: string }>;
+  searchParams: Promise<{ new?: string; token?: string }>;
 }) {
   const { slug, id } = await params;
-  const { new: isNew } = await searchParams;
+  const { new: isNew, token } = await searchParams;
+  if (!token) notFound();
 
   const supabase = await createClient();
 
   const { data: tenant } = await supabase
-    .from('tenants')
+    .from('public_storefronts')
     .select('id, name, phone')
     .eq('slug', slug)
     .maybeSingle();
 
   if (!tenant) notFound();
 
-  const { data: order } = await supabase
+  const admin = createAdminClient();
+  const { data: order } = await admin
     .from('orders')
     .select(
       `id, order_number, status, payment_method, payment_status, subtotal_iqd,
@@ -35,6 +37,7 @@ export default async function OrderConfirmationPage({
     )
     .eq('id', id)
     .eq('tenant_id', tenant.id)
+    .eq('public_access_token', token)
     .maybeSingle();
 
   if (!order) notFound();
