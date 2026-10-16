@@ -20,9 +20,9 @@ export default async function DashboardPage() {
   supabase.from("orders").select("id,order_number,status,total_iqd,created_at").eq("tenant_id",tenantId).is("deleted_at",null).order("created_at",{ascending:false}).limit(6)
  ]);
  const modules=[
-  {icon:ClipboardList,title:"الطلبات",description:"إدارة الطلبات ومتابعة مراحلها",href:"#orders",value:orderCount??0,unit:"طلب حقيقي"},
+  {icon:ClipboardList,title:"الطلبات",description:"إدارة الطلبات ومتابعة مراحلها",href:"/dashboard/orders",value:orderCount??0,unit:"طلب حقيقي"},
   {icon:Boxes,title:"المنتجات والمخزون",description:"الكتالوج والكميات والأسعار",href:"/dashboard/products",value:productCount??0,unit:"منتج"},
-  {icon:Users,title:"العملاء",description:"بيانات العملاء وسجل الطلبات",href:"#customers",value:customerCount??0,unit:"عميل"},
+  {icon:Users,title:"العملاء",description:"بيانات العملاء وسجل الطلبات",href:"/dashboard/customers",value:customerCount??0,unit:"عميل"},
   {icon:Truck,title:"التوصيل",description:"تجهيز تكاملات الشحن لاحقًا",href:"#delivery",value:"—",unit:"غير مربوط بعد"}
  ];
  const statuses:Record<string,string>={draft:"مسودة",pending:"طلب جديد",confirmed:"مؤكد",preparing:"قيد التجهيز",ready:"جاهز للشحن",shipped:"قيد التوصيل",delivered:"تم التسليم",cancelled:"ملغي",returned:"مرتجع"};
