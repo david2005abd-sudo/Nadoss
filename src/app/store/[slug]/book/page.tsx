@@ -12,7 +12,7 @@ export default async function PublicBookingPage({
   const supabase = await createClient();
 
   const { data: tenant } = await supabase
-    .from('tenants')
+    .from('public_storefronts')
     .select('id, name, slug, phone')
     .eq('slug', slug)
     .eq('is_active', true)
