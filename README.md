@@ -18,7 +18,7 @@
 2. انسخ .env.local.example إلى .env.local وأكمل مفاتيحك محليًا.
 3. لا ترفع أي مفاتيح أو ملف .env إلى GitHub.
 4. ثبّت الحزم عبر npm install.
-5. أنشئ مشروع Supabase تجريبيًا ثم طبّق migrations بالترتيب عبر Supabase CLI.
+5. نفّذ npx supabase login ثم npx supabase link --project-ref YOUR_PROJECT_REF، وبعدها npx supabase db push لتطبيق migrations بالترتيب.
 6. نفّذ npm run typecheck ثم npm run lint ثم npm run build.
 7. شغّل npm run dev.
 

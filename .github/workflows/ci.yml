@@ -18,7 +18,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20.19.0'
-      - run: npm install
+      - run: npm install --no-audit --no-fund
+      - name: Dependency audit summary
+        run: |
+          npm audit --json > npm-audit.json || true
+          node -e 'const a=require("./npm-audit.json"); console.log("Dependency audit:", JSON.stringify(a.metadata?.vulnerabilities)); for (const [n,v] of Object.entries(a.vulnerabilities || {})) if (v.severity === "critical" || v.severity === "high") console.log(n, v.severity, "fixAvailable=", JSON.stringify(v.fixAvailable));'
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm run build
@@ -50,7 +54,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20.19.0'
-      - run: npm install
+      - run: npm install --no-audit --no-fund
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
