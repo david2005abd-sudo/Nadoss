@@ -13,6 +13,7 @@ function VerifyOtpForm() {
   const [state, formAction, isPending] = useActionState(verifyOtpAction, initialState);
   const searchParams = useSearchParams();
   const phone = searchParams.get('phone') ?? '';
+  const flow = searchParams.get('flow') ?? '';
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
@@ -29,6 +30,7 @@ function VerifyOtpForm() {
 
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="phone" value={phone} />
+        <input type="hidden" name="flow" value={flow} />
         <FormField
           label="رمز التحقق"
           name="token"
