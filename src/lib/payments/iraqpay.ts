@@ -24,8 +24,6 @@ export function getIraqPay(): IraqPay {
         nasspay: {
           token: process.env.NASSPAY_TOKEN!, // SDK config type currently omits this provider field.
         } as never,
-        //
-        },
       },
       sandbox: process.env.NODE_ENV !== 'production',
       language: 'ar',
