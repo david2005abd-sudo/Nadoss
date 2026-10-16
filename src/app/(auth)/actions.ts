@@ -7,7 +7,6 @@ import {
   registerSchema,
   forgotPasswordSchema,
   otpSchema,
-  normalizeIraqiPhone,
 } from '@/lib/validations/auth';
 
 export type ActionState = {
@@ -120,9 +119,10 @@ export async function verifyOtpAction(
   const raw = {
     phone: String(formData.get('phone') ?? ''),
     token: String(formData.get('token') ?? ''),
+    mode: String(formData.get('mode') ?? 'login'),
   };
 
-  const parsed = otpSchema.safeParse(raw);
+  const parsed = otpSchema.safeParse({ phone: raw.phone, token: raw.token });
   if (!parsed.success) {
     return {
       fieldErrors: flattenZodErrors(parsed.error.flatten().fieldErrors),
@@ -141,6 +141,7 @@ export async function verifyOtpAction(
     return { error: 'رمز التحقق غير صحيح أو منتهي الصلاحية' };
   }
 
+  if (raw.mode === 'recovery') redirect('/reset-password');
   redirect('/dashboard');
 }
 
@@ -161,15 +162,30 @@ export async function forgotPasswordAction(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.resetPasswordForEmail(
-    `${parsed.data.phone.replace('+', '')}@phone.nados.iq`,
-    { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/reset-password` }
-  );
+  // Phone accounts recover via an SMS OTP; never send email to a fabricated phone-derived address.
+  await supabase.auth.signInWithOtp({
+    phone: parsed.data.phone,
+    options: { shouldCreateUser: false },
+  });
 
-  // Always return success to avoid phone enumeration
-  return {
-    success: 'إذا كان الرقم مسجلًا، ستصلك رسالة لإعادة تعيين كلمة المرور',
-  };
+  // Redirect even when the phone is unknown/rate-limited to avoid account enumeration.
+  redirect(`/verify-otp?phone=${encodeURIComponent(parsed.data.phone)}&mode=recovery`);
+}
+
+export async function resetPasswordAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const password = String(formData.get('password') ?? '');
+  const confirmPassword = String(formData.get('confirmPassword') ?? '');
+  if (password.length < 10) return { error: 'كلمة المرور يجب أن تكون 10 أحرف على الأقل' };
+  if (password !== confirmPassword) return { error: 'كلمتا المرور غير متطابقتين' };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: 'تعذر تحديث كلمة المرور. أعد طلب رمز التحقق وحاول مجددًا' };
+  redirect('/dashboard');
 }
 
 export async function logoutAction() {

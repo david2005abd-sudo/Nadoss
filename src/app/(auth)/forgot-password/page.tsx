@@ -15,7 +15,7 @@ export default function ForgotPasswordPage() {
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">نسيت كلمة المرور؟</h1>
       <p className="text-sm text-gray-500 mb-6">
-        أدخل رقم هاتفك وسنرسل لك رابط إعادة التعيين
+        أدخل رقم هاتفك وسنرسل لك رمز تحقق عبر SMS
       </p>
 
       {state.success && (
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
           errors={state.fieldErrors?.phone}
         />
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'جارٍ الإرسال...' : 'إرسال رابط إعادة التعيين'}
+          {isPending ? 'جارٍ الإرسال...' : 'إرسال رمز التحقق'}
         </Button>
       </form>
 
