@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CheckCircle2, Package, MapPin, Phone } from 'lucide-react';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { ClearCartOnOrder } from '@/components/store/clear-cart-on-order';
 import { formatIQD } from '@/lib/utils';
 
 export default async function OrderConfirmationPage({
@@ -72,7 +73,9 @@ export default async function OrderConfirmationPage({
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <>
+      <ClearCartOnOrder />
+      <div className="max-w-2xl mx-auto space-y-6">
       {isNew && (
         <div className="rounded-2xl border border-green-200 bg-green-50 p-6 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-green-600" />
@@ -151,6 +154,7 @@ export default async function OrderConfirmationPage({
           مواصلة التسوق
         </Link>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
