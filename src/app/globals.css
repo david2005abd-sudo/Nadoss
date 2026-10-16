@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --nados-primary: #1a56db;
+  --nados-secondary: #0e9f6e;
+}
+
+body {
+  direction: rtl;
+  text-align: right;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

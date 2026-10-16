@@ -1,0 +1,227 @@
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { formatIQD } from '@/lib/utils';
+import {
+  ShoppingCart,
+  Package,
+  Users,
+  TrendingUp,
+  Plus,
+  Truck,
+  Bot,
+  Sparkles,
+} from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
+
+export default async function DashboardPage() {
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    redirect('/login');
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect('/login');
+
+  let tenantId: string | null = null;
+  let membershipError = false;
+  try {
+    const { data: membership } = await supabase
+      .from('memberships')
+      .select('tenant_id')
+      .eq('user_id', user.id)
+      .limit(1)
+      .maybeSingle();
+    tenantId = membership?.tenant_id ?? null;
+  } catch {
+    membershipError = true;
+  }
+
+  const { data: setupGuideDismissed } = await supabase
+    .from('tenants')
+    .select('id')
+    .maybeSingle();
+
+  const showSetup = membershipError || !tenantId || !setupGuideDismissed;
+
+  let productsCount = 0;
+  let ordersCount = 0;
+  let customersCount = 0;
+  let totalRevenue = 0;
+  let recentOrders: {
+    id: string;
+    order_number: string;
+    total_iqd: number;
+    status: string;
+    created_at: string;
+  }[] = [];
+
+  if (tenantId) {
+    try {
+      const [{ count: pc }, { count: oc }, { count: cc }, { data: orders }, { data: revenue }] =
+        await Promise.all([
+          supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('tenant_id', tenantId)
+            .is('deleted_at', null),
+          supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('tenant_id', tenantId)
+            .is('deleted_at', null),
+          supabase
+            .from('customers')
+            .select('*', { count: 'exact', head: true })
+            .eq('tenant_id', tenantId)
+            .is('deleted_at', null),
+          supabase
+            .from('orders')
+            .select('id, order_number, total_iqd, status, created_at')
+            .eq('tenant_id', tenantId)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(5),
+          supabase
+            .from('orders')
+            .select('total_iqd')
+            .eq('tenant_id', tenantId)
+            .eq('status', 'delivered')
+            .is('deleted_at', null),
+        ]);
+
+      productsCount = pc ?? 0;
+      ordersCount = oc ?? 0;
+      customersCount = cc ?? 0;
+      totalRevenue = (revenue ?? []).reduce((sum, o) => sum + (o.total_iqd ?? 0), 0);
+      recentOrders = orders ?? [];
+    } catch {
+      // Tables not migrated yet
+    }
+  }
+
+  const stats = [
+    { label: 'المنتجات', value: String(productsCount), icon: Package, tone: 'text-blue-600 bg-blue-50' },
+    { label: 'الطلبات', value: String(ordersCount), icon: ShoppingCart, tone: 'text-green-600 bg-green-50' },
+    { label: 'العملاء', value: String(customersCount), icon: Users, tone: 'text-purple-600 bg-purple-50' },
+    { label: 'الإيرادات', value: formatIQD(totalRevenue), icon: TrendingUp, tone: 'text-amber-600 bg-amber-50' },
+  ];
+
+  const statusLabels: Record<string, string> = {
+    draft: 'مسودة',
+    pending: 'قيد الانتظار',
+    confirmed: 'مؤكد',
+    preparing: 'قيد التحضير',
+    ready: 'جاهز',
+    shipped: 'تم الشحن',
+    delivered: 'تم التوصيل',
+    cancelled: 'ملغي',
+    returned: 'مرتجع',
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">نظرة عامة</h1>
+        <p className="mt-1 text-sm text-gray-500">ملخص أداء متجرك</p>
+      </div>
+
+      {showSetup && (
+        <div className="rounded-xl border border-blue-100 bg-blue-50 p-5">
+          <h2 className="flex items-center gap-2 font-semibold text-blue-900">
+            <Sparkles className="h-4 w-4" />
+            ابدأ بخطوات سريعة
+          </h2>
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <Link
+              href="/dashboard/products/new"
+              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:shadow"
+            >
+              <Plus className="h-4 w-4 text-nados-primary" />
+              أضف منتجك الأول
+            </Link>
+            <Link
+              href="/dashboard/delivery"
+              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:shadow"
+            >
+              <Truck className="h-4 w-4 text-nados-primary" />
+              اربط شركة توصيل
+            </Link>
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:shadow"
+            >
+              <Bot className="h-4 w-4 text-nados-primary" />
+              فعّل بوت الواتساب
+            </Link>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.tone}`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="rounded-xl border border-gray-100 bg-white">
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+          <h2 className="font-semibold text-gray-900">آخر الطلبات</h2>
+          <Link href="/dashboard/orders" className="text-sm text-nados-primary hover:underline">
+            عرض الكل
+          </Link>
+        </div>
+        {recentOrders.length > 0 ? (
+          <div className="divide-y divide-gray-50">
+            {recentOrders.map((order) => (
+              <div
+                key={order.id}
+                className="flex items-center justify-between px-5 py-3.5"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    {order.order_number}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(order.created_at).toLocaleDateString('ar-IQ')}
+                  </p>
+                </div>
+                <div className="mr-4 shrink-0 text-left">
+                  <p className="text-sm font-semibold text-gray-900">
+                    {formatIQD(order.total_iqd)}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {statusLabels[order.status] ?? order.status}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="px-5 py-12 text-center text-sm text-gray-400">
+            لا توجد طلبات بعد — شارك رابط متجرك لتبدأ البيع
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
