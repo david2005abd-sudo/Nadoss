@@ -11,3 +11,4 @@
 - [ ] مراجعة Sentry وcron secrets وسياسة الاحتفاظ بالبيانات.
 - [ ] نشر preview ثم مراجعة LAUNCH_CHECKLIST قبل الإنتاج.
 - [ ] Re-check full and production-only npm audit after the Sentry and transitive dependency upgrades; resolve or document remaining high findings.
+- [ ] Revisit high-severity npm audit findings with compatible dependency upgrades; do not apply overrides until a clean install and CI pass.

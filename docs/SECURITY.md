@@ -13,3 +13,5 @@
 - استعادة كلمة المرور للحسابات الهاتفية تتم عبر SMS OTP ثم updateUser؛ لا يُستخدم بريد إلكتروني اصطناعي مبني على رقم الهاتف.
 
 - CI dependency audit currently reports no critical issues but does report high-severity transitive dependencies; the dependency upgrade/override pass is being validated before production.
+
+- The latest dependency override experiment caused npm's dependency resolver to fail, so those overrides were reverted. Keep the known-green dependency set and review high-severity dev-tool findings separately before production.
