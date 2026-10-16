@@ -17,7 +17,7 @@ export default async function ProductsPage({
 
   const supabase = await createClient();
   const { data: tenant } = await supabase
-    .from('tenants')
+    .from('public_storefronts')
     .select('id')
     .eq('slug', slug)
     .maybeSingle();
