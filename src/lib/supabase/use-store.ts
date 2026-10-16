@@ -32,6 +32,11 @@ export function useStore(): StoreData {
     async function load() {
       try {
         const supabase = createClient();
+
+        // getSession() hydrates from localStorage before getUser() makes its
+        // network call; without it the fresh client may look signed-out.
+        await supabase.auth.getSession();
+
         const {
           data: { user },
         } = await supabase.auth.getUser();
