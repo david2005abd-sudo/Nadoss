@@ -125,3 +125,10 @@ insert into public.iraq_governorates(name_ar,name_en,code,default_delivery_fee_i
 ('ميسان','Maysan','MYN',8000),('المثنى','Muthanna','MTH',8500),('واسط','Wasit','WST',7000),
 ('ذي قار','Dhi Qar','DQR',7500),('صلاح الدين','Saladin','SLD',7500),('نينوى','Nineveh','NNV',7500)
 on conflict(code) do nothing;
+
+
+-- SQL privileges are required in addition to RLS policies.
+grant select on public.iraq_governorates to anon, authenticated;
+grant select, insert, update, delete on public.tenants, public.memberships,
+  public.categories, public.products, public.customers, public.orders to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
