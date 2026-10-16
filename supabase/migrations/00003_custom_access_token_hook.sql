@@ -7,7 +7,9 @@ CREATE OR REPLACE FUNCTION public.custom_access_token_hook(event JSONB)
 RETURNS JSONB
 LANGUAGE plpgsql
 STABLE
-AS $$
+SECURITY DEFINER
+SET search_path = public
+AS $
 DECLARE
   claims JSONB;
   user_tenant_id UUID;
