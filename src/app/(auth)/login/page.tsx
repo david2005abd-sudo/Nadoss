@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { Suspense, useActionState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { loginAction, type ActionState } from '../actions';
@@ -9,7 +9,7 @@ import { FormField } from '@/components/ui/form-field';
 
 const initialState: ActionState = {};
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered') === '1';
@@ -70,5 +70,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-gray-400">جارٍ التحميل...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
