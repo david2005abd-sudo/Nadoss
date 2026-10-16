@@ -137,7 +137,7 @@ async function applyPaymentUpdate(event: {
     .from('orders')
     .update({
       payment_status: newPaymentStatus,
-      status: newOrderStatus,
+      status: newPaymentStatus === 'failed' ? 'cancelled' : newOrderStatus,
     })
     .eq('id', order.id);
 
