@@ -1,56 +1,13 @@
+'use client';
+
 import Link from 'next/link';
-import { formatIQD } from '@/lib/utils';
-import {
-  ShoppingCart,
-  Package,
-  Users,
-  TrendingUp,
-  Plus,
-  Truck,
-  Bot,
-  Sparkles,
-} from 'lucide-react';
+import { DashboardStats } from '@/components/dashboard/dashboard-stats';
+import { useStore } from '@/lib/supabase/use-store';
 
 export const dynamic = process.env.NEXT_EXPORT === 'true' ? 'force-static' : 'force-dynamic';
 
 export default function DashboardPage() {
-  const tenantId: string | null = null;
-  const membershipError = false;
-  const showSetup = false;
-
-  // Static preview: no server-side data is loaded, the layout below
-  // renders empty state cards. Connect the live deploy to Supabase for
-  // real figures.
-  const productsCount = 0;
-  const ordersCount = 0;
-  const customersCount = 0;
-  const recentOrders: {
-    id: string;
-    order_number: string;
-    total_iqd: number;
-    status: string;
-    created_at: string;
-  }[] = [];
-  const totalRevenue = 0;
-
-  const stats = [
-    { label: 'المنتجات', value: String(productsCount), icon: Package, tone: 'text-blue-600 bg-blue-50' },
-    { label: 'الطلبات', value: String(ordersCount), icon: ShoppingCart, tone: 'text-green-600 bg-green-50' },
-    { label: 'العملاء', value: String(customersCount), icon: Users, tone: 'text-purple-600 bg-purple-50' },
-    { label: 'الإيرادات', value: formatIQD(totalRevenue), icon: TrendingUp, tone: 'text-amber-600 bg-amber-50' },
-  ];
-
-  const statusLabels: Record<string, string> = {
-    draft: 'مسودة',
-    pending: 'قيد الانتظار',
-    confirmed: 'مؤكد',
-    preparing: 'قيد التحضير',
-    ready: 'جاهز',
-    shipped: 'تم الشحن',
-    delivered: 'تم التوصيل',
-    cancelled: 'ملغي',
-    returned: 'مرتجع',
-  };
+  const store = useStore();
 
   return (
     <div className="space-y-6">
@@ -59,96 +16,30 @@ export default function DashboardPage() {
         <p className="mt-1 text-sm text-gray-500">ملخص أداء متجرك</p>
       </div>
 
-      {showSetup && (
-        <div className="rounded-xl border border-blue-100 bg-blue-50 p-5">
-          <h2 className="flex items-center gap-2 font-semibold text-blue-900">
-            <Sparkles className="h-4 w-4" />
-            ابدأ بخطوات سريعة
-          </h2>
-          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+      {!store.loading && !store.tenantId && (
+        <div className="rounded-xl border border-amber-100 bg-amber-50 p-5">
+          <h2 className="font-semibold text-amber-900">لم تسجّل الدخول بعد</h2>
+          <p className="mt-1 text-sm text-amber-800">
+            سجّل الدخول لعرض إحصائيات متجرك، أو أنشئ متجرًا جديدًا مجانًا.
+          </p>
+          <div className="mt-3 flex gap-2">
             <Link
-              href="/dashboard/products/new"
-              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:shadow"
+              href="/login"
+              className="rounded-lg bg-nados-primary px-4 py-2 text-sm font-medium text-white hover:bg-nados-primary-dark"
             >
-              <Plus className="h-4 w-4 text-nados-primary" />
-              أضف منتجك الأول
+              تسجيل الدخول
             </Link>
             <Link
-              href="/dashboard/delivery"
-              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:shadow"
+              href="/register"
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              <Truck className="h-4 w-4 text-nados-primary" />
-              اربط شركة توصيل
-            </Link>
-            <Link
-              href="/dashboard/settings"
-              className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:shadow"
-            >
-              <Bot className="h-4 w-4 text-nados-primary" />
-              فعّل بوت الواتساب
+              إنشاء متجر مجاني
             </Link>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                  <p className="mt-1 text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.tone}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="rounded-xl border border-gray-100 bg-white">
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-          <h2 className="font-semibold text-gray-900">آخر الطلبات</h2>
-          <Link href="/dashboard/orders" className="text-sm text-nados-primary hover:underline">
-            عرض الكل
-          </Link>
-        </div>
-        {recentOrders.length > 0 ? (
-          <div className="divide-y divide-gray-50">
-            {recentOrders.map((order) => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between px-5 py-3.5"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-gray-900">
-                    {order.order_number}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(order.created_at).toLocaleDateString('ar-IQ')}
-                  </p>
-                </div>
-                <div className="mr-4 shrink-0 text-left">
-                  <p className="text-sm font-semibold text-gray-900">
-                    {formatIQD(order.total_iqd)}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {statusLabels[order.status] ?? order.status}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="px-5 py-12 text-center text-sm text-gray-400">
-            لا توجد طلبات بعد — شارك رابط متجرك لتبدأ البيع
-          </div>
-        )}
-      </div>
+      <DashboardStats />
     </div>
   );
 }

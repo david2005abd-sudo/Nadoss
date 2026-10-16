@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { navigateTo } from '@/lib/supabase/navigate';
 import { normalizeIraqiPhone } from '@/lib/utils';
 
 export type AuthState = {
@@ -86,8 +87,9 @@ export function useClientAuth() {
       }
 
       setState({ success: 'تم تسجيل الدخول بنجاح', loading: false });
-      // Full navigation so the dashboard layout runs on the live server.
-      window.location.assign('/dashboard');
+      // Full page load so the dashboard runs with a fresh session; basePath
+      // aware, otherwise GitHub Pages serves a 404 for /dashboard.
+      navigateTo('/dashboard');
       return true;
     } catch {
       setState({
@@ -150,7 +152,7 @@ export function useClientAuth() {
 
       if (data.session) {
         setState({ success: 'تم إنشاء الحساب بنجاح', loading: false });
-        window.location.assign('/dashboard');
+        navigateTo('/dashboard');
         return true;
       }
 
@@ -158,7 +160,7 @@ export function useClientAuth() {
         success: 'تم إنشاء الحساب — سجّل الدخول الآن',
         loading: false,
       });
-      window.location.assign('/login?registered=1');
+      navigateTo('/login?registered=1');
       return true;
     } catch {
       setState({
