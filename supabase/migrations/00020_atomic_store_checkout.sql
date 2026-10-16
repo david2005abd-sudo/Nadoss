@@ -2,6 +2,13 @@
 -- NADOS — Atomic public checkout and stock safety
 -- ============================================
 
+ALTER TABLE public.orders
+  ADD COLUMN IF NOT EXISTS public_access_token TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_public_access_token
+  ON public.orders(public_access_token)
+  WHERE public_access_token IS NOT NULL;
+
 -- Do not allow anonymous callers to decrement arbitrary inventory.
 CREATE OR REPLACE FUNCTION public.decrement_stock(
   p_tenant_id UUID,
@@ -77,6 +84,7 @@ DECLARE
   v_customer_id UUID;
   v_order_id UUID;
   v_order_number TEXT;
+  v_public_access_token TEXT;
   v_lines JSONB := '[]'::JSONB;
   v_item_count INTEGER;
   v_distinct_count INTEGER;
@@ -212,13 +220,14 @@ BEGIN
   RETURNING id INTO v_customer_id;
 
   v_order_number := 'ORD-' || upper(substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 16));
+  v_public_access_token := replace(gen_random_uuid()::TEXT, '-', '') || replace(gen_random_uuid()::TEXT, '-', '');
 
   INSERT INTO public.orders (
-    tenant_id, customer_id, order_number, status, payment_method, payment_status,
+    tenant_id, customer_id, order_number, public_access_token, status, payment_method, payment_status,
     subtotal_iqd, delivery_fee_iqd, total_iqd, governorate_id, city, address, notes, source
   )
   VALUES (
-    v_tenant.id, v_customer_id, v_order_number,
+    v_tenant.id, v_customer_id, v_order_number, v_public_access_token,
     CASE WHEN p_payment_method = 'cod' THEN 'confirmed' ELSE 'pending' END,
     p_payment_method, 'pending', v_subtotal::INTEGER, v_delivery_fee, v_total::INTEGER,
     p_governorate_id, trim(p_city), trim(p_address), NULLIF(trim(COALESCE(p_notes, '')), ''), 'store'
@@ -250,6 +259,7 @@ BEGIN
   RETURN jsonb_build_object(
     'id', v_order_id,
     'order_number', v_order_number,
+    'public_access_token', v_public_access_token,
     'total_iqd', v_total,
     'subtotal_iqd', v_subtotal,
     'delivery_fee_iqd', v_delivery_fee,
