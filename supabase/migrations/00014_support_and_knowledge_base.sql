@@ -47,6 +47,10 @@ CREATE INDEX idx_ticket_messages_ticket
 CREATE INDEX idx_ticket_messages_tenant
   ON public.ticket_messages(tenant_id);
 
+-- pgvector must be enabled before creating the embedding column.
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
+
 -- ============================================
 -- Knowledge base articles
 -- ============================================
@@ -65,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.knowledge_articles (
   views_count INTEGER DEFAULT 0,
   helpful_count INTEGER DEFAULT 0,
   not_helpful_count INTEGER DEFAULT 0,
-  embedding vector(1536), -- pgvector for semantic search
+  embedding extensions.vector(1536), -- pgvector for semantic search
   author_id UUID REFERENCES auth.users(id),
   deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -84,13 +88,12 @@ CREATE INDEX idx_knowledge_articles_platform
 CREATE INDEX idx_knowledge_articles_tags
   ON public.knowledge_articles USING gin(tags);
 
--- pgvector extension for semantic search
-CREATE EXTENSION IF NOT EXISTS vector;
+-- pgvector extension is enabled above before table creation.
 
 -- IVFFlat index for embedding search
 CREATE INDEX idx_knowledge_articles_embedding
   ON public.knowledge_articles
-  USING ivfflat (embedding vector_cosine_ops)
+  USING ivfflat (embedding extensions.vector_cosine_ops)
   WITH (lists = 100)
   WHERE embedding IS NOT NULL;
 
