@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { QrCode, Smartphone, Copy } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { getIraqPay } from '@/lib/payments/iraqpay';
 import { formatIQD } from '@/lib/utils';
 
@@ -16,14 +16,24 @@ export default async function FibPayPage({
   const { paymentId } = await searchParams;
 
   const supabase = await createClient();
-
-  const { data: order } = await supabase
-    .from('orders')
-    .select('id, order_number, total_iqd, payment_method, payment_status')
-    .eq('id', id)
+  const { data: tenant } = await supabase
+    .from('public_storefronts')
+    .select('id, slug')
+    .eq('slug', slug)
+    .eq('is_active', true)
     .maybeSingle();
 
-  if (!order) notFound();
+  if (!tenant) notFound();
+
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from('orders')
+    .select('id, tenant_id, order_number, total_iqd, payment_method, payment_status')
+    .eq('id', id)
+    .eq('tenant_id', tenant.id)
+    .maybeSingle();
+
+  if (!order || order.payment_method !== 'fib') notFound();
 
   if (order.payment_status === 'paid') {
     return (
