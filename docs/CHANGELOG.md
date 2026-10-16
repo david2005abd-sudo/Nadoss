@@ -1,3 +1,14 @@
+## [0.1.6] — 2026-10-16
+### إصلاحات المتجر والcheckout
+- إضافة view عامة محدودة public_storefronts بدل كشف سجل tenants الكامل.
+- تفعيل سياسات القراءة العامة للمنتجات والتصنيفات والخدمات والموظفين النشطين في المتاجر النشطة.
+- إضافة migration 00020 لإنشاء الطلب والعميل وعناصر الطلب وحجز المخزون ذريًا.
+- قصر RPC إنشاء الطلب وإلغاء الطلب غير المدفوع على service_role.
+- منع استدعاء decrement_stock من anon، والتحقق من عضوية المتجر والكمية المتاحة.
+- إصلاح Server Action للدفع حتى لا يلتقط redirect() داخل try/catch.
+- جعل صفحة تأكيد الطلب وصفحة FIB تقرآن الطلب من الخادم مع تقييد الاستعلام بالمتجر.
+- إصلاح تدفق إنشاء الحجز العام ليتحقق من الموظف ويستخدم admin client في الخادم فقط.
+
 ## [0.1.5] — 2026-10-16
 ### إصلاحات RLS
 - إضافة migration 00019 لتفعيل RLS على subscription_plans وiraq_governorates وdelivery_companies وwhatsapp_pricing_rates.
@@ -18,15 +29,4 @@
 - إصلاح تدفق GitHub Actions لمفاتيح Supabase المحلية وseed وwait-on.
 
 ## [0.1.2] — 2026-10-16
-### أُضيف
-- src/lib/validations/booking.ts — schemas + state machine
-- src/app/dashboard/bookings/actions.ts — 9 server actions
-- src/lib/whatsapp/sender.ts — outbound-only WhatsApp sender
-- صفحات لوحة التحكم: bookings list, new, detail, services, staff, calendar
-- مكونات: BookingForm, BookingStatusBadge, BookingStatusUpdater, RescheduleForm, BookingCalendar, ServiceCategoryCreateForm, ServiceCategoryRowActions, StaffCreateForm
-- صفحة عامة: /store/[slug]/book (Wizard 3 خطوات) + success
-- إشعار WhatsApp للتاجر عند حجز جديد
-- تحديث sidebar بقسم "الحجوزات"
-
-## [0.1.1] — 2026-10-16
-- WhatsApp Cost Tracker + Wayl Integration (المرحلة 10 — الجزء 2)
+- نظام الحجوزات الأولي: صفحات الإدارة والتقويم ونموذج الحجز العام.
