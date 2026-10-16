@@ -1,5 +1,6 @@
 -- NADOS phase 2: safe onboarding and order items.
 -- Apply after 00001_core_schema.sql in Supabase SQL Editor.
+alter table public.orders add constraint orders_tenant_id_unique unique (tenant_id, id);
 create table if not exists public.order_items (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references public.tenants(id) on delete cascade,
@@ -15,9 +16,13 @@ create table if not exists public.order_items (
 );
 create index if not exists order_items_tenant_order_idx on public.order_items(tenant_id, order_id);
 alter table public.order_items enable row level security;
+drop policy if exists order_items_member_read on public.order_items;
 create policy order_items_member_read on public.order_items for select to authenticated using (public.is_tenant_member(tenant_id));
+drop policy if exists order_items_member_insert on public.order_items;
 create policy order_items_member_insert on public.order_items for insert to authenticated with check (public.has_tenant_role(tenant_id, array['owner','admin','staff']));
+drop policy if exists order_items_member_update on public.order_items;
 create policy order_items_member_update on public.order_items for update to authenticated using (public.has_tenant_role(tenant_id, array['owner','admin','staff'])) with check (public.has_tenant_role(tenant_id, array['owner','admin','staff']));
+drop policy if exists order_items_admin_delete on public.order_items;
 create policy order_items_admin_delete on public.order_items for delete to authenticated using (public.has_tenant_role(tenant_id, array['owner','admin']));
 grant select, insert, update, delete on public.order_items to authenticated;
 
@@ -42,8 +47,6 @@ end;
 $$;
 revoke all on function public.create_store_for_current_user(text) from public, anon;
 grant execute on function public.create_store_for_current_user(text) to authenticated;
-
--- Ordinary users cannot manufacture memberships for other users.
 drop policy if exists memberships_owner_insert on public.memberships;
 create policy memberships_owner_insert on public.memberships for insert to authenticated
   with check (public.has_tenant_role(tenant_id, array['owner']) and user_id = (select auth.uid()));
