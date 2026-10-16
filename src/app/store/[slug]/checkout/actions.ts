@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server';
 import { checkoutSchema, cartPayloadSchema } from '@/lib/validations/checkout';
 import { createPayment } from '@/lib/payments/iraqpay';
 
@@ -55,7 +55,7 @@ export async function placeOrderAction(
   // This database function validates the store, authoritative prices, governorate,
   // stock and customer data, then creates the customer/order/items and reserves
   // inventory atomically. Client-provided prices are never accepted.
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase.rpc('create_store_order', {
     p_slug: slug,
     p_customer_name: parsed.data.customerName,
