@@ -117,3 +117,7 @@ CREATE POLICY products_select_public
         AND t.is_active IS TRUE
     )
   );
+
+-- RLS policies constrain these public reads; grants alone do not bypass row security.
+GRANT SELECT ON public.products, public.categories, public.service_categories, public.staff_members
+  TO anon, authenticated;
