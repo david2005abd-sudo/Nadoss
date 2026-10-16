@@ -13,6 +13,7 @@ function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered') === '1';
+  const passwordReset = searchParams.get('passwordReset') === 'success';
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
@@ -22,6 +23,12 @@ function LoginForm() {
       {registered && (
         <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
           تم إنشاء حسابك بنجاح، سجّل الدخول الآن
+        </div>
+      )}
+
+      {passwordReset && (
+        <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+          تم تحديث كلمة المرور بنجاح. سجّل الدخول بكلمة المرور الجديدة.
         </div>
       )}
 
