@@ -1,31 +1,11 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import { MessageCircle, Truck, CreditCard, ShieldCheck, Copy } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'الإعدادات' };
 
-export default async function SettingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
-
-  let storeSlug: string | null = null;
-  try {
-    const { data: membership } = await supabase
-      .from('memberships')
-      .select('tenant_id, tenants(slug, name, phone)')
-      .eq('user_id', user.id)
-      .limit(1)
-      .maybeSingle();
-    const tenants = membership?.tenants as unknown as { slug: string } | null;
-    storeSlug = tenants?.slug ?? null;
-  } catch {
-    // not migrated
-  }
+export default function SettingsPage() {
+  const storeSlug: string | null = null;
 
   const sections = [
     {

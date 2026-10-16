@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import { formatIQD } from '@/lib/utils';
 import {
   ShoppingCart,
@@ -15,40 +13,22 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export default async function DashboardPage() {
-  let supabase;
-  try {
-    supabase = await createClient();
-  } catch {
-    redirect('/login');
-  }
+export default function DashboardPage() {
+  const tenantId: string | null = null;
+  const membershipError = false;
+  const showSetup = false;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect('/login');
-
-  let tenantId: string | null = null;
-  let membershipError = false;
-  try {
-    const { data: membership } = await supabase
-      .from('memberships')
-      .select('tenant_id')
-      .eq('user_id', user.id)
-      .limit(1)
-      .maybeSingle();
-    tenantId = membership?.tenant_id ?? null;
-  } catch {
-    membershipError = true;
-  }
-
-  const { data: setupGuideDismissed } = await supabase
-    .from('tenants')
-    .select('id')
-    .maybeSingle();
-
-  const showSetup = membershipError || !tenantId || !setupGuideDismissed;
+  const productsCount = 0;
+  const ordersCount = 0;
+  const customersCount = 0;
+  const totalRevenue = 0;
+  const recentOrders: {
+    id: string;
+    order_number: string;
+    total_iqd: number;
+    status: string;
+    created_at: string;
+  }[] = [];
 
   let productsCount = 0;
   let ordersCount = 0;

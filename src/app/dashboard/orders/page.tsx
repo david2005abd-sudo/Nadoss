@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import { formatIQD } from '@/lib/utils';
 import { ShoppingCart, Search } from 'lucide-react';
 
@@ -41,19 +39,14 @@ const STATUS_FILTERS = [
   { v: 'cancelled', l: 'ملغي' },
 ];
 
-export default async function OrdersPage({
+export default function OrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string; q?: string }>;
 }) {
   const { status, q } = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
 
-  let orders: {
+  const orders: {
     id: string;
     order_number: string;
     status: string;
@@ -61,34 +54,7 @@ export default async function OrdersPage({
     total_iqd: number;
     created_at: string;
   }[] = [];
-  let error: string | null = null;
-
-  try {
-    const { data: membership } = await supabase
-      .from('memberships')
-      .select('tenant_id')
-      .eq('user_id', user.id)
-      .limit(1)
-      .maybeSingle();
-
-    if (membership?.tenant_id) {
-      let query = supabase
-        .from('orders')
-        .select('id, order_number, status, payment_method, total_iqd, created_at')
-        .eq('tenant_id', membership.tenant_id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-      if (status) query = query.eq('status', status);
-      if (q) query = query.ilike('order_number', `%${q}%`);
-
-      const { data, error: qError } = await query.limit(100);
-      if (qError) error = qError.message;
-      else orders = data ?? [];
-    }
-  } catch {
-    error = 'قاعدة البيانات غير مُهيأة — طبّق ملفات migrations على Supabase';
-  }
+  const error: string | null = null;
 
   return (
     <div className="space-y-5">

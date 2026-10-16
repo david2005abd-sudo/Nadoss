@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import { formatIQD } from '@/lib/utils';
 import { Package, Plus, Search } from 'lucide-react';
 
@@ -8,19 +6,14 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'المنتجات' };
 
-export default async function ProductsPage({
+export default function ProductsPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; status?: string }>;
 }) {
   const { q, status } = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
 
-  let products: {
+  const products: {
     id: string;
     name_ar: string;
     name: string;
@@ -29,36 +22,7 @@ export default async function ProductsPage({
     is_active: boolean;
     is_featured: boolean;
   }[] = [];
-  let error: string | null = null;
-
-  try {
-    const { data: membership } = await supabase
-      .from('memberships')
-      .select('tenant_id')
-      .eq('user_id', user.id)
-      .limit(1)
-      .maybeSingle();
-
-    if (membership?.tenant_id) {
-      let query = supabase
-        .from('products')
-        .select('id, name_ar, name, price_iqd, stock, is_active, is_featured')
-        .eq('tenant_id', membership.tenant_id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-      if (q) query = query.or(`name_ar.ilike.%${q}%,name.ilike.%${q}%`);
-      if (status === 'active') query = query.eq('is_active', true);
-      if (status === 'inactive') query = query.eq('is_active', false);
-      if (status === 'low') query = query.lte('stock', 5);
-
-      const { data, error: qError } = await query.limit(100);
-      if (qError) error = qError.message;
-      else products = data ?? [];
-    }
-  } catch {
-    error = 'قاعدة البيانات غير مُهيأة — طبّق ملفات migrations على Supabase';
-  }
+  const error: string | null = null;
 
   return (
     <div className="space-y-5">
