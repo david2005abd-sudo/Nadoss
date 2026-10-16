@@ -58,7 +58,8 @@ BEGIN
   WHERE slug = 'free'
   LIMIT 1;
 
-  -- Create tenant  INSERT INTO public.tenants (name, slug, phone, plan_id, is_active)
+  -- Create tenant
+  INSERT INTO public.tenants (name, slug, phone, plan_id, is_active)
   VALUES (
     store_name,
     store_slug,
