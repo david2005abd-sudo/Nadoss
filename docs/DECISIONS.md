@@ -1,4 +1,5 @@
 # القرارات المعمارية — NADOS
+
 - Shared PostgreSQL schema مع tenant_id وRLS لعزل متاجر التجار.
 - Supabase Auth والجلسات عبر @supabase/ssr.
 - Next.js App Router + TypeScript + Tailwind RTL.
@@ -6,3 +7,9 @@
 - بوابات الدفع وشركات التوصيل وWhatsApp adapters خلف طبقات موحدة لتجنب ربط منطق التطبيق بمزود واحد.
 - بيانات الاعتماد لا تُحفظ في المستودع ولا تُرسل للعميل.
 - أي feature خارجي يعتمد على credentials يجب أن يبقى غير مفعّل حتى ينجح اختبار staging.
+
+## ADR-034: قابلية إعادة تشغيل Supabase وE2E
+- اعتماد supabase/config.toml محفوظًا في Git لتوحيد إعدادات التطوير والـ CI.
+- تفعيل custom access-token hook محليًا كي تكون claims الخاصة بالمتجر متوافقة مع سياسات RLS.
+- حساب E2E يُنشأ في بيئة CI فقط عبر مفتاح service-role محلي مؤقت؛ لا تُستخدم بيانات دخول إنتاجية ولا تُحفظ أسرار في المستودع.
+- يتم تشغيل seed عبر supabase db reset لتجنب تكرار بيانات demo.
