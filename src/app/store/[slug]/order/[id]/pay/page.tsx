@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { QrCode, Smartphone, Copy } from 'lucide-react';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { ClearCartOnOrder } from '@/components/store/clear-cart-on-order';
 import { getIraqPay } from '@/lib/payments/iraqpay';
 import { formatIQD } from '@/lib/utils';
 
@@ -70,7 +71,9 @@ export default async function FibPayPage({
   }
 
   return (
-    <div className="max-w-lg mx-auto space-y-5">
+    <>
+      <ClearCartOnOrder />
+      <div className="max-w-lg mx-auto space-y-5">
       <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center space-y-4">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
           <QrCode className="h-6 w-6 text-nados-primary" />
@@ -111,6 +114,7 @@ export default async function FibPayPage({
           بعد إتمام الدفع، ستُحدَّث حالة الطلب تلقائيًا خلال لحظات
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
