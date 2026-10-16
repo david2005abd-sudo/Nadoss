@@ -189,13 +189,13 @@ export default async function OrderDetailPage({
               <div className="flex justify-between">
                 <span className="text-gray-600">الطريقة</span>
                 <span className="font-medium text-gray-900">
-                  {{
+                  {({
                     cod: 'عند الاستلام',
                     zaincash: 'زين كاش',
                     fib: 'FIB',
                     qicard: 'كي كارد',
                     nasspay: 'ناس باي',
-                  }[order.payment_method] ?? order.payment_method}
+                  } as Record<string, string>)[order.payment_method] ?? order.payment_method}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -209,12 +209,12 @@ export default async function OrderDetailPage({
                         : 'text-gray-900'
                   }`}
                 >
-                  {{
+                  {({
                     pending: 'معلّق',
                     paid: 'مدفوع',
                     failed: 'فشل',
                     refunded: 'مُرجَع',
-                  }[order.payment_status] ?? order.payment_status}
+                  } as Record<string, string>)[order.payment_status] ?? order.payment_status}
                 </span>
               </div>
             </div>

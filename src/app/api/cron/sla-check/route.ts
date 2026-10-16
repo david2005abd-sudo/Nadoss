@@ -27,6 +27,6 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     flagged: breached?.length ?? 0,
-    tickets: breached?.map((t) => ({ id: t.id, priority: t.priority })) ?? [],
+    tickets: breached?.map((t: { id: string; priority: string }) => ({ id: t.id, priority: t.priority })) ?? [],
   });
 }

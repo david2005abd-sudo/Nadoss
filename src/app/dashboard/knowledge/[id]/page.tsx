@@ -28,7 +28,7 @@ export default async function EditArticlePage({
 
   if (!article) notFound();
 
-  const boundAction = updateArticleAction.bind(null, { id });
+  const boundAction = updateArticleAction.bind(null, id);
 
   return (
     <div className="space-y-5">

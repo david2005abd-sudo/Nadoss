@@ -39,7 +39,7 @@ export default async function EditProductPage({
 
   if (!product) notFound();
 
-  const boundAction = updateProductAction.bind(null, { id });
+  const boundAction = updateProductAction.bind(null, id);
 
   return (
     <div className="space-y-5">

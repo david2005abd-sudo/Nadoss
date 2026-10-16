@@ -68,7 +68,7 @@ export function buildMerchantNotification(
   lines.push('🔔 طلب جديد من واتساب');
   lines.push('');
   lines.push(`العميل: ${extraction.customer_name ?? '—'}`);
-  lines.push(`الهاتف: ${extraction.customerPhone ?? opts.customerPhone}`);
+  lines.push(`الهاتف: ${extraction.phone ?? opts.customerPhone}`);
   if (extraction.governorate) lines.push(`المحافظة: ${extraction.governorate}`);
   if (extraction.city) lines.push(`المدينة: ${extraction.city}`);
   if (extraction.address) lines.push(`العنوان: ${extraction.address}`);

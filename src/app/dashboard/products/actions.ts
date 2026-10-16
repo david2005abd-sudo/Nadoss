@@ -150,8 +150,9 @@ export async function createProductAction(
 }
 
 export async function updateProductAction(
+  id: string,
   _prev: ProductActionState,
-  { id, formData }: { id: string; formData: FormData }
+  formData: FormData
 ): Promise<ProductActionState> {
   const { supabase, tenantId, userId } = await getTenantContext();
 

@@ -33,7 +33,7 @@ export default async function TicketDetailPage({
 
   const { data: messages } = await supabase
     .from('ticket_messages')
-    .select('id, sender_id, sender_type, sender_name, content, content_type, is_internal, created_at')
+    .select('id, ticket_id, tenant_id, sender_id, sender_type, sender_name, content, content_type, is_internal, attachments, created_at')
     .eq('ticket_id', id)
     .order('created_at', { ascending: true });
 

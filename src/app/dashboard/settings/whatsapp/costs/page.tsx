@@ -62,7 +62,7 @@ export default async function WhatsAppCostsPage() {
         </div>
       )}
 
-      {quota.level === 'critical' && quota.level !== 'exceeded' && (
+      {quota.level === 'critical' && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
           <div>

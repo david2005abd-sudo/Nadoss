@@ -196,12 +196,12 @@ export default async function BillingPage({
                             : 'bg-amber-50 text-amber-700'
                     }`}
                   >
-                    {{
+                    {({
                       paid: 'مدفوعة',
                       pending: 'معلّقة',
                       failed: 'فشلت',
                       refunded: 'مُرجعة',
-                    }[inv.status] ?? inv.status}
+                    } as Record<string, string>)[inv.status] ?? inv.status}
                   </span>
                 </div>
               </div>

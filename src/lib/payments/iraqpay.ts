@@ -22,7 +22,9 @@ export function getIraqPay(): IraqPay {
           terminalId: process.env.QICARD_TERMINAL_ID!,
         },
         nasspay: {
-          token: process.env.NASSPAY_TOKEN!,
+          token: process.env.NASSPAY_TOKEN!, // SDK config type currently omits this provider field.
+        } as never,
+        //
         },
       },
       sandbox: process.env.NODE_ENV !== 'production',

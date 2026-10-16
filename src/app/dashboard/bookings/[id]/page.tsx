@@ -117,11 +117,11 @@ export default async function BookingDetailPage({
                     booking.payment_status === 'paid' ? 'text-green-700' : 'text-gray-600'
                   }`}
                 >
-                  {{
+                  {({
                     pending: 'معلّق',
                     paid: 'مدفوع',
                     refunded: 'مُرجع',
-                  }[booking.payment_status] ?? booking.payment_status}
+                  } as Record<string, string>)[booking.payment_status] ?? booking.payment_status}
                 </dd>
               </div>
             </dl>

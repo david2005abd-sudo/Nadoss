@@ -101,8 +101,9 @@ export async function createArticleAction(
 }
 
 export async function updateArticleAction(
+  id: string,
   _prev: ArticleActionState,
-  { id, formData }: { id: string; formData: FormData }
+  formData: FormData
 ): Promise<ArticleActionState> {
   const raw = {
     slug: formData.get('slug'),
