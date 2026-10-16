@@ -48,6 +48,20 @@ export const forgotPasswordSchema = z.object({
   phone: phoneSchema,
 });
 
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل')
+      .regex(/[a-zA-Z]/, 'يجب أن تحتوي على حرف واحد على الأقل')
+      .regex(/[0-9]/, 'يجب أن تحتوي على رقم واحد على الأقل'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'كلمتا المرور غير متطابقتين',
+    path: ['confirmPassword'],
+  });
+
 export const otpSchema = z.object({
   phone: phoneSchema,
   token: z.string().length(6, 'رمز التحقق يجب أن يكون 6 أرقام'),
@@ -57,3 +71,4 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type OtpInput = z.infer<typeof otpSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
