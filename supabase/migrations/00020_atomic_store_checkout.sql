@@ -3,7 +3,8 @@
 -- ============================================
 
 ALTER TABLE public.orders
-  ADD COLUMN IF NOT EXISTS public_access_token TEXT;
+  ADD COLUMN IF NOT EXISTS public_access_token TEXT,
+  ADD COLUMN IF NOT EXISTS payment_reference TEXT;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_public_access_token
   ON public.orders(public_access_token)
