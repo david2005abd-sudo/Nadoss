@@ -191,21 +191,11 @@ body {
     @apply badge bg-muted-surface text-text-secondary;
   }
 
-  /* ---------------- Typography helpers ---------------- */
+  /* ---------------- Typography helper (muted only) ---------------- */
+  /* text-primary/success/warning/danger already exist as Tailwind color
+     utilities because those names are declared in tailwind.config.ts. */
   .text-muted {
     @apply text-text-secondary;
-  }
-  .text-primary {
-    @apply text-primary;
-  }
-  .text-success {
-    @apply text-success;
-  }
-  .text-warning {
-    @apply text-warning;
-  }
-  .text-danger {
-    @apply text-danger;
   }
 
   .section-header {
