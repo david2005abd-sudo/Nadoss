@@ -26,7 +26,7 @@
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.6.0",
     "lucide-react": "^0.475.0",
-    "@sentry/nextjs": "^9.0.0",
+    "@sentry/nextjs": "^11.8.0",
     "openai": "^4.80.0",
     "zod-to-json-schema": "^3.24.5",
     "@radix-ui/react-label": "^2.1.2",
@@ -45,5 +45,12 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "15.5.28",
     "@playwright/test": "^1.50.1"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "braces": "^3.0.3",
+    "chokidar": "^3.6.0",
+    "micromatch": "^4.0.8",
+    "fast-glob": "^3.3.3"
   }
 }

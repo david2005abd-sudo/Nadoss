@@ -22,7 +22,9 @@ jobs:
       - name: Dependency audit summary
         run: |
           npm audit --json > npm-audit.json || true
-          node -e 'const a=require("./npm-audit.json"); console.log("Dependency audit:", JSON.stringify(a.metadata?.vulnerabilities)); for (const [n,v] of Object.entries(a.vulnerabilities || {})) if (v.severity === "critical" || v.severity === "high") console.log(n, v.severity, "fixAvailable=", JSON.stringify(v.fixAvailable));'
+          node -e 'const a=require("./npm-audit.json"); console.log("Full dependency audit:", JSON.stringify(a.metadata?.vulnerabilities)); for (const [n,v] of Object.entries(a.vulnerabilities || {})) if (v.severity === "critical" || v.severity === "high") console.log(n, v.severity, "range=", v.range, "via=", JSON.stringify((v.via || []).map(x => typeof x === "string" ? x : x.title)), "fixAvailable=", JSON.stringify(v.fixAvailable));'
+          npm audit --omit=dev --json > npm-audit-prod.json || true
+          node -e 'const a=require("./npm-audit-prod.json"); console.log("Production dependency audit:", JSON.stringify(a.metadata?.vulnerabilities)); for (const [n,v] of Object.entries(a.vulnerabilities || {})) if (v.severity === "critical" || v.severity === "high") console.log("PRODUCTION", n, v.severity, "via=", JSON.stringify((v.via || []).map(x => typeof x === "string" ? x : x.title)), "fixAvailable=", JSON.stringify(v.fixAvailable));'
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm run build

@@ -11,3 +11,5 @@
 - قبل الإنتاج: اختبارات RLS، E2E، backup/restore، redirects، headers، rate limits، ومراجعة كل integration.
 
 - استعادة كلمة المرور للحسابات الهاتفية تتم عبر SMS OTP ثم updateUser؛ لا يُستخدم بريد إلكتروني اصطناعي مبني على رقم الهاتف.
+
+- CI dependency audit currently reports no critical issues but does report high-severity transitive dependencies; the dependency upgrade/override pass is being validated before production.

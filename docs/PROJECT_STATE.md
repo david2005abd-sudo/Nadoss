@@ -14,3 +14,5 @@
 - ✅ صفحة عامة: `/store/[slug]/book` (Wizard 3 خطوات) + `/book/success`
 - ✅ إشعار تلقائي للتاجر عبر WhatsApp عند حجز جديد من الويب
 - ✅ تحديث Sidebar بقسم "الحجوزات"
+
+- CI validation: TypeScript and ESLint passed; the production build passed after wrapping login search params in Suspense. Dependency audit still needs final review.

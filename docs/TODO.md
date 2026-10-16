@@ -10,3 +10,4 @@
 - [ ] تشغيل اختبارات E2E مع إعدادات اختبارية.
 - [ ] مراجعة Sentry وcron secrets وسياسة الاحتفاظ بالبيانات.
 - [ ] نشر preview ثم مراجعة LAUNCH_CHECKLIST قبل الإنتاج.
+- [ ] Re-check full and production-only npm audit after the Sentry and transitive dependency upgrades; resolve or document remaining high findings.
