@@ -45,11 +45,5 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "15.5.28",
     "@playwright/test": "^1.50.1"
-  },
-  "overrides": {
-    "braces": "^3.0.3",
-    "chokidar": "^3.6.0",
-    "micromatch": "^4.0.8",
-    "fast-glob": "^3.3.3"
   }
 }
