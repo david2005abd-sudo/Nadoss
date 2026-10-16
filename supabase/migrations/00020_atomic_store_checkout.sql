@@ -289,7 +289,7 @@ BEGIN
   WHERE id = p_order_id
   FOR UPDATE;
 
-  IF NOT FOUND OR v_order.payment_status <> 'pending' OR v_order.status <> 'pending' THEN
+  IF NOT FOUND OR v_order.payment_status NOT IN ('pending', 'failed') OR v_order.status <> 'pending' THEN
     RETURN FALSE;
   END IF;
 
