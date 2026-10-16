@@ -10,10 +10,10 @@ export default async function FibPayPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
-  searchParams: Promise<{ paymentId?: string; token?: string }>;
+  searchParams: Promise<{ token?: string }>;
 }) {
   const { slug, id } = await params;
-  const { paymentId, token } = await searchParams;
+  const { token } = await searchParams;
   if (!token) notFound();
 
   const supabase = await createClient();
@@ -29,13 +29,13 @@ export default async function FibPayPage({
   const admin = createAdminClient();
   const { data: order } = await admin
     .from('orders')
-    .select('id, tenant_id, order_number, total_iqd, payment_method, payment_status')
+    .select('id, tenant_id, order_number, total_iqd, payment_method, payment_status, payment_reference')
     .eq('id', id)
     .eq('tenant_id', tenant.id)
     .eq('public_access_token', token)
     .maybeSingle();
 
-  if (!order || order.payment_method !== 'fib') notFound();
+  if (!order || order.payment_method !== 'fib' || !order.payment_reference) notFound();
 
   if (order.payment_status === 'paid') {
     return (
@@ -56,10 +56,10 @@ export default async function FibPayPage({
   let readableCode: string | undefined;
   let deepLinks: { personal?: string; business?: string; corporate?: string } | undefined;
 
-  if (paymentId && order.payment_method === 'fib') {
+  if (order.payment_reference) {
     try {
       const pay = getIraqPay();
-      const status = await pay.getStatus(paymentId, 'fib');
+      const status = await pay.getStatus(order.payment_reference, 'fib');
       // Gateway may return QR in status payload for pending
       qrCode = (status as unknown as { qrCode?: string }).qrCode;
       readableCode = (status as unknown as { readableCode?: string }).readableCode;
