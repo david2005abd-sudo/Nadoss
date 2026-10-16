@@ -87,7 +87,7 @@ BEGIN
 
   IF length(trim(COALESCE(p_customer_name, ''))) < 2
      OR length(trim(p_customer_name)) > 100
-     OR p_customer_phone !~ '^\+9647[5789][0-9]{8}$'
+     OR COALESCE(p_customer_phone, '') !~ '^\+9647[5789][0-9]{8}$'
      OR length(trim(COALESCE(p_city, ''))) < 2
      OR length(trim(p_city)) > 100
      OR length(trim(COALESCE(p_address, ''))) < 5
