@@ -13,3 +13,4 @@
 - [ ] Re-check full and production-only npm audit after the Sentry and transitive dependency upgrades; resolve or document remaining high findings.
 - [ ] Revisit high-severity npm audit findings with compatible dependency upgrades; do not apply overrides until a clean install and CI pass.
 - [ ] Verify Sentry 11 and current PostCSS resolve cleanly in CI before keeping the security upgrade.
+- [ ] Upgrade Sentry and vulnerable transitive packages only after a reproducible clean npm install succeeds; current known-green Sentry 9 set is retained.
