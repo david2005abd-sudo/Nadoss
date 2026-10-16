@@ -108,7 +108,12 @@ async function applyPaymentUpdate(event: {
   if (order.payment_status === 'failed' && newPaymentStatus === 'pending') {
     return getPublicOrderContext(admin, order);
   }
-  if (order.payment_status === newPaymentStatus && ['paid', 'refunded', 'failed'].includes(newPaymentStatus)) {
+  if (order.payment_status === 'failed' && newPaymentStatus === 'failed' && order.status === 'pending') {
+    const { error: releaseError } = await admin.rpc('cancel_unpaid_store_order', { p_order_id: order.id });
+    if (releaseError) throw new Error('Unable to release stock for failed payment');
+    return getPublicOrderContext(admin, order);
+  }
+  if (order.payment_status === newPaymentStatus && ['paid', 'refunded'].includes(newPaymentStatus)) {
     return getPublicOrderContext(admin, order);
   }
 
@@ -135,6 +140,11 @@ async function applyPaymentUpdate(event: {
 
   if (updateError) {
     throw new Error('Unable to persist verified payment status');
+  }
+
+  if (newPaymentStatus === 'failed') {
+    const { error: releaseError } = await admin.rpc('cancel_unpaid_store_order', { p_order_id: order.id });
+    if (releaseError) throw new Error('Unable to release stock for failed payment');
   }
 
   // Audit
