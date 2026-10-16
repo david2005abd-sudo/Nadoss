@@ -11,7 +11,7 @@ export default async function CheckoutPage({
   const supabase = await createClient();
 
   const { data: tenant } = await supabase
-    .from('tenants')
+    .from('public_storefronts')
     .select('id, name, slug')
     .eq('slug', slug)
     .eq('is_active', true)
