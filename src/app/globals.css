@@ -600,7 +600,7 @@ body {
   min-width: 220px;
 }
 .nq-toast-icon {
-  @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-current/15 text-xs font-bold;
+  @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold;
 }
 @keyframes nq-toast-in {
   from {
