@@ -119,7 +119,7 @@ export default function OrdersPage() {
           ))}
          </select>
         </Field>
-        <p className="text-xs text-muted">سجل التغييرات ال يُعرض داخل قاعدة البيانات في نسخة الإنتاج.</p>
+        <p className="text-xs text-muted">يُحفظ سجل تغييرات حالة الطلب داخل قاعدة البيانات.</p>
        </Modal>
       )}
      </>

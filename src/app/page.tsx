@@ -46,7 +46,7 @@ const FAQS = [
  { q: 'كيف يعمل الذكاء الاصطناعي؟', a: 'يقرأ المساعد الذكي سياق مشروعك الحالي (نوع النشاط والمنتجات أو الخدمات) ليقترح أوصافًا، حملات، وعروض أسعار مناسبة. يعمل بوضع الردود السريعة داخل متصفحك دون إرسال بياناتك لأي جهة خارجية، ويمكن ربطه بمزوّدي ذكاء اصطناعي عند الحاجة.' },
  { q: 'هل أستطيع تغيير القالب؟', a: 'نعم، يمكنك تغيير القالب والألوان والخطوط وترتيب أقسام الصفحة في أي وقت من خلال (محرر الموقع) دون فقدان بيانات منتجاتك أو عملائك.' },
  { q: 'هل أستطيع إدارة الطلبات من الهاتف؟', a: 'نعم، جميع شاشات المنصة ولوحة العميل مصممة باستجابة كاملة للهواتف الذكية والأجهزة اللوحية مع قوائم جانبية مريحة للمس.' },
- { q: 'هل بياناتي محفوظة عند إغلاق الصفحة؟', a: 'نعم، يحفظ النموذج ال تغييراتك ومشاريعك محليًا في متصفحك عبر localStorage، كما يمكنك تصفيرها كملف JSON أو إعادة تعيينها متى شئت.' },
+ { q: 'هل بياناتي محفوظة عند إغلاق الصفحة؟', a: 'نعم، تُحفظ تغييراتك ومشاريعك بأمان في متصفحك عبر localStorage، ويمكنك تصديرها كملف JSON أو إعادة تعيينها متى شئت.' },
 ] as const;
 
 const NAV_LINKS = [
@@ -74,11 +74,11 @@ const FEATURED_TYPES = ['store', 'restaurant', 'maintenance', 'engineering', 're
 
 export default function HomePage() {
  const { state, setActiveProject } = useNasaq();
- const [demoTab, setDemoTab] = useState<string>('store');
+ const [previewTab, setDemoTab] = useState<string>('store');
  const [openFaq, setOpenFaq] = useState<number>(0);
  const [previewTpl, setPreviewTpl] = useState<string | null>(null);
 
- const demoProject = state.projects.find((p) => p.id === demoTab) ?? state.projects[0];
+ const previewProject = state.projects.find((p) => p.id === previewTab) ?? state.projects[0];
  const previewTemplate = state.templates.find((t) => t.id === previewTpl);
 
  return (
@@ -252,14 +252,14 @@ export default function HomePage() {
       </p>
      </div>
 
-     {demoProject && (
+     {previewProject && (
       <>
        <div className="nq-tabs-bar mb-4 flex flex-wrap justify-center gap-2">
         {DEMO_TABS.map((t) => (
          <button
           key={t.id}
           type="button"
-          className={`nq-tab-btn ${demoTab === t.id ? 'active' : ''}`}
+          className={`nq-tab-btn ${previewTab === t.id ? 'active' : ''}`}
           onClick={() => setDemoTab(t.id)}
          >
           {t.label}
@@ -273,10 +273,10 @@ export default function HomePage() {
           <span className="badge badge-primary">الأقسام المفعلة في لوحة العميل</span>
           <span className="text-xs text-muted">تتغير تلقائيًا حسب النشاط</span>
          </div>
-         <h3 className="mb-2 text-lg">{demoProject.name} — ({demoProject.city})</h3>
-         <p className="mb-3 text-sm text-muted">{demoProject.description}</p>
+         <h3 className="mb-2 text-lg">{previewProject.name} — ({previewProject.city})</h3>
+         <p className="mb-3 text-sm text-muted">{previewProject.description}</p>
          <div className="mb-4 flex flex-wrap gap-2">
-          {demoProject.enabledModules.map((mId) => (
+          {previewProject.enabledModules.map((mId) => (
            <span
             key={mId}
             className="badge badge-secondary"
@@ -287,10 +287,10 @@ export default function HomePage() {
           ))}
          </div>
          <div className="flex flex-wrap items-center gap-2">
-          <Link href="/dashboard" className="btn btn-primary btn-sm" onClick={() => setActiveProject(demoProject.id)}>
+          <Link href="/dashboard" className="btn btn-primary btn-sm" onClick={() => setActiveProject(previewProject.id)}>
            افتح لوحة تحكم هذا المشروع ←
           </Link>
-          <Link href="/builder" className="btn btn-outline btn-sm" onClick={() => setActiveProject(demoProject.id)}>
+          <Link href="/builder" className="btn btn-outline btn-sm" onClick={() => setActiveProject(previewProject.id)}>
            افتح محرر موقع المشروع
           </Link>
          </div>
@@ -298,24 +298,24 @@ export default function HomePage() {
 
         <div className="card">
          <div className="mb-2 flex items-center justify-between">
-          <Link href={`/store/${demoProject.id}`} className="badge badge-secondary hover:underline">معاينة موقع المشروع ←</Link>
-          <span className="text-xs text-muted">{demoProject.domain}</span>
+          <Link href={`/store/${previewProject.id}`} className="badge badge-secondary hover:underline">معاينة موقع المشروع ←</Link>
+          <span className="text-xs text-muted">{previewProject.domain}</span>
          </div>
          <div
           className="rounded-lg border border-border p-4"
-          style={{ background: `linear-gradient(180deg, ${demoProject.primaryColor}12 0%, #FFFFFF 100%)` }}
+          style={{ background: `linear-gradient(180deg, ${previewProject.primaryColor}12 0%, #FFFFFF 100%)` }}
          >
           <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
-           <span className="font-extrabold" style={{ color: demoProject.primaryColor }}>
-            {demoProject.builder.logoText}
+           <span className="font-extrabold" style={{ color: previewProject.primaryColor }}>
+            {previewProject.builder.logoText}
            </span>
            <span className="badge badge-muted">قالب متجاوب</span>
           </div>
-          <h4 className="mb-1 text-base">{demoProject.builder.heroTitle}</h4>
-          <p className="mb-3 text-xs text-muted">{demoProject.builder.heroSubtitle}</p>
+          <h4 className="mb-1 text-base">{previewProject.builder.heroTitle}</h4>
+          <p className="mb-3 text-xs text-muted">{previewProject.builder.heroSubtitle}</p>
           <div className="mb-2 text-xs font-bold">أقسام الصفحة المفعلة لهذا النشاط:</div>
           <div className="flex flex-wrap gap-1">
-           {demoProject.builder.sections.filter((s) => s.visible).map((s) => (
+           {previewProject.builder.sections.filter((s) => s.visible).map((s) => (
             <span key={s.id} className="badge badge-muted">{s.title}</span>
            ))}
           </div>
@@ -394,8 +394,7 @@ export default function HomePage() {
       <span className="badge badge-warning mb-1">تنبيه الشفافية التقنية</span>
       <p className="font-bold">وضع الردود السريعة</p>
       <p className="mt-1 text-sm text-muted">
-       في هذا النموذج الأولي يعمل المساعد بردود سياقية مبرمجة مسبقًا دون إرسال بياناتك لأي خادم خارجي. عند
-       الربط بالإنتاج يتم الاتصال عبر Backend آمن.
+       يعمل المساعد داخل متصفحك دون إرسال بياناتك لأي خادم خارجي، ويمكن ربطه بمزوّدي ذكاء اصطناعي عند الحاجة.
       </p>
       <Link href="/ai-assistant" className="btn btn-primary mt-3">
        افتح المساعد الذكي الآن
@@ -467,8 +466,7 @@ export default function HomePage() {
       <span className="badge badge-warning mb-2">أسعار توضيحية قابلة للتعديل</span>
       <h2 className="section-title">باقات مرنة تنمو مع حجم أعمالك</h2>
       <p className="section-desc">
-       الأسعار المعروضة أدناه هي أسعار توضيحية للنموذج ال فقط، ويمكنك تعديلها وإدارتها مباشرة من لوحة
-       المالك (Super Admin).
+       الأسعار المعروضة أدناه قابلة للتعديل والإدارة مباشرة من لوحة المالك.
       </p>
      </div>
      <div className="grid-3">
@@ -491,7 +489,7 @@ export default function HomePage() {
           <li>✓ الحد الأقصى للمشاريع: <strong>{pl.maxProjects}</strong></li>
           <li>✓ عدد الصفحات: <strong>حتى {pl.maxPages} صفحة</strong></li>
           <li>✓ حصة الذكاء الاصطناعي: <strong>{pl.aiLimit}</strong></li>
-          <li>✓ التخزين ال: <strong>{pl.storage}</strong></li>
+          <li>✓ التخزين: <strong>{pl.storage}</strong></li>
           <li>✓ الوحدات: <strong>{pl.availableModules}</strong></li>
          </ul>
         </div>
@@ -550,7 +548,7 @@ export default function HomePage() {
        <ul className="space-y-2 text-sm text-muted">
         <li><a href="#hero" className="hover:text-primary">نبذة عن المنصة</a></li>
         <li><a href="#features" className="hover:text-primary">المميزات</a></li>
-        <li><a href="#pricing" className="hover:text-primary">الأسعار ال</a></li>
+        <li><a href="#pricing" className="hover:text-primary">الأسعار</a></li>
         <li><a href="#templates" className="hover:text-primary">معرض القوالب</a></li>
        </ul>
       </div>
@@ -568,16 +566,16 @@ export default function HomePage() {
       <div>
        <h3 className="mb-3 text-sm font-bold">المساعدة والسياسات</h3>
        <ul className="space-y-2 text-sm text-muted">
-        <li>مركز المساعدة والدعم ال</li>
+        <li>مركز المساعدة والدعم</li>
         <li>سياسة الخصوصية والبيانات المحلية</li>
         <li>شروط الاستخدام والحدود التقنية</li>
-        <li>معلومات التواصل ال</li>
+        <li>معلومات التواصل</li>
        </ul>
       </div>
      </div>
 
      <div className="mt-8 border-t border-border pt-5 text-center text-xs text-muted">
-      <p>© 2026 نَسَق — جميع الحقوق محفوظة .</p>
+      <p>© 2026 نَسَق — جميع الحقوق محفوظة</p>
       <p className="mt-1">الوضع النهاري القياسي • RTL • متوافق مع الهواتف والشاشات الواسعة</p>
      </div>
     </div>

@@ -17,7 +17,7 @@ export default function PrivacyPage() {
     <section>
      <h2 className="font-bold">1. ما نجمعه</h2>
      <p className="mt-1 text-muted">
-      في هذه النسخة ال لا نجمع أي بيانات شخصية على أي خادم. كل ما تُدخله يبقى داخل متصفحك في
+      لا نجمع أي بيانات شخصية على أي خادم. كل ما تُدخله يبقى داخل متصفحك في
       <span className="font-mono"> localStorage</span>.
      </p>
     </section>
@@ -33,8 +33,8 @@ export default function PrivacyPage() {
     <section>
      <h2 className="font-bold">3. الذكاء الاصطناعي</h2>
      <p className="mt-1 text-muted">
-      في وضع Demo لا تُرسل أي من بياناتك إلى مزودي الذكاء الاصطناعي. في نسخة الإنتاج يُمرّ كل طلب عبر
-      خادم آمن ولا تُكشف مفاتيح المزودين للمتصفح.
+      لا تُرسل أي من بياناتك إلى مزوّدي الذكاء الاصطناعي من متصفحك مباشرة. عند الربط بمزوّد خارجي يُمرّ كل
+      طلب عبر قناة آمنة ولا تُكشف مفاتيح المزوّدين للمتصفح.
      </p>
     </section>
 

@@ -38,7 +38,7 @@ const EMPTY: WizardData = {
  city: '',
  phone: '',
  email: '',
- currency: 'ريال سعودي (ر.س)',
+ currency: 'دينار عراقي (د.ع)',
  language: 'العربية (RTL)',
  description: '',
  primaryColor: '#5B5CE2',
@@ -280,7 +280,7 @@ export default function OnboardingPage() {
           <input id="wiz-phone" className="form-control" value={draft.phone} onChange={(e) => set({ phone: e.target.value })} placeholder="05XXXXXXXX" />
          </label>
          <label className="form-group">
-          <span className="form-label">البريد الإلكتروني ال</span>
+          <span className="form-label">البريد الإلكتروني</span>
           <input id="wiz-email" className="form-control" value={draft.email} onChange={(e) => set({ email: e.target.value })} placeholder="owner@nasaq.iq" />
          </label>
          <label className="form-group">
@@ -428,7 +428,7 @@ export default function OnboardingPage() {
           <div className="rounded-lg border border-border p-3" style={{ background: 'linear-gradient(180deg, #F8FAFC, #FFFFFF)' }}>
            <div className="mb-2 flex items-center justify-between border-b border-border pb-2">
             <span className="text-base font-extrabold" style={{ color: draft.primaryColor }}>{draft.name || 'موقعك الجديد'}</span>
-            <span className="badge badge-muted"> محلي</span>
+            <span className="badge badge-muted">نَسَق</span>
            </div>
            <h4 className="mb-1 text-sm" style={{ color: draft.primaryColor }}>
             مرحبًا بك في {draft.name || 'مشروعك الجديد'}!
@@ -502,13 +502,13 @@ export default function OnboardingPage() {
       يمكنك تعديل كل هذه الخيارات لاحقًا من الإعدادات وتخصيص الوحدات.
      </p>
      <div className="mt-4 space-y-1">
-      <span className="badge badge-success"><IconCheck size={12} /> تجربة محلية بدون خادم</span>
+      <span className="badge badge-success"><IconCheck size={12} /> إعداد سريع بدون خادم</span>
      </div>
      <button
       type="button"
       className="btn btn-danger-outline btn-sm mt-3 w-full"
       onClick={() => {
-       if (window.confirm('سيتم إعادة تعيين بيانات هذا النموذج ال إلى الحالة الافتراضية. متابعة؟')) {
+       if (window.confirm('سيتم إعادة تعيين بيانات مشاريعك إلى الحالة الافتراضية. متابعة؟')) {
         window.localStorage.removeItem('nasaq_state_v1');
         window.location.href = '/';
        }

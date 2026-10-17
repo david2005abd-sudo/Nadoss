@@ -1,6 +1,6 @@
 /**
  * نَسَق — بيانات المنصة الأولية (المشاريع، القوالب، الباقات، المشتركون، المزودون).
- * تُشتق من مواصفات واجهات المنصة وتُستخدم كحالة ابتدائية للمتجر المحلي.
+ * تُشتق من مواصفات واجهات المنصة وتُستخدم كحالة ابتدائية للمتاجر.
  */
 
 import { BUSINESS_DEFAULT_MODULES } from './modules';
@@ -424,7 +424,7 @@ const plans: Plan[] = [
   code: 'Starter',
   nameAr: 'باقة البداية (Starter)',
   price: 15000,
-  period: 'شهريًا (سعر )',
+  period: 'شهريًا',
   maxProjects: 1,
   maxPages: 5,
   aiLimit: '100 طلب / شهر',
@@ -438,7 +438,7 @@ const plans: Plan[] = [
   code: 'Growth',
   nameAr: 'باقة النمو (Growth)',
   price: 35000,
-  period: 'شهريًا (سعر )',
+  period: 'شهريًا',
   maxProjects: 3,
   maxPages: 25,
   aiLimit: '500 طلب / شهر',
@@ -452,7 +452,7 @@ const plans: Plan[] = [
   code: 'Business',
   nameAr: 'باقة الأعمال (Business)',
   price: 75000,
-  period: 'شهريًا (سعر )',
+  period: 'شهريًا',
   maxProjects: 10,
   maxPages: 100,
   aiLimit: '2,500 طلب / شهر',

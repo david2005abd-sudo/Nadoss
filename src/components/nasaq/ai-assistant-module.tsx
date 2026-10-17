@@ -216,7 +216,7 @@ export default function AiAssistantModule({ standalone = false }: { standalone?:
     </div>
     <div className="card">
      <span className="icon-box mb-2">{getIcon('chart', { size: 18 })}</span>
-     <h3 className="text-sm font-bold">تحليل النشاط ال</h3>
+     <h3 className="text-sm font-bold">تحليل النشاط</h3>
      <p className="mt-1 text-xs text-muted">قراءة مؤشرات الطلبات والمخزون واقتراح الإجراءات.</p>
     </div>
     <div className="card">

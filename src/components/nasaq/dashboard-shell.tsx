@@ -152,7 +152,7 @@ function AppTopbar({ onMenu }: { onMenu: () => void }) {
      <span className="brand-mark">ن</span>
      <span className="font-extrabold">نَسَق</span>
     </Link>
-    <span className="badge badge-primary">لوحة العميل ال </span>
+    <span className="badge badge-primary">لوحة تحكم العميل</span>
    </div>
 
    <div className="flex flex-1 items-center gap-2">

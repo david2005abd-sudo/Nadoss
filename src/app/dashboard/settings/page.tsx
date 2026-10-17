@@ -48,7 +48,7 @@ export default function SettingsPage() {
         <div className="card lg:col-span-2">
          <h2 className="mb-3 text-base font-extrabold">بيانات المشروع الأساسية</h2>
          <div className="grid-2 nq-reveal">
-          <Field label="اسم المشروع / المتجر">
+          <Field label="اسم المشروع أو المتجر">
            <input id="set-proj-name" className="form-control" value={project.name} onChange={(e) => patch({ name: e.target.value })} />
           </Field>
           <Field label="المدينة">
@@ -57,7 +57,7 @@ export default function SettingsPage() {
           <Field label="رقم التواصل">
            <input id="set-proj-phone" className="form-control" dir="ltr" value={project.phone} onChange={(e) => patch({ phone: e.target.value })} />
           </Field>
-          <Field label="البريد الإلكتروني ال">
+          <Field label="البريد الإلكتروني">
            <input id="set-pf-email" className="form-control" dir="ltr" value={project.email} onChange={(e) => patch({ email: e.target.value })} />
           </Field>
           <Field label="العملة">
@@ -208,7 +208,7 @@ export default function SettingsPage() {
         <div className="card lg:col-span-2">
          <h2 className="mb-3 text-base font-extrabold">الخصوصية وبيانات المشروع</h2>
          <p className="text-sm text-muted">
-          هذا النموذج ال يعمل بالكامل داخل متصفحك. تُحفظ بيانات المشاريع والعملاء والطلبات في
+          تعمل المنصة بالكامل داخل متصفحك. تُحفظ بيانات المشاريع والعملاء والطلبات في
           <span className="font-mono"> localStorage </span>
           تحت المفتاح التالي، ولا تُرسل إلى أي خادم خارجي:
          </p>
@@ -243,7 +243,7 @@ export default function SettingsPage() {
            type="button"
            className="btn btn-danger-outline btn-sm"
            onClick={() => {
-            if (window.confirm('سيتم حذف جميع بيانات هذا النموذج ال والعودة للحالة الافتراضية. متابعة؟')) {
+            if (window.confirm('سيتم حذف جميع بيانات مشاريعك والعودة للحالة الافتراضية. متابعة؟')) {
              window.localStorage.removeItem('nasaq_state_v1');
              window.location.href = '/dashboard';
             }

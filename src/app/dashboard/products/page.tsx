@@ -145,7 +145,7 @@ export default function ProductsPage() {
        <div className="table-wrap nq-reveal">
         <EmptyState
          title={q || filter ? 'لا توجد منتجات مطابقة' : 'لم تضف أي منتجات بعد'}
-         description="أضف منتجك الأول لبدء البيع ال في لوحة المشروع."
+         description="أضف منتجك الأول لبدء البيع في لوحة المشروع."
         />
        </div>
       )}

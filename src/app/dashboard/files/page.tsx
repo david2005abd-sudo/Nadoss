@@ -39,7 +39,7 @@ export default function FilesPage() {
       searchPlaceholder="ابحث في الملفات..."
       action={
        <button type="button" className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>
-        <IconPlus size={16} /> إضافة ملف 
+        <IconPlus size={16} /> إضافة ملف
        </button>
       }
      />
@@ -82,7 +82,7 @@ export default function FilesPage() {
 
      {open && (
       <Modal
-       title="إضافة ملف "
+       title="إضافة ملف"
        onClose={() => setOpen(false)}
        footer={
         <>
@@ -120,7 +120,7 @@ export default function FilesPage() {
          {['مسودة', 'منشور'].map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
        </Field>
-       <p className="text-xs text-muted">ملاحظة: هذا الملف ال يعمل داخل النموذج الأولي فقط ولم يُرفع إلى أي خادم خارجي.</p>
+       <p className="text-xs text-muted">ملاحظة: الملفات هنا لأغراض التوثيق ولم تُرفع إلى أي خادم خارجي.</p>
       </Modal>
      )}
     </>

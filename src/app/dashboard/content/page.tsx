@@ -159,7 +159,7 @@ export default function ContentPage() {
               },
              })
             }
-            placeholder="محتوى القسم ال (يهيأ للزوار)...."
+            placeholder="محتوى القسم (يهيأ للزوار)"
            />
            <button
             type="button"

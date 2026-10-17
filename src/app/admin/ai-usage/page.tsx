@@ -103,7 +103,7 @@ export default function AdminAiUsagePage() {
     </div>
 
     <div className="card" style={{ background: 'var(--muted-surface)' }}>
-     <span className="badge badge-warning">قيود السجل ال</span>
+     <span className="badge badge-warning">قيود هذا السجل</span>
      <p className="mt-2 text-sm">
       هذه السجلات فقط لاستعراض شكل لوحة المالك. في الإنتاج تُجمع هذه البيانات من الخادم مع مراقبة
       الحدود الشهرية لكل باقة.

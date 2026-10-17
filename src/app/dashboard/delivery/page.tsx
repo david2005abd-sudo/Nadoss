@@ -88,7 +88,7 @@ export default function DeliveryPage() {
       )}
 
       <div className="card">
-       <span className="text-xs text-muted">مناطق التغطية ورسوم التوصيل ال</span>
+       <span className="text-xs text-muted">مناطق التغطية ورسوم التوصيل</span>
        <div className="mt-3 grid-2 sm:grid-cols-3">
         {CITIES.map((c) => (
          <div key={c.city} className="flex items-center justify-between rounded-md border border-border p-2">

@@ -19,7 +19,7 @@ export default function AdminSupportPage() {
 
  return (
   <>
-   <AdminHeader title="تذاكر الدعم الفني" subtitle="طلبات الدعم ال من المشتركين مع الأولوية والحالة." />
+   <AdminHeader title="تذاكر الدعم الفني" subtitle="طلبات الدعم الواردة من المشتركين مع الأولوية والحالة." />
 
    <div className="grid-3 sm:grid-cols-2 lg:grid-cols-4">
     <KpiCard label="إجمالي التذاكر" value={tickets.length} icon={getIcon('file')} tone="purple" />

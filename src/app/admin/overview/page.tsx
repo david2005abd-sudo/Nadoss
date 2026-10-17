@@ -80,7 +80,7 @@ export default function AdminOverviewPage() {
    </div>
 
    <div className="card" style={{ background: 'var(--muted-surface)' }}>
-    <span className="badge badge-warning">قيود لوحة المالك ال</span>
+    <span className="badge badge-warning">قيود لوحة المالك</span>
     <p className="mt-2 text-sm">
      كل البيانات في هذه اللوحة ومحلية فقط. يمكنك تجربة التعديل على الباقات والمشتركين والمزودين
      لمعرفة سلوك اللوحة، لكن لا يوجد أي تأثير حقيقي على اشتراكات أو مدفوعات فعلية.

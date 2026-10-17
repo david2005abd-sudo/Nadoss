@@ -31,7 +31,7 @@ export default function BuilderPage() {
  function addSection() {
   const type = newSection as (typeof SECTION_TYPES)[number];
   patchBuilder({
-   sections: [...b.sections, { id: `sec_${Date.now().toString(36)}`, type, title: `قسم ${type} جديد`, content: `محتوى القسم ال — عدّله هنا ليظهر للزوار على موقعك.`, visible: true }],
+   sections: [...b.sections, { id: `sec_${Date.now().toString(36)}`, type, title: `قسم ${type} جديد`, content: `محتوى القسم — عدّله هنا ليظهر للزوار على موقعك.`, visible: true }],
   });
  }
 
