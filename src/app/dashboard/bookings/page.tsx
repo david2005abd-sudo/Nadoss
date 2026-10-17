@@ -62,7 +62,7 @@ export default function BookingsPage() {
       />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -100,7 +100,7 @@ export default function BookingsPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q || filter ? 'لا توجد حجوزات مطابقة' : 'لا توجد حجوزات بعد'} description="أضف أول موعد ليظهر في جدول العملاء." />
        </div>
       )}
@@ -125,7 +125,7 @@ export default function BookingsPage() {
           {project.services.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
          </select>
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="التاريخ">
           <input id="mod-bk-date" type="date" className="form-control" value={form.date ?? ''} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
          </Field>

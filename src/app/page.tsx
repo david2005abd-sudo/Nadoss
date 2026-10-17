@@ -84,7 +84,7 @@ export default function HomePage() {
  return (
   <div>
    {/* ================= HEADER ================= */}
-   <header className="landing-header">
+   <header className="nq-reveal landing-header">
     <div className="nasaq-container flex h-16 items-center justify-between gap-3">
      <a href="#hero" className="brand-logo">
       <span className="brand-mark">ن</span>
@@ -189,7 +189,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= BUSINESS TYPES ================= */}
-   <section id="business-types" className="section-block section-block-alt">
+   <section id="business-types" className="nq-reveal section-block section-block-alt">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge">تخصيص ذكي حسب القطاع</span>
@@ -242,7 +242,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= INTERACTIVE DEMO ================= */}
-   <section id="interactive-preview" className="section-block">
+   <section id="interactive-preview" className="nq-reveal section-block">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge section-badge-secondary">معاينة تفاعلية فورية</span>
@@ -328,7 +328,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= FEATURES ================= */}
-   <section id="features" className="section-block section-block-alt">
+   <section id="features" className="nq-reveal section-block section-block-alt">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge">مميزات المنصة</span>
@@ -350,7 +350,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= HOW IT WORKS ================= */}
-   <section id="how-it-works" className="section-block">
+   <section id="how-it-works" className="nq-reveal section-block">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge section-badge-secondary">خطوات واضحة</span>
@@ -370,7 +370,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= AI SHOWCASE ================= */}
-   <section id="ai-showcase" className="section-block section-block-alt">
+   <section id="ai-showcase" className="nq-reveal section-block section-block-alt">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge">ذكاء اصطناعي يفهم نشاطك</span>
@@ -405,7 +405,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= TEMPLATES ================= */}
-   <section id="templates" className="section-block">
+   <section id="templates" className="nq-reveal section-block">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge section-badge-secondary">معرض القوالب</span>
@@ -461,7 +461,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= PRICING ================= */}
-   <section id="pricing" className="section-block section-block-alt">
+   <section id="pricing" className="nq-reveal section-block section-block-alt">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="badge badge-warning mb-2">أسعار توضيحية قابلة للتعديل</span>
@@ -505,7 +505,7 @@ export default function HomePage() {
    </section>
 
    {/* ================= FAQ ================= */}
-   <section id="faq" className="section-block">
+   <section id="faq" className="nq-reveal section-block">
     <div className="nasaq-container">
      <div className="section-header">
       <span className="section-badge">الأسئلة الشائعة</span>

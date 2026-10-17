@@ -63,7 +63,7 @@ export default function ProjectsPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث باسم المشروع أو العميل..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -94,7 +94,7 @@ export default function ProjectsPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title="لا توجد مشاريع مهنية بعد" description="أضف أول عقد ومشروع لتتبع مراحله." />
        </div>
       )}
@@ -119,7 +119,7 @@ export default function ProjectsPage() {
         <Field label="وصف المرحلة">
          <textarea className="form-control" rows={3} value={form.description ?? ''} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="بداية">
           <input type="date" className="form-control" value={form.startDate ?? ''} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
          </Field>

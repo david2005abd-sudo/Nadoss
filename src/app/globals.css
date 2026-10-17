@@ -484,5 +484,314 @@ body {
 }
 
 .hide-sm {
- @apply hidden sm:inline;
+  @apply hidden sm:inline;
+}
+
+/* =====================================================================
+   Scroll motion — CSS-class driven reveals (no JSX restructuring needed)
+   ===================================================================== */
+.nq-scroll-rail {
+  @apply fixed right-0 top-0 z-40 h-[3px] w-full;
+  background: linear-gradient(90deg, var(--secondary), var(--primary));
+  transform: scaleX(var(--nq-scroll, 0));
+  transform-origin: 100% 50%; /* RTL: grows from the right */
+  transition: transform .1s linear;
+}
+
+.nq-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .55s ease, transform .55s cubic-bezier(.2, .7, .3, 1);
+}
+.nq-reveal.nq-shown {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* عناصر فرعية تتدرّج ظهورها داخل القسم المكشوف */
+.nq-reveal > * {
+  transition: transform .5s cubic-bezier(.2, .7, .3, 1), opacity .5s ease;
+}
+.nq-reveal.nq-shown > *:nth-child(1) { transition-delay: 0ms; }
+.nq-reveal.nq-shown > *:nth-child(2) { transition-delay: 60ms; }
+.nq-reveal.nq-shown > *:nth-child(3) { transition-delay: 120ms; }
+.nq-reveal.nq-shown > *:nth-child(4) { transition-delay: 180ms; }
+.nq-reveal.nq-shown > *:nth-child(5) { transition-delay: 240ms; }
+.nq-reveal.nq-shown > *:nth-child(n + 6) { transition-delay: 300ms; }
+
+/* =====================================================================
+   Interaction layer — ripples, tilts, spotlights, reveals, toasts
+   ===================================================================== */
+
+/* ---- Ripple ---- */
+.nq-ripple-host {
+  position: relative;
+  overflow: hidden;
+}
+.nq-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.28;
+  transform: scale(0);
+  animation: nq-ripple .62s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes nq-ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* ---- Tilt + spotlight ---- */
+.nq-tilt {
+  transition: transform .35s cubic-bezier(.2, .7, .3, 1), box-shadow .35s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.nq-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.nq-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    220px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--primary) 12%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.nq-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* ---- Icon pop ---- */
+.nq-icon-pop {
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1), background-color .3s ease;
+}
+.nq-icon-pop:hover {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+/* ---- KPI hover lift ---- */
+.kpi-card {
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1), box-shadow .3s ease, border-color .3s ease;
+}
+.kpi-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+}
+
+/* ---- Toasts ---- */
+.nq-toast-stack {
+  @apply fixed bottom-5 left-5 z-[60] space-y-2;
+}
+.nq-toast {
+  @apply flex items-center gap-2 cursor-pointer;
+  animation: nq-toast-in .32s cubic-bezier(.2, .7, .3, 1);
+  min-width: 220px;
+}
+.nq-toast-icon {
+  @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-current/15 text-xs font-bold;
+}
+@keyframes nq-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* ---- Stat bars ---- */
+.nq-statbar {
+  @apply space-y-1.5;
+}
+.nq-statbar-head {
+  @apply flex items-center justify-between text-muted;
+}
+.nq-statbar-track {
+  @apply h-2.5 w-full overflow-hidden rounded-full;
+  background: var(--muted-surface);
+}
+.nq-statbar-fill {
+  @apply h-full rounded-full;
+}
+
+/* ---- Live dot ---- */
+.nq-livedot {
+  @apply inline-flex items-center gap-1.5;
+}
+.nq-livedot-dot {
+  @apply relative inline-block h-2.5 w-2.5 rounded-full;
+}
+.nq-livedot-success .nq-livedot-dot { background: var(--success); }
+.nq-livedot-warning .nq-livedot-dot { background: var(--warning); }
+.nq-livedot-danger .nq-livedot-dot { background: var(--danger); }
+.nq-livedot-primary .nq-livedot-dot { background: var(--primary); }
+.nq-livedot-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: nq-ping 1.7s cubic-bezier(0, 0, .2, 1) infinite;
+}
+@keyframes nq-ping {
+  75%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ---- Progress rail (scroll indicator) ---- */
+.nq-scroll-rail {
+  @apply fixed left-0 top-0 z-40 h-[3px] w-full origin-right;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform-origin: 0 50%;
+}
+
+/* ---- Skeleton shimmer ---- */
+.nq-skeleton {
+  @apply relative overflow-hidden rounded-md;
+  background: var(--muted-surface);
+}
+.nq-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .65), transparent);
+  transform: translateX(-100%);
+  animation: nq-shimmer 1.5s infinite;
+}
+@keyframes nq-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---- Floating label helper for cards ---- */
+.nq-float {
+  animation: nq-float 5.5s ease-in-out infinite;
+}
+@keyframes nq-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* ---- Gradient text ---- */
+.nq-gradient-text {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Press feedback ---- */
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* ---- Cart badge (storefront) ---- */
+.nq-cart-count {
+  @apply absolute -top-1.5 -left-1.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold;
+  background: var(--danger);
+  color: #fff;
+  animation: nq-pop .35s cubic-bezier(.2, .7, .3, 1);
+}
+@keyframes nq-pop {
+  from { transform: scale(.4); }
+  to { transform: scale(1); }
+}
+
+/* ---- Cart panel ---- */
+.nq-cart-panel {
+  animation: nq-slide-down .28s cubic-bezier(.2, .7, .3, 1);
+}
+@keyframes nq-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Stars ---- */
+.nq-stars {
+  @apply text-lg tracking-widest;
+  color: #f59e0b;
+}
+
+/* ---- Rank badge ---- */
+.nq-rank {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold;
+  background: var(--light-purple);
+  color: var(--primary);
+}
+
+/* ---- Product card image slot ---- */
+.nq-item-art {
+  @apply mb-3 flex flex-col justify-between p-3;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  min-height: 96px;
+}
+
+/* ---- Card entry ---- */
+.card {
+  animation: nq-card-in .4s ease both;
+}
+@keyframes nq-card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Sidebar item hover ---- */
+.sidebar-item {
+  position: relative;
+}
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: 0;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--primary);
+  transform: translateY(-50%);
+  transition: height .25s ease;
+}
+.sidebar-item:hover::before,
+.sidebar-item.active::before {
+  height: 60%;
+}
+
+/* ---- Table row hover ---- */
+.data-table tbody tr {
+  transition: background-color .18s ease;
+}
+
+/* ---- Respect reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .nq-ripple,
+  .nq-livedot-dot::after,
+  .nq-skeleton::after,
+  .nq-float,
+  .card {
+    animation: none !important;
+  }
+  .nq-tilt {
+    transition: none !important;
+  }
+  .nq-statbar-fill {
+    transition: none !important;
+  }
 }

@@ -47,7 +47,7 @@ export default function CategoriesPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث عن فئة..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -79,7 +79,7 @@ export default function CategoriesPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد فئات مطابقة' : 'لا توجد تصنيفات بعد'} description="أضف فئة لتنظيم المنتجات أو الوجبات." />
        </div>
       )}

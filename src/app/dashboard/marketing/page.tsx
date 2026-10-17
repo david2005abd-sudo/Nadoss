@@ -61,7 +61,7 @@ export default function MarketingPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث بكود الكوبون..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -96,7 +96,7 @@ export default function MarketingPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد كوبونات مطابقة' : 'لا توجد كوبونات بعد'} description="أنشئ كوبون خصمًا لتنشيط المبيعات." />
        </div>
       )}

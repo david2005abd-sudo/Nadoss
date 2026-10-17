@@ -30,7 +30,7 @@ export default function InventoryPage() {
 
     return (
      <>
-      <div className="grid-3 sm:grid-cols-3">
+      <div className="grid-3 sm:grid-cols-3 nq-reveal">
        <KpiCard label="إجمالي الأصناف" value={total} icon={<IconBox size={18} />} tone="purple" />
        <KpiCard label="أصناف منخفضة" value={low} icon={<IconBox size={18} />} tone="amber" />
        <KpiCard label="أصناف نفذت" value={out} icon={<IconBox size={18} />} tone="teal" />
@@ -40,7 +40,7 @@ export default function InventoryPage() {
        <>
         <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث عن صنف..." />
 
-        <div className="table-wrap">
+        <div className="table-wrap nq-reveal">
          <table className="data-table">
           <thead>
            <tr>
@@ -79,7 +79,7 @@ export default function InventoryPage() {
         </div>
        </>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState
          title="لا توجد أصناف في المخزون بعد"
          description="أضف منتجات في وحدة المنتجات ليظهر المخزون هنا."

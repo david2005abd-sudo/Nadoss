@@ -45,7 +45,7 @@ export default function AdminModulesPage() {
     onFilterChange={setTypeFilter}
    />
 
-   <div className="table-wrap">
+   <div className="table-wrap nq-reveal">
     <table className="data-table">
      <thead>
       <tr>

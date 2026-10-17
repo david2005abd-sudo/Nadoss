@@ -30,7 +30,7 @@ export default function AdminSubscribersPage() {
 
    <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث بالاسم أو الباقة..." />
 
-   <div className="table-wrap">
+   <div className="table-wrap nq-reveal">
     <table className="data-table">
      <thead>
       <tr>

@@ -44,7 +44,7 @@ export default function ServicesPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث عن خدمة..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -74,7 +74,7 @@ export default function ServicesPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد خدمات مطابقة' : 'لا توجد خدمات بعد'} description="أضف خدمتك الأولى لتظهر للعملاء على الموقع." />
        </div>
       )}
@@ -96,7 +96,7 @@ export default function ServicesPage() {
         <Field label="الوصف">
          <textarea id="mod-srv-desc" className="form-control" rows={3} value={form.description ?? ''} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="السعر">
           <input id="mod-srv-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

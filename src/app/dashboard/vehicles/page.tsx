@@ -53,7 +53,7 @@ export default function VehiclesPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث باسم المالك أو الموديل..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -80,7 +80,7 @@ export default function VehiclesPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState
          title={q ? 'لا توجد مركبات مطابقة' : 'لا توجد مركبات بعد'}
          description="اربط مركبات العملاء لتتبع مواعيد الفحص والصيانة الدورية."

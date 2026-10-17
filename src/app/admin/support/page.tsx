@@ -37,7 +37,7 @@ export default function AdminSupportPage() {
     onFilterChange={setStatusFilter}
    />
 
-   <div className="table-wrap">
+   <div className="table-wrap nq-reveal">
     <table className="data-table">
      <thead>
       <tr>

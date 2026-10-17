@@ -45,7 +45,7 @@ export default function QuotesPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث بعنوان العرض أو العميل..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -79,7 +79,7 @@ export default function QuotesPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد عروض مطابقة' : 'لا توجد عروض أسعار بعد'} description="جهز عرض سعر احترافي لعميلك الآن." />
        </div>
       )}
@@ -101,7 +101,7 @@ export default function QuotesPage() {
         <Field label="العميل">
          <input id="mod-q-client" className="form-control" value={form.client ?? ''} onChange={(e) => setForm((f) => ({ ...f, client: e.target.value }))} />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="المبلغ">
           <input id="mod-q-amount" type="number" className="form-control" value={form.amount ?? 0} onChange={(e) => setForm((f) => ({ ...f, amount: Number(e.target.value) }))} />
          </Field>

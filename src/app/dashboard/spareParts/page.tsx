@@ -54,7 +54,7 @@ export default function SparePartsPage() {
 
     return (
      <>
-      <div className="grid-3 sm:grid-cols-3">
+      <div className="grid-3 sm:grid-cols-3 nq-reveal">
        <div className="card"><span className="text-xs text-muted">عدد القطع</span><p className="kpi-value">{project.spareParts.length}</p></div>
        <div className="card"><span className="text-xs text-muted">قطع منخفضة</span><p className="kpi-value">{low}</p></div>
        <div className="card"><span className="text-xs text-muted">مركبات مرتبطة</span><p className="kpi-value">{project.vehicles.length}</p></div>
@@ -63,7 +63,7 @@ export default function SparePartsPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث بالقطعة أو الرقم المصنعي..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -98,7 +98,7 @@ export default function SparePartsPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد قطع مطابقة' : 'لا توجد قطع غيار بعد'} description="أضف قطع الغيار لمتابعة المخزون والتوافق." />
        </div>
       )}
@@ -117,7 +117,7 @@ export default function SparePartsPage() {
         <Field label="اسم القطعة">
          <input id="mod-sp-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="رقم القطعة (OEM)">
           <input id="mod-sp-num" className="form-control" dir="ltr" value={form.partNo ?? ''} onChange={(e) => setForm((f) => ({ ...f, partNo: e.target.value }))} />
          </Field>
@@ -128,7 +128,7 @@ export default function SparePartsPage() {
         <Field label="التوافق">
          <input id="mod-sp-comp" className="form-control" value={form.compatibility ?? ''} onChange={(e) => setForm((f) => ({ ...f, compatibility: e.target.value }))} placeholder="تويوتا كامري 2019-2025" />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="السعر">
           <input id="mod-sp-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

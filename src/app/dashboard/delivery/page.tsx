@@ -39,7 +39,7 @@ export default function DeliveryPage() {
 
     return (
      <>
-      <div className="grid-3 sm:grid-cols-3">
+      <div className="grid-3 sm:grid-cols-3 nq-reveal">
        <div className="card"><span className="text-xs text-muted">طلبات قيد التوصيل</span><p className="kpi-value">{orders.length}</p></div>
        <div className="card"><span className="text-xs text-muted">بانتظار التجهيز</span><p className="kpi-value">{orders.filter((o) => o.status === 'قيد التجهيز').length}</p></div>
        <div className="card"><span className="text-xs text-muted">بانتظار التوصيل</span><p className="kpi-value">{orders.filter((o) => o.status === 'بانتظار التوصيل').length}</p></div>
@@ -48,7 +48,7 @@ export default function DeliveryPage() {
       {filtered.length > 0 ? (
        <>
         <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث باسم العميل..." />
-        <div className="table-wrap">
+        <div className="table-wrap nq-reveal">
          <table className="data-table">
           <thead>
            <tr>
@@ -82,7 +82,7 @@ export default function DeliveryPage() {
         </div>
        </>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title="لا توجد طلبات لوجستية بعد" description="ستظهر الطلبات النشطة هنا عند استقبال طلبات جديدة." />
        </div>
       )}

@@ -44,7 +44,7 @@ export default function EmployeesPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث عن موظف..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -71,7 +71,7 @@ export default function EmployeesPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد نتائج مطابقة' : 'لا يوجد موظفون بعد'} description="أضف أعضاء فريقك لتوزيع المهام والصلاحيات ال." />
        </div>
       )}
@@ -90,7 +90,7 @@ export default function EmployeesPage() {
         <Field label="اسم الموظف">
          <input id="mod-emp-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="الدور الرئيسي">
           <select id="mod-emp-role" className="form-control" value={form.role ?? ''} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}>
            {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}

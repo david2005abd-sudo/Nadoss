@@ -45,7 +45,7 @@ export default function FilesPage() {
      />
 
      {filtered.length > 0 ? (
-      <div className="table-wrap">
+      <div className="table-wrap nq-reveal">
        <table className="data-table">
         <thead>
          <tr>
@@ -72,7 +72,7 @@ export default function FilesPage() {
        </table>
       </div>
      ) : (
-      <div className="table-wrap">
+      <div className="table-wrap nq-reveal">
        <EmptyState
         title={q ? 'لا توجد ملفات مطابقة' : 'لا توجد ملفات بعد'}
         description="ارفع مخططاتك وعقودك لتشاركها مع فريقك وعملائك."
@@ -105,7 +105,7 @@ export default function FilesPage() {
        <Field label="اسم الملف">
         <input className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="عقد التصميم الداخلي.pdf" />
        </Field>
-       <div className="grid-2">
+       <div className="grid-2 nq-reveal">
         <Field label="النوع">
          <select className="form-control" value={form.type ?? ''} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
           {['PDF', 'DOCX', 'PNG', 'JPG', 'XLSX', 'DWG'].map((t) => <option key={t} value={t}>{t}</option>)}

@@ -15,14 +15,14 @@ export default function StockPage() {
 
     return (
      <>
-      <div className="grid-3 sm:grid-cols-3">
+      <div className="grid-3 sm:grid-cols-3 nq-reveal">
        <div className="card"><span className="text-xs text-muted">إجمالي الأكواد المتاحة</span><p className="kpi-value">{total}</p></div>
        <div className="card"><span className="text-xs text-muted">عدد المنتجات الرقمية</span><p className="kpi-value">{items.length}</p></div>
        <div className="card"><span className="text-xs text-muted">منتجات منخفضة</span><p className="kpi-value">{items.filter((d) => d.availableCodes <= 10).length}</p></div>
       </div>
 
       {items.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -51,7 +51,7 @@ export default function StockPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState
          title="لا توجد بطاقات رقمية في المخزون بعد"
          description="أضف منتجات رقمية من وحدة التسليم الرقمي لمتابعة الرصيد."

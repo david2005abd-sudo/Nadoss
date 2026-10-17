@@ -39,7 +39,7 @@ export default function AnalyticsPage() {
 
     return (
      <>
-      <div className="grid-4">
+      <div className="grid-4 nq-reveal">
        <KpiCard label="إجمالي الطلبات" value={totalOrders} icon={getIcon('cart')} tone="purple" />
        <KpiCard label="إجمالي الإيرادات" value={formatIQD(totalRevenue)} icon={getIcon('chart')} tone="green" />
        <KpiCard label="متوسط قيمة الطلب" value={formatIQD(avgOrder)} icon={getIcon('receipt')} tone="amber" />
@@ -51,9 +51,9 @@ export default function AnalyticsPage() {
        />
       </div>
 
-      <div className="grid-2">
+      <div className="grid-2 nq-reveal">
        {/* ---------- Orders per month ---------- */}
-       <div className="chart-box">
+       <div className="chart-box nq-reveal">
         <span className="text-xs text-muted">نمو الطلبات شهريًا </span>
         <div className="mt-4 flex h-56 items-end gap-3">
          {MONTHS.map((m, i) => (
@@ -73,7 +73,7 @@ export default function AnalyticsPage() {
        </div>
 
        {/* ---------- Revenue per month ---------- */}
-       <div className="chart-box">
+       <div className="chart-box nq-reveal">
         <span className="text-xs text-muted">الإيرادات شهريًا </span>
         <div className="mt-4 flex h-56 items-end gap-3">
          {MONTHS.map((m, i) => {
@@ -97,7 +97,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ---------- Best products ---------- */}
-      <div className="chart-box">
+      <div className="chart-box nq-reveal">
        <span className="text-xs text-muted">أفضل المنتجات (حسبالمبيعات)</span>
        {topProducts.length > 0 ? (
         <div className="table-wrap mt-3">
@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ---------- Top customers ---------- */}
-      <div className="chart-box">
+      <div className="chart-box nq-reveal">
        <span className="text-xs text-muted">أعلى العملاء (حسب إجمالي المشتريات)</span>
        {topCustomers.length > 0 ? (
         <div className="table-wrap mt-3">

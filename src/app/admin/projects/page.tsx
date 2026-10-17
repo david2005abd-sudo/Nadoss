@@ -21,7 +21,7 @@ export default function AdminProjectsPage() {
 
    <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث باسم المشروع أو المالك..." />
 
-   <div className="table-wrap">
+   <div className="table-wrap nq-reveal">
     <table className="data-table">
      <thead>
       <tr>

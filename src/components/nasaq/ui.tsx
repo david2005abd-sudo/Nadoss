@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { IconX } from './icons';
+import { AnimatedNumber, TiltCard } from '@/components/nasaq/interactive';
 import { useToasts } from '@/lib/nasaq/store-core';
 
 /* ==========================================================================
@@ -216,35 +217,44 @@ export function PageHeader({
 }
 
 /* ==========================================================================
-  KPI card
-  ========================================================================== */
+   Icon tone map (shared by KPI cards)
+   ========================================================================== */
 
-export function KpiCard({
- label,
- value,
- icon,
- tone = 'purple',
-}: {
- label: string;
- value: string | number;
- icon?: ReactNode;
- tone?: 'purple' | 'teal' | 'green' | 'amber';
-}) {
- const tones = {
+const ICON_TONES: Record<string, string> = {
   purple: 'icon-box-purple',
   teal: 'icon-box-teal',
   green: 'icon-box-green',
   amber: 'icon-box-amber',
- };
- return (
-  <div className="kpi-card">
-   <div>
-    <p className="text-xs text-text-secondary">{label}</p>
-    <p className="kpi-value">{value}</p>
-   </div>
-   {icon && <div className={tones[tone]}>{icon}</div>}
-  </div>
- );
+};
+
+/* ==========================================================================
+   KPI card — animated: counts up when scrolled into view, tilts on hover
+   ========================================================================== */
+
+export function KpiCard({
+  label,
+  value,
+  icon,
+  tone = 'purple',
+  hint,
+}: {
+  label: string;
+  value: string | number;
+  icon?: ReactNode;
+  tone?: 'purple' | 'teal' | 'green' | 'amber';
+  hint?: string;
+}) {
+  const isNumeric = typeof value === 'number';
+  return (
+    <TiltCard className="kpi-card" max={4}>
+      <div>
+        <p className="text-xs text-text-secondary">{label}</p>
+        {isNumeric ? <AnimatedNumber value={value as number} /> : <p className="kpi-value">{value}</p>}
+        {hint && <p className="mt-1 text-xs text-text-secondary">{hint}</p>}
+      </div>
+      {icon && <div className={`${ICON_TONES[tone]} nq-icon-pop`}>{icon}</div>}
+    </TiltCard>
+  );
 }
 
 /* ==========================================================================

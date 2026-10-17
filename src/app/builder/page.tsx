@@ -49,7 +49,7 @@ export default function BuilderPage() {
  }
 
  return (
-  <div className="space-y-5">
+  <div className="space-y-5 nq-reveal">
    <div className="flex flex-wrap items-end justify-between gap-3">
     <div>
      <nav className="breadcrumbs" aria-label="مسار التنقل">

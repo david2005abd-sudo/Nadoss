@@ -50,7 +50,7 @@ export default function OrdersPage() {
       />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -86,7 +86,7 @@ export default function OrdersPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q || filter ? 'لا توجد طلبات مطابقة' : 'لا توجد طلبات بعد'} description="شارك رابط متجرك لتبدأ استقبال الطلبات." />
        </div>
       )}
@@ -97,7 +97,7 @@ export default function OrdersPage() {
         onClose={() => setDetail(null)}
         footer={<button type="button" className="btn btn-outline btn-sm" onClick={() => setDetail(null)}>إغلاق</button>}
        >
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <div><span className="text-xs text-muted">العميل</span><p className="font-bold">{detail.customer}</p></div>
          <div><span className="text-xs text-muted">التاريخ</span><p className="font-bold">{detail.date}</p></div>
          <div><span className="text-xs text-muted">العناصر</span><p className="font-bold">{detail.items}</p></div>

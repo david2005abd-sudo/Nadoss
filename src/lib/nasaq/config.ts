@@ -59,6 +59,37 @@ export const LANGUAGES = ['العربية (RTL)', 'العربية مع دعم ا
 
 export const FONTS = ['Tajawal', 'Almarai', 'Arial / System'] as const;
 
+
+/** المحافظات العراقية مع أجور التوصيل التقديرية. */
+export const IRAQ_GOVERNORATES = [
+  { city: 'بغداد', fee: 5000 },
+  { city: 'البصرة', fee: 7500 },
+  { city: 'النجف', fee: 6500 },
+  { city: 'كربلاء', fee: 6500 },
+  { city: 'أربيل', fee: 8000 },
+  { city: 'السليمانية', fee: 8000 },
+  { city: 'دهوك', fee: 8500 },
+  { city: 'كركوك', fee: 7500 },
+  { city: 'ديالى', fee: 7000 },
+  { city: 'الأنبار', fee: 8000 },
+  { city: 'بابل', fee: 6500 },
+  { city: 'القادسية', fee: 6500 },
+  { city: 'ميسان', fee: 8000 },
+  { city: 'المثنى', fee: 8500 },
+  { city: 'واسط', fee: 7000 },
+  { city: 'ذي قار', fee: 7500 },
+  { city: 'صلاح الدين', fee: 7500 },
+  { city: 'نينوى', fee: 7500 },
+];
+
+export const DEFAULTS = {
+  currency: 'دينار عراقي (د.ع)',
+  language: 'العربية (RTL)',
+  city: 'بغداد',
+  phone: '+964 7XX XXX XXXX',
+  email: 'owner@nasaq.iq',
+};
+
 export const BRAND = {
  name: 'نَسَق',
  short: 'ن',

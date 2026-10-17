@@ -101,7 +101,7 @@ export default function ProductsPage() {
       />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -142,7 +142,7 @@ export default function ProductsPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState
          title={q || filter ? 'لا توجد منتجات مطابقة' : 'لم تضف أي منتجات بعد'}
          description="أضف منتجك الأول لبدء البيع ال في لوحة المشروع."
@@ -172,7 +172,7 @@ export default function ProductsPage() {
           ))}
          </select>
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="السعر (رقم)">
           <input id="modal-prod-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

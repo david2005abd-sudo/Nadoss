@@ -53,7 +53,7 @@ export default function CustomersPage() {
 
     return (
      <>
-      <div className="grid-4">
+      <div className="grid-4 nq-reveal">
        <KpiCard label="عدد العملاء" value={project.customers.length} icon={<IconUsers size={18} />} tone="purple" />
        <KpiCard label="إجمالي المشتريات" value={formatIQD(totalSpent)} icon={<IconUsers size={18} />} tone="green" />
        <KpiCard label="متوسط قيمة العميل" value={formatIQD(avg)} icon={<IconUsers size={18} />} tone="amber" />
@@ -63,7 +63,7 @@ export default function CustomersPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث باسم العميل أو رقمه..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -94,7 +94,7 @@ export default function CustomersPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد نتائج مطابقة' : 'لا يوجد عملاء بعد'} description="أضف أول عميل لك لبدء المتابعة." />
        </div>
       )}

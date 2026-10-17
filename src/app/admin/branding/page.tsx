@@ -33,7 +33,7 @@ export default function AdminBrandingPage() {
    <div className="grid-2 lg:grid-cols-3">
     <div className="card lg:col-span-2">
      <h2 className="mb-3 text-base font-extrabold">إعدادات المنصة</h2>
-     <div className="grid-2">
+     <div className="grid-2 nq-reveal">
       <Field label="اسم المنصة (يظهر في العلامة التجارية)">
        <input id="adm-pf-brand" className="form-control" value={state.platformSettings.brandName} onChange={(e) => setPlatformSettings({ brandName: e.target.value })} />
       </Field>

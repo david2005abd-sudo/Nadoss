@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useNasaq } from '@/lib/nasaq/store';
 import { MODULE_REGISTRY } from '@/lib/nasaq/modules';
 import { getIcon } from '@/components/nasaq/icons';
-import { Breadcrumbs, KpiCard } from '@/components/nasaq/ui';
+import { Breadcrumbs } from '@/components/nasaq/ui';
+import { AnimatedKpi, LiveDot, StatBar, TiltCard, Reveal } from '@/components/nasaq/interactive';
 import { formatIQD, formatPrice } from '@/lib/utils';
 
 /** عناوين ونصائح حسب نوع النشاط. */
@@ -132,7 +133,7 @@ export default function DashboardPage() {
   const money = (n: number) => formatPrice(n, project.currency);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 nq-reveal">
       <Breadcrumbs items={['نَسَق', project.name, 'نظرة عامة']} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -151,11 +152,11 @@ export default function DashboardPage() {
       </div>
 
       {/* -------- KPIs -------- */}
-      <div className="grid-4">
-        <KpiCard label="المنتجات" value={productsCount} icon={getIcon('bag')} tone="purple" />
-        <KpiCard label="الطلبات" value={ordersCount} icon={getIcon('cart')} tone="teal" />
-        <KpiCard label="العملاء" value={customersCount} icon={getIcon('users')} tone="green" />
-        <KpiCard label="قيمة الطلبات" value={money(totalOrdersValue)} icon={getIcon('chart')} tone="amber" />
+      <div className="grid-4 nq-reveal">
+        <AnimatedKpi label="المنتجات" value={productsCount} icon="bag" tone="purple" />
+        <AnimatedKpi label="الطلبات" value={ordersCount} icon="cart" tone="teal" />
+        <AnimatedKpi label="العملاء" value={customersCount} icon="users" tone="green" />
+        <AnimatedKpi label="قيمة الطلبات" value={money(totalOrdersValue)} icon="chart" tone="amber" />
       </div>
 
       <div className="grid-2 lg:grid-cols-3">
@@ -203,7 +204,7 @@ export default function DashboardPage() {
       </div>
 
       {/* -------- Recent orders -------- */}
-      <div className="card !p-0">
+      <div className="card !p-0 nq-reveal">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <h2 className="font-semibold">آخر الطلبات</h2>
           <Link href="/dashboard/orders" className="text-sm text-primary hover:underline">

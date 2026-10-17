@@ -48,7 +48,7 @@ export default function DigitalDeliveryPage() {
 
     return (
      <>
-      <div className="grid-3 sm:grid-cols-3">
+      <div className="grid-3 sm:grid-cols-3 nq-reveal">
        <div className="card"><span className="text-xs text-muted">منتجات رقمية</span><p className="kpi-value">{project.digitalItems.length}</p></div>
        <div className="card"><span className="text-xs text-muted">أكواد متاحة</span><p className="kpi-value">{totalCodes}</p></div>
        <div className="card"><span className="text-xs text-muted">طلبات مكتملة</span><p className="kpi-value">{project.orders.filter((o) => o.status?.includes('تم تسليم الكود')).length}</p></div>
@@ -57,7 +57,7 @@ export default function DigitalDeliveryPage() {
       <TableToolbar search={q} onSearchChange={setQ} searchPlaceholder="ابحث عن منتج رقمي..." />
 
       {filtered.length > 0 ? (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <table className="data-table">
          <thead>
           <tr>
@@ -97,7 +97,7 @@ export default function DigitalDeliveryPage() {
         </table>
        </div>
       ) : (
-       <div className="table-wrap">
+       <div className="table-wrap nq-reveal">
         <EmptyState title={q ? 'لا توجد منتجات مطابقة' : 'لا توجد منتجات رقمية بعد'} description="أضف منتجًا رقميًا ليتم تسليمه فورًا للعملاء." />
        </div>
       )}
@@ -116,7 +116,7 @@ export default function DigitalDeliveryPage() {
         <Field label="اسم المنتج">
          <input id="mod-dig-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </Field>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="نوع التسليم">
           <select id="mod-dig-type" className="form-control" value={form.type ?? ''} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
            {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -126,7 +126,7 @@ export default function DigitalDeliveryPage() {
           <input id="mod-dig-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>
         </div>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal">
          <Field label="عدد الأكواد المتاحة">
           <input type="number" className="form-control" value={form.availableCodes ?? 0} onChange={(e) => setForm((f) => ({ ...f, availableCodes: Number(e.target.value) }))} />
          </Field>

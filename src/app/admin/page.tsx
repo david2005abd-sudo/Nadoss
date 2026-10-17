@@ -38,7 +38,7 @@ export default function AdminPage() {
       />
 
       {/* -------- KPIs -------- */}
-      <div className="grid-4">
+      <div className="grid-4 nq-reveal">
         <KpiCard label="إجمالي المشتركين" value={subscribers.length} icon={getIcon('users')} tone="purple" />
         <KpiCard label="مشتركون نشطون" value={activeSubs} icon={getIcon('users')} tone="green" />
         <KpiCard
@@ -101,13 +101,13 @@ export default function AdminPage() {
       </div>
 
       {/* -------- Latest subscribers -------- */}
-      <div className="grid-2">
+      <div className="grid-2 nq-reveal">
         <div className="card">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs text-muted">أحدث المشتركين</span>
             <Link href="/admin/subscribers" className="text-xs text-primary hover:underline">عرض الكل</Link>
           </div>
-          <div className="table-wrap">
+          <div className="table-wrap nq-reveal">
             <table className="data-table">
               <thead>
                 <tr>
@@ -154,7 +154,7 @@ export default function AdminPage() {
           <span className="text-xs text-muted">ملخص الباقات</span>
           <Link href="/admin/plans" className="text-xs text-primary hover:underline">تعديل الأسعار</Link>
         </div>
-        <div className="grid-3 sm:grid-cols-3">
+        <div className="grid-3 sm:grid-cols-3 nq-reveal">
           {state.plans.map((p) => (
             <div key={p.id} className="rounded-md border border-border p-3">
               <div className="flex items-center justify-between">
