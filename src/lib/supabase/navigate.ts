@@ -10,13 +10,13 @@
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? process.env.__NEXT_ROUTE_BASEPATH ?? '';
 
 export function withBase(path: string): string {
-  if (!path.startsWith('/')) return path;
-  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
-  if (path === '/') return `${base}/`;
-  return `${base}${path}`;
+ if (!path.startsWith('/')) return path;
+ const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+ if (path === '/') return `${base}/`;
+ return `${base}${path}`;
 }
 
 /** Full page load to a basePath-correct URL. */
 export function navigateTo(path: string): void {
-  window.location.assign(withBase(path));
+ window.location.assign(withBase(path));
 }
