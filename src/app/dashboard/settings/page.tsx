@@ -47,7 +47,7 @@ export default function SettingsPage() {
        <div className="grid-2 lg:grid-cols-3">
         <div className="card lg:col-span-2">
          <h2 className="mb-3 text-base font-extrabold">بيانات المشروع الأساسية</h2>
-         <div className="grid-2 nq-reveal">
+         <div className="grid-2 nq-reveal nq-stagger">
           <Field label="اسم المشروع أو المتجر">
            <input id="set-proj-name" className="form-control" value={project.name} onChange={(e) => patch({ name: e.target.value })} />
           </Field>
@@ -139,7 +139,7 @@ export default function SettingsPage() {
        <div className="grid-2 lg:grid-cols-3">
         <div className="card lg:col-span-2">
          <h2 className="mb-3 text-base font-extrabold">المستخدم والواجهة</h2>
-         <div className="grid-2 nq-reveal">
+         <div className="grid-2 nq-reveal nq-stagger">
           <Field label="اسم المالك / المستخدم">
            <input id="set-user-name" className="form-control" value={state.userSettings.name} onChange={(e) => patchUser({ name: e.target.value })} />
           </Field>

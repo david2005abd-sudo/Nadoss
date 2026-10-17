@@ -153,7 +153,7 @@ export default function AdminAiPage() {
      <Field label="اسم المزود">
       <input id="mod-pv-model" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="OpenAI" />
      </Field>
-     <div className="grid-2 nq-reveal">
+     <div className="grid-2 nq-reveal nq-stagger">
       <Field label="الموديل">
        <input id="mod-pv-modelid" className="form-control" dir="ltr" value={form.model ?? ''} onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))} placeholder="gpt-4o-mini" />
       </Field>
@@ -172,7 +172,7 @@ export default function AdminAiPage() {
        placeholder="توليد نصوص, تلخيص, تحليل"
       />
      </Field>
-     <div className="grid-2 nq-reveal">
+     <div className="grid-2 nq-reveal nq-stagger">
       <Field label="الحد الأقصى ال">
        <input className="form-control" value={form.limit ?? ''} onChange={(e) => setForm((f) => ({ ...f, limit: e.target.value }))} />
       </Field>

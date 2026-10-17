@@ -116,7 +116,7 @@ export default function DigitalDeliveryPage() {
         <Field label="اسم المنتج">
          <input id="mod-dig-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="نوع التسليم">
           <select id="mod-dig-type" className="form-control" value={form.type ?? ''} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
            {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -126,7 +126,7 @@ export default function DigitalDeliveryPage() {
           <input id="mod-dig-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>
         </div>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="عدد الأكواد المتاحة">
           <input type="number" className="form-control" value={form.availableCodes ?? 0} onChange={(e) => setForm((f) => ({ ...f, availableCodes: Number(e.target.value) }))} />
          </Field>

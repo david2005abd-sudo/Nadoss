@@ -243,7 +243,7 @@ export default function OnboardingPage() {
         />
 
         <div className="mb-2 text-sm font-bold">أو اختر من الأنواع المدعومة:</div>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal nq-stagger">
          {BUSINESS_TYPES.map((bt) => (
           <button
            key={bt.id}
@@ -266,7 +266,7 @@ export default function OnboardingPage() {
       {step === 1 && (
        <div>
         <h2 className="mb-3 text-lg font-extrabold">{WIZARD_STEPS[1]}</h2>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal nq-stagger">
          <label className="form-group">
           <span className="form-label">اسم المشروع أو المتجر *</span>
           <input id="wiz-name" className="form-control" value={draft.name} onChange={(e) => set({ name: e.target.value })} placeholder="مثال: متجر الرياض الأنيق" />
@@ -320,7 +320,7 @@ export default function OnboardingPage() {
        <div>
         <h2 className="mb-2 text-lg font-extrabold">{WIZARD_STEPS[2]}</h2>
         <p className="mb-3 text-sm text-muted">حدد أهدافك الأساسية ليقترح محرك الوحدات الأقسام المناسبة تلقائيًا.</p>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal nq-stagger">
          {GOALS.map((g) => (
           <button
            key={g.id}
@@ -349,7 +349,7 @@ export default function OnboardingPage() {
         <p className="mb-3 text-sm text-muted">
          فعّل فقط الأقسام التي تحتاجها في لوحة التحكم لحماية خصوصية بياناتك وتبسيط العمل اليومي:
         </p>
-        <div id="wiz-modules-grid" className="grid-3">
+        <div id="wiz-modules-grid" className="grid-3 nq-reveal nq-stagger">
          {allModules.map((mod) => {
           const supported = supportsBusinessType(mod, draft.businessType || 'store');
           const enabled = draft.enabledModules.includes(mod.id);
@@ -422,7 +422,7 @@ export default function OnboardingPage() {
       {step === 5 && (
        <div className="mt-2" id="wizard-footr">
         <h2 className="mb-3 text-lg font-extrabold">{WIZARD_STEPS[5]}</h2>
-        <div className="grid-2">
+        <div className="grid-2 nq-reveal nq-stagger">
          <div className="card" style={{ background: 'var(--muted-surface)' }}>
           <h3 className="mb-2 text-sm font-bold">موقعك الإلكتروني (معاينة حية)</h3>
           <div className="rounded-lg border border-border p-3" style={{ background: 'linear-gradient(180deg, #F8FAFC, #FFFFFF)' }}>

@@ -38,7 +38,7 @@ export default function AdminPage() {
       />
 
       {/* -------- KPIs -------- */}
-      <div className="grid-4 nq-reveal">
+      <div className="grid-4 nq-reveal nq-stagger">
         <KpiCard label="إجمالي المشتركين" value={subscribers.length} icon={getIcon('users')} tone="purple" />
         <KpiCard label="مشتركون نشطون" value={activeSubs} icon={getIcon('users')} tone="green" />
         <KpiCard
@@ -101,7 +101,7 @@ export default function AdminPage() {
       </div>
 
       {/* -------- Latest subscribers -------- */}
-      <div className="grid-2 nq-reveal">
+      <div className="grid-2 nq-reveal nq-stagger">
         <div className="card">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs text-muted">أحدث المشتركين</span>

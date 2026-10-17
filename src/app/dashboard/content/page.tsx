@@ -87,7 +87,7 @@ export default function ContentPage() {
       {/* ---------- Hero text ---------- */}
       <div className="card">
        <h2 className="mb-3 text-base font-extrabold">نصوص الصفحة الرئيسية</h2>
-       <div className="grid-2 nq-reveal">
+       <div className="grid-2 nq-reveal nq-stagger">
         <Field label="عنوان الموقع / الشعار">
          <input
           id="mod-pg-title"
@@ -199,7 +199,7 @@ export default function ContentPage() {
         <Field label="عنوان الصفحة">
          <input className="form-control" value={form.title ?? ''} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="اتصل بنا" />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="مسار الصفحة">
           <input className="form-control" dir="ltr" value={form.slug ?? ''} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} placeholder="/contact" />
          </Field>

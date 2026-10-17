@@ -105,7 +105,7 @@ export default function FilesPage() {
        <Field label="اسم الملف">
         <input className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="عقد التصميم الداخلي.pdf" />
        </Field>
-       <div className="grid-2 nq-reveal">
+       <div className="grid-2 nq-reveal nq-stagger">
         <Field label="النوع">
          <select className="form-control" value={form.type ?? ''} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
           {['PDF', 'DOCX', 'PNG', 'JPG', 'XLSX', 'DWG'].map((t) => <option key={t} value={t}>{t}</option>)}

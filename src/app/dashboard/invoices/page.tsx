@@ -107,7 +107,7 @@ export default function InvoicesPage() {
         <Field label="العميل">
          <input id="mod-inv-client" className="form-control" value={form.client ?? ''} onChange={(e) => setForm((f) => ({ ...f, client: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="المبلغ">
           <input id="mod-inv-amount" type="number" className="form-control" value={form.amount ?? 0} onChange={(e) => setForm((f) => ({ ...f, amount: Number(e.target.value) }))} />
          </Field>

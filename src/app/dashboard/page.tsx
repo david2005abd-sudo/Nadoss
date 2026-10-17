@@ -152,7 +152,7 @@ export default function DashboardPage() {
       </div>
 
       {/* -------- KPIs -------- */}
-      <div className="grid-4 nq-reveal">
+      <div className="grid-4 nq-reveal nq-stagger">
         <AnimatedKpi label="المنتجات" value={productsCount} icon="bag" tone="purple" />
         <AnimatedKpi label="الطلبات" value={ordersCount} icon="cart" tone="teal" />
         <AnimatedKpi label="العملاء" value={customersCount} icon="users" tone="green" />

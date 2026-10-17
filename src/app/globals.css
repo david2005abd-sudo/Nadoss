@@ -466,10 +466,14 @@ body {
  }
 }
 
-/* RTL sidebar on mobile: slide in from the right */
+/* =====================================================================
+   Responsive layer — mobile-first corrections for the app shells
+   ===================================================================== */
+
+/* القائمة الجانبية خارج الشاشة على الهاتف، تنزلق من اليمين */
 @media (max-width: 1023px) {
  .app-sidebar {
-  @apply translate-x-full transition-transform;
+  @apply fixed translate-x-full transition-transform;
   box-shadow: var(--shadow-md);
  }
  .app-sidebar.mobile-open {
@@ -480,6 +484,126 @@ body {
  }
  .sidebar-overlay.open {
   @apply pointer-events-auto opacity-100;
+ }
+ /* لا حاجة لهوامش الـ sidebar على الهاتف */
+ .app-main-wrap {
+  padding-right: 0 !important;
+ }
+}
+
+/* الحاسوب: القائمة الجانبية ظاهرة دائمًا والمحتوى مزاح */
+@media (min-width: 1024px) {
+ .app-main-wrap {
+  padding-right: var(--sidebar-width);
+ }
+ .sidebar-overlay {
+  @apply hidden;
+ }
+}
+
+/* هوامش آمنة لشاشات النوتش */
+@supports (padding: max(0px)) {
+ .app-topbar {
+  padding-top: max(0px, env(safe-area-inset-top));
+ }
+ .nq-toast-stack,
+ .toast-container {
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+ }
+ .app-sidebar {
+  padding-bottom: env(safe-area-inset-bottom);
+ }
+}
+
+/* الهاتف: الشريط العلوي يلتف، الجداول تُمرر أفقيًا، النماذج تملأ العرض */
+@media (max-width: 640px) {
+ .app-topbar {
+  @apply h-auto flex-wrap py-2;
+  min-height: var(--topbar-height);
+ }
+ .app-content {
+  @apply p-3.5;
+ }
+ .nasaq-container {
+  @apply px-3.5;
+ }
+ .table-wrap {
+  @apply -mx-3.5 overflow-x-auto px-3.5;
+  -webkit-overflow-scrolling: touch;
+ }
+ .data-table {
+  min-width: 640px;
+ }
+ .data-table thead th,
+ .data-table tbody td {
+  @apply px-3 py-2.5;
+  white-space: nowrap;
+ }
+ .wizard-progress {
+  @apply grid-cols-2 gap-1.5;
+ }
+ .wizard-step-pill {
+  @apply px-1.5 py-1.5 text-[11px];
+ }
+ .modal-dialog {
+  @apply max-w-none;
+ }
+ .modal-footer .btn {
+  @apply flex-1;
+ }
+ .kpi-card {
+  @apply flex-row items-center;
+ }
+ .grid-2,
+ .grid-3,
+ .grid-4 {
+  @apply gap-3.5;
+ }
+ /* شريط السلة العائم في المتجر */
+ .nq-cart-float {
+  @apply !bottom-5 !left-5;
+ }
+}
+
+/* الأجهزة اللوحية */
+@media (min-width: 641px) and (max-width: 1023px) {
+ .data-table {
+  min-width: 720px;
+ }
+ .wizard-progress {
+  @apply grid-cols-3;
+ }
+}
+
+/* منع التمرير الأفقي غير المقصود */
+html,
+body {
+ @apply max-w-full overflow-x-hidden;
+}
+
+/* القائمة الرئيسية في رأس الموقع */
+@media (max-width: 1023px) {
+ .nav-links {
+  @apply absolute left-0 right-0 top-full hidden flex-col gap-3 border-b border-border bg-surface p-4;
+ }
+ .nav-links.mobile-open {
+  @apply flex;
+ }
+}
+
+/* محسّنات اللمس */
+@media (hover: none) {
+ .btn,
+ .sidebar-item,
+ .nav-link {
+  min-height: 40px;
+ }
+ .data-table tbody tr:active {
+  background-color: var(--muted-surface);
+ }
+ /* تأثيرات الفأرة تُعطَّل على اللمس لتبقى الواجهة هادئة */
+ .nq-spotlight::before {
+  display: none;
  }
 }
 
@@ -785,13 +909,209 @@ body {
   .nq-livedot-dot::after,
   .nq-skeleton::after,
   .nq-float,
-  .card {
+  .card,
+  .nq-page-enter,
+  .nq-stagger > * {
     animation: none !important;
+    transition: none !important;
   }
-  .nq-tilt {
+  .nq-tilt,
+  .nq-cart-count {
+    animation: none !important;
     transition: none !important;
   }
   .nq-statbar-fill {
     transition: none !important;
   }
+}
+
+/* =====================================================================
+   Page transitions — subtle enter animation for <main> on every route
+   ===================================================================== */
+@keyframes nq-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.nq-page-enter {
+  animation: nq-page-in .38s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+/* =====================================================================
+   Stagger — child elements of .nq-stagger cascade in on reveal
+   ===================================================================== */
+.nq-stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: nq-page-in .5s cubic-bezier(.2, .7, .3, 1) both;
+}
+.nq-stagger.nq-shown > *:nth-child(1) { animation-delay: 0ms; }
+.nq-stagger.nq-shown > *:nth-child(2) { animation-delay: 55ms; }
+.nq-stagger.nq-shown > *:nth-child(3) { animation-delay: 110ms; }
+.nq-stagger.nq-shown > *:nth-child(4) { animation-delay: 165ms; }
+.nq-stagger.nq-shown > *:nth-child(5) { animation-delay: 220ms; }
+.nq-stagger.nq-shown > *:nth-child(6) { animation-delay: 275ms; }
+.nq-stagger.nq-shown > *:nth-child(7) { animation-delay: 330ms; }
+.nq-stagger.nq-shown > *:nth-child(8) { animation-delay: 385ms; }
+.nq-stagger.nq-shown > *:nth-child(n + 9) { animation-delay: 440ms; }
+
+/* =====================================================================
+   Micro-interactions — reusable hover/press polish
+   ===================================================================== */
+
+/* روابط التنقل: خط سفني متحرك */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform .28s cubic-bezier(.2, .7, .3, 1);
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* جدول: سطر الكشف عند المرور */
+.data-table thead th {
+  position: relative;
+}
+.data-table thead th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--primary);
+  transform: scaleX(0);
+  transition: transform .3s ease;
+}
+.data-table thead:hover th::after {
+  transform: scaleX(1);
+}
+
+/* حقول الإدخال: شريط سفلي عند التركيز */
+.form-control {
+  position: relative;
+}
+.form-control:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+/* شارات: تنبض بلطف عند المرور */
+.badge {
+  transition: transform .2s ease, filter .2s ease;
+}
+.badge:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* بطاقات المنيو/المنتجات: تكبير خفيف للصورة */
+.nq-item-art {
+  transition: transform .35s cubic-bezier(.2, .7, .3, 1);
+}
+.card:hover .nq-item-art {
+  transform: scale(1.03);
+}
+
+/* القائمة الجانبية: انزلاق الأيقونة */
+.sidebar-item svg {
+  transition: transform .25s cubic-bezier(.2, .7, .3, 1);
+}
+.sidebar-item:hover svg,
+.sidebar-item.active svg {
+  transform: translateX(-3px);
+}
+
+/* أزرار الأيقونات الصغيرة: تكبير */
+.btn-sm:hover svg {
+  transform: scale(1.12);
+}
+.btn-sm svg {
+  transition: transform .2s ease;
+}
+
+/* الـ hero: تدرّج متحرك في الخلفية */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--primary) 7%, transparent), transparent 45%),
+              radial-gradient(circle at 25% 75%, color-mix(in srgb, var(--secondary) 7%, transparent), transparent 42%);
+  animation: nq-drift 22s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes nq-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-2%, 2%, 0) scale(1.06); }
+  100% { transform: translate3d(2%, -2%, 0) scale(1.02); }
+}
+
+/* الأسئلة الشائعة: فتح سلس */
+.faq-answer {
+  animation: nq-faq .3s cubic-bezier(.2, .7, .3, 1);
+}
+@keyframes nq-faq {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* الأقسام الممتدة: خط زمني جانبي */
+.section-block-alt {
+  position: relative;
+}
+.section-block-alt::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--primary) 22%, transparent), transparent);
+}
+
+/* طباعة */
+@media print {
+  .app-sidebar,
+  .app-topbar,
+  .nq-scroll-rail,
+  .nq-toast-stack,
+  .toast-container,
+  .btn {
+    display: none !important;
+  }
+  .app-main-wrap {
+    padding: 0 !important;
+  }
+  body {
+    background: #fff;
+  }
+}
+
+/* =====================================================================
+   Heading typography — Almarai for titles, Tajawal for body
+   ===================================================================== */
+h1, h2, h3, h4, h5, h6,
+.hero-title, .section-title, .kpi-value, .brand-mark {
+  font-family: 'Almarai', 'Tajawal', Arial, system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }

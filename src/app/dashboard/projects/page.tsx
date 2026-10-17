@@ -119,7 +119,7 @@ export default function ProjectsPage() {
         <Field label="وصف المرحلة">
          <textarea className="form-control" rows={3} value={form.description ?? ''} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="بداية">
           <input type="date" className="form-control" value={form.startDate ?? ''} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
          </Field>

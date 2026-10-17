@@ -128,7 +128,7 @@ export default function MenuPage() {
           {project.categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
          </select>
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="السعر">
           <input id="mod-meal-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

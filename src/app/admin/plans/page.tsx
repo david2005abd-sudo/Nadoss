@@ -23,7 +23,7 @@ export default function AdminPlansPage() {
     }
    />
 
-   <div className="grid-3 nq-reveal">
+   <div className="grid-3 nq-reveal nq-stagger">
     {state.plans.map((p) => (
      <div key={p.id} className={p.popular ? 'card border-primary' : 'card'}>
       <div className="mb-2 flex items-center justify-between">
@@ -155,7 +155,7 @@ export default function AdminPlansPage() {
      <Field label="اسم الباقة (عربي)">
       <input id="mod-pl-name" className="form-control" value={form.nameAr} onChange={(e) => setForm((f) => ({ ...f, nameAr: e.target.value }))} placeholder="باقة مخصصة" />
      </Field>
-     <div className="grid-2 nq-reveal">
+     <div className="grid-2 nq-reveal nq-stagger">
       <Field label="الكود">
        <input id="mod-pl-code" className="form-control" dir="ltr" value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} />
       </Field>
@@ -163,7 +163,7 @@ export default function AdminPlansPage() {
        <input id="mod-pl-price" type="number" className="form-control" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
       </Field>
      </div>
-     <div className="grid-2 nq-reveal">
+     <div className="grid-2 nq-reveal nq-stagger">
       <Field label="عدد المشاريع">
        <input id="mod-pl-proj" type="number" className="form-control" value={form.maxProjects} onChange={(e) => setForm((f) => ({ ...f, maxProjects: Number(e.target.value) }))} />
       </Field>

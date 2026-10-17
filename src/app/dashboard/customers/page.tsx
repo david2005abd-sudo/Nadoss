@@ -53,7 +53,7 @@ export default function CustomersPage() {
 
     return (
      <>
-      <div className="grid-4 nq-reveal">
+      <div className="grid-4 nq-reveal nq-stagger">
        <KpiCard label="عدد العملاء" value={project.customers.length} icon={<IconUsers size={18} />} tone="purple" />
        <KpiCard label="إجمالي المشتريات" value={formatIQD(totalSpent)} icon={<IconUsers size={18} />} tone="green" />
        <KpiCard label="متوسط قيمة العميل" value={formatIQD(avg)} icon={<IconUsers size={18} />} tone="amber" />

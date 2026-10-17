@@ -65,7 +65,7 @@ export default function BuilderPage() {
     </div>
    </div>
 
-   <div className="builder-layout">
+   <div className="builder-layout nq-reveal">
     {/* ================= CONTROLS ================= */}
     <aside id="builder-controls-panel" className="builder-controls">
      <div>

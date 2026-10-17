@@ -40,7 +40,7 @@ export default function AdminAiUsagePage() {
     subtitle="سجلات لطلبات المساعد الذكي حسب المشروع والمزود والمهمة."
    />
 
-   <div className="grid-4 nq-reveal">
+   <div className="grid-4 nq-reveal nq-stagger">
     <KpiCard label="إجمالي الطلبات" value={totals.requests} icon={getIcon('sparkle')} tone="purple" />
     <KpiCard label="إجمالي التوكنات" value={totals.tokens.toLocaleString('en-US')} icon={getIcon('chart')} tone="teal" />
     <KpiCard label="التكلفة التقديرية" value={`$${totals.cost.toFixed(2)}`} icon={getIcon('receipt')} tone="amber" />
@@ -89,7 +89,7 @@ export default function AdminAiUsagePage() {
     </table>
    </div>
 
-   <div className="grid-2 nq-reveal">
+   <div className="grid-2 nq-reveal nq-stagger">
     <div className="card">
      <span className="text-xs text-muted">أعلى المشاريع استهلاكًا </span>
      <div className="mt-3 space-y-2">

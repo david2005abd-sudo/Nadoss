@@ -117,7 +117,7 @@ export default function SparePartsPage() {
         <Field label="اسم القطعة">
          <input id="mod-sp-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="رقم القطعة (OEM)">
           <input id="mod-sp-num" className="form-control" dir="ltr" value={form.partNo ?? ''} onChange={(e) => setForm((f) => ({ ...f, partNo: e.target.value }))} />
          </Field>
@@ -128,7 +128,7 @@ export default function SparePartsPage() {
         <Field label="التوافق">
          <input id="mod-sp-comp" className="form-control" value={form.compatibility ?? ''} onChange={(e) => setForm((f) => ({ ...f, compatibility: e.target.value }))} placeholder="تويوتا كامري 2019-2025" />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="السعر">
           <input id="mod-sp-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

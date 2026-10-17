@@ -97,7 +97,7 @@ export default function OrdersPage() {
         onClose={() => setDetail(null)}
         footer={<button type="button" className="btn btn-outline btn-sm" onClick={() => setDetail(null)}>إغلاق</button>}
        >
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <div><span className="text-xs text-muted">العميل</span><p className="font-bold">{detail.customer}</p></div>
          <div><span className="text-xs text-muted">التاريخ</span><p className="font-bold">{detail.date}</p></div>
          <div><span className="text-xs text-muted">العناصر</span><p className="font-bold">{detail.items}</p></div>

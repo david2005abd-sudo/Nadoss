@@ -156,13 +156,13 @@ function AppTopbar({ onMenu }: { onMenu: () => void }) {
    </div>
 
    <div className="flex flex-1 items-center gap-2">
-    <label className="form-group w-full sm:max-w-xs">
+    <label className="form-group w-full min-w-0 sm:max-w-xs">
      <span className="sr-only">بحث</span>
      <div className="relative">
       <input
        id="global-search-input"
        className="form-control !py-1.5 sm:w-64"
-       placeholder="بحث سريع في المشروع واللوحة..."
+       placeholder="بحث سريع في اللوحة..."
        onKeyDown={(e) => {
         if (e.key === 'Enter') router.push('/dashboard');
        }}
@@ -172,16 +172,16 @@ function AppTopbar({ onMenu }: { onMenu: () => void }) {
    </div>
 
    <div className="flex items-center gap-2">
-    <label className="form-group hidden sm:block">
+    <label className="form-group min-w-0">
      <span className="sr-only">تبديل المشروع</span>
      <select
       id="project-switcher-select"
-      className="form-control !w-auto !py-1.5"
+      className="form-control !w-auto !max-w-[9rem] !py-1.5 sm:!max-w-none"
       value={project?.id ?? ''}
       onChange={(e) => setActiveProject(e.target.value)}
      >
       {state.projects.map((p) => (
-       <option key={p.id} value={p.id}>{p.name} — {p.businessType}</option>
+       <option key={p.id} value={p.id}>{p.name}</option>
       ))}
      </select>
     </label>

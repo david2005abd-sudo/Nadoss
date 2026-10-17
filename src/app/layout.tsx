@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Almarai, Tajawal } from 'next/font/google';
 import './globals.css';
 import { NasaqProvider } from '@/lib/nasaq/store';
-import { MotionObserver, ScrollRail } from '@/components/nasaq/motion';
+import { MobileNavSync, MotionObserver, PageTransition, ScrollRail } from '@/components/nasaq/motion';
 
 const almarai = Almarai({ weight: ['400', '700', '800'], subsets: ['arabic'], display: 'swap' });
 const tajawal = Tajawal({ weight: ['400', '500', '700', '800'], subsets: ['arabic'], display: 'swap' });
@@ -15,10 +15,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={tajawal.className}>
+    <html lang="ar" dir="rtl" className={tajawal.className} data-heading-font={almarai.className}>
+      <head>
+        <meta name="theme-color" content="#5B5CE2" />
+        <meta name="color-scheme" content="light" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </head>
       <body className="min-h-screen bg-bg text-text-primary font-sans antialiased">
         <NasaqProvider>
           <MotionObserver />
+          <PageTransition />
+          <MobileNavSync />
           <ScrollRail />
           {children}
         </NasaqProvider>

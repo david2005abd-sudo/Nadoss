@@ -96,7 +96,7 @@ export default function ServicesPage() {
         <Field label="الوصف">
          <textarea id="mod-srv-desc" className="form-control" rows={3} value={form.description ?? ''} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="السعر">
           <input id="mod-srv-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

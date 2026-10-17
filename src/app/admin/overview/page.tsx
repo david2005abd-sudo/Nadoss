@@ -22,7 +22,7 @@ export default function AdminOverviewPage() {
   <>
    <AdminHeader title="نظرة عامة على المنصة" subtitle="مؤشرات المشتركين، الاشتراكات، استهلاك الذكاء الاصطناعي، والدعم الفني." />
 
-   <div className="grid-4 nq-reveal">
+   <div className="grid-4 nq-reveal nq-stagger">
     <KpiCard label="إجمالي المشتركين" value={subs.length} icon={getIcon('users')} tone="purple" />
     <KpiCard label="مشتركون نشطون" value={activeCount} icon={getIcon('users')} tone="green" />
     <KpiCard label="الإيرادات الشهرية " value={formatIQD(totalRevenue)} icon={getIcon('chart')} tone="amber" />
@@ -36,7 +36,7 @@ export default function AdminOverviewPage() {
     <div className="card"><span className="text-xs text-muted">وضع الصيانة</span><p className="mt-1 text-sm font-bold">{state.platformSettings.maintenanceMode ? 'مفعّل' : 'معطّل'}</p></div>
    </div>
 
-   <div className="grid-2 nq-reveal">
+   <div className="grid-2 nq-reveal nq-stagger">
     <div className="card">
      <span className="text-xs text-muted">أحدث المشتركين </span>
      <div className="table-wrap mt-3">

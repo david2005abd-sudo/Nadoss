@@ -125,7 +125,7 @@ export default function BookingsPage() {
           {project.services.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
          </select>
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="التاريخ">
           <input id="mod-bk-date" type="date" className="form-control" value={form.date ?? ''} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
          </Field>

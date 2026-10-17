@@ -101,7 +101,7 @@ export default function QuotesPage() {
         <Field label="العميل">
          <input id="mod-q-client" className="form-control" value={form.client ?? ''} onChange={(e) => setForm((f) => ({ ...f, client: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="المبلغ">
           <input id="mod-q-amount" type="number" className="form-control" value={form.amount ?? 0} onChange={(e) => setForm((f) => ({ ...f, amount: Number(e.target.value) }))} />
          </Field>

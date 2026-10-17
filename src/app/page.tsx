@@ -74,6 +74,7 @@ const FEATURED_TYPES = ['store', 'restaurant', 'maintenance', 'engineering', 're
 
 export default function HomePage() {
  const { state, setActiveProject } = useNasaq();
+ const [navOpen, setNavOpen] = useState(false);
  const [previewTab, setDemoTab] = useState<string>('store');
  const [openFaq, setOpenFaq] = useState<number>(0);
  const [previewTpl, setPreviewTpl] = useState<string | null>(null);
@@ -91,17 +92,21 @@ export default function HomePage() {
       <span className="font-extrabold">نَسَق</span>
      </a>
 
-     <nav className="nav-links hidden items-center gap-6 lg:flex" aria-label="التنقل الرئيسي">
+     <nav
+      id="landing-nav-links"
+      className={`nav-links items-center gap-6 ${navOpen ? 'mobile-open flex' : 'hidden lg:flex'}`}
+      aria-label="التنقل الرئيسي"
+     >
       {NAV_LINKS.map((l) => (
-       <a key={l.href} href={l.href} className="nav-link">
+       <a key={l.href} href={l.href} className="nav-link" onClick={() => setNavOpen(false)}>
         {l.label}
        </a>
       ))}
      </nav>
 
      <div className="flex items-center gap-2">
-      <Link href="/admin/overview" className="btn btn-sm btn-ghost hide-sm" title="فتح لوحة المالك ال">
-       لوحة المالك 
+      <Link href="/admin/overview" className="btn btn-sm btn-ghost hide-sm" title="فتح لوحة المالك">
+       لوحة المالك
       </Link>
       <Link href="/login" className="btn btn-sm btn-outline">
        تسجيل الدخول
@@ -109,6 +114,15 @@ export default function HomePage() {
       <Link href="/onboarding" className="btn btn-sm btn-primary">
        ابدأ مجانًا
       </Link>
+      <button
+       type="button"
+       className="btn btn-ghost !px-2 lg:hidden"
+       aria-label="القائمة"
+       aria-expanded={navOpen}
+       onClick={() => setNavOpen((v) => !v)}
+      >
+       {getIcon(navOpen ? 'x' : 'menu', { size: 20 })}
+      </button>
      </div>
     </div>
    </header>
@@ -254,7 +268,7 @@ export default function HomePage() {
 
      {previewProject && (
       <>
-       <div className="nq-tabs-bar mb-4 flex flex-wrap justify-center gap-2">
+       <div className="nq-tabs-bar nq-reveal mb-4 flex flex-wrap justify-center gap-2">
         {DEMO_TABS.map((t) => (
          <button
           key={t.id}

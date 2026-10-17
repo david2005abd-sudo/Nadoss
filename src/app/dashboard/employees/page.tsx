@@ -90,7 +90,7 @@ export default function EmployeesPage() {
         <Field label="اسم الموظف">
          <input id="mod-emp-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="الدور الرئيسي">
           <select id="mod-emp-role" className="form-control" value={form.role ?? ''} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}>
            {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}

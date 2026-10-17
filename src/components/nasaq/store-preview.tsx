@@ -415,7 +415,7 @@ export default function StorePreview({ slug = '' }: { slug?: string }) {
           </Reveal>
 
           {visibleItems.length > 0 ? (
-            <StaggerGrid className="grid-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StaggerGrid className="grid-3 nq-reveal nq-stagger sm:grid-cols-2 lg:grid-cols-4">
               {visibleItems.map((item) => (
                 <TiltCard key={item.id} className="card flex flex-col justify-between" max={5}>
                   <div
@@ -492,7 +492,7 @@ export default function StorePreview({ slug = '' }: { slug?: string }) {
       {visibleSections.map((s, i) => (
         <Reveal key={s.id} delay={i * 60}>
           <section id={`sec-${s.id}`} className="section-block section-block-alt">
-            <div className="nasaq-container max-w-3xl">
+            <div className="nasaq-container nq-reveal max-w-3xl">
               <span className="section-badge">{s.type}</span>
               <h2 className="section-title">{s.title}</h2>
               <p className="section-desc">{s.content}</p>
@@ -510,7 +510,7 @@ export default function StorePreview({ slug = '' }: { slug?: string }) {
               <h2 className="section-title">تجربة شراء مريحة وموثوقة</h2>
             </div>
           </Reveal>
-          <StaggerGrid className="grid-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StaggerGrid className="grid-3 nq-reveal nq-stagger sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: 'truck', title: 'توصيل لكل العراق', desc: '18 محافظة مع أجور واضحة قبل الطلب.' },
               { icon: 'card', title: 'دفع عند الاستلام', desc: 'تدفع لما يوصلك الطلب لبابك.' },

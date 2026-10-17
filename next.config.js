@@ -25,6 +25,24 @@ const nextConfig = isExport
       env: {
         NEXT_PUBLIC_BASE_PATH: '',
       },
+      // صفحات HTML يجب ألا تُخزَّن طويلاً في المتصفح، وإلا رأى المستخدم نسخة
+      // قديمة بعد كل نشر. حزم _next/static اسمها محتوى ثابت فلا حاجة لها.
+      async headers() {
+        return [
+          {
+            source: '/:path*',
+            headers: [
+              { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+            ],
+          },
+          {
+            source: '/_next/static/:path*',
+            headers: [
+              { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+            ],
+          },
+        ];
+      },
     };
 
 module.exports = nextConfig;

@@ -172,7 +172,7 @@ export default function ProductsPage() {
           ))}
          </select>
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="السعر (رقم)">
           <input id="modal-prod-price" type="number" className="form-control" value={form.price ?? 0} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
          </Field>

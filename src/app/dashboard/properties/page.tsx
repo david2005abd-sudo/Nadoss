@@ -113,7 +113,7 @@ export default function PropertiesPage() {
         <Field label="اسم الوحدة">
          <input id="mod-prop-name" className="form-control" value={form.name ?? ''} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="فيلا الياسمين بحي الملقا" />
         </Field>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="السعر (نص)" help="مثال: 1,250,000,000 د.ع أو 95,000,000 د.ع / سنويًا">
           <input id="mod-prop-price" className="form-control" value={form.price ?? ''} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} />
          </Field>
@@ -121,7 +121,7 @@ export default function PropertiesPage() {
           <input className="form-control" value={form.area ?? ''} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} placeholder="320 م²" />
          </Field>
         </div>
-        <div className="grid-2 nq-reveal">
+        <div className="grid-2 nq-reveal nq-stagger">
          <Field label="المدينة">
           <input id="mod-prop-city" className="form-control" value={form.city ?? ''} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} />
          </Field>
