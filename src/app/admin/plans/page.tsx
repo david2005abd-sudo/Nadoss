@@ -72,7 +72,7 @@ export default function AdminPlansPage() {
          }
         />
        </Field>
-       <Field label="التخزين ال">
+       <Field label="التخزين">
         <input
          className="form-control"
          value={p.storage}
@@ -133,7 +133,7 @@ export default function AdminPlansPage() {
             code: form.code,
             nameAr,
             price: form.price,
-            period: 'شهريًا (سعر )',
+            period: 'شهريًا',
             maxProjects: form.maxProjects,
             maxPages: form.maxPages,
             aiLimit: form.aiLimit,
@@ -159,7 +159,7 @@ export default function AdminPlansPage() {
       <Field label="الكود">
        <input id="mod-pl-code" className="form-control" dir="ltr" value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} />
       </Field>
-      <Field label="السعر (ر.س)">
+      <Field label="السعر (د.ع)">
        <input id="mod-pl-price" type="number" className="form-control" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
       </Field>
      </div>

@@ -903,7 +903,7 @@ const projects: Project[] = [
   },
   products: [
    { id: 'dp_1', name: 'بطاقة ألعاب رقمية 50 دولار', category: 'بطاقات الألعاب', price: 740000, stock: 50, minStock: 10, status: 'نشط', sales: 120, featured: false },
-   { id: 'dp_2', name: 'بطاقة متجر إلكتروني 100 ريال', category: 'بطاقات المتاجر', price: 400000, stock: 38, minStock: 10, status: 'نشط', sales: 95, featured: false },
+   { id: 'dp_2', name: 'بطاقة متجر إلكتروني بقيمة 100,000 د.ع', category: 'بطاقات المتاجر', price: 400000, stock: 38, minStock: 10, status: 'نشط', sales: 95, featured: false },
    { id: 'dp_3', name: 'بطاقة شحن ', category: 'بطاقات الاتصالات والشحن', price: 200000, stock: 8, minStock: 15, status: 'منخفض المخزون', sales: 140, featured: false },
    { id: 'dp_4', name: 'اشتراك رقمي شهري', category: 'الاشتراكات الرقمية', price: 260000, stock: 42, minStock: 10, status: 'نشط', sales: 88, featured: false },
   ],
