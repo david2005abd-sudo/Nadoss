@@ -12,6 +12,14 @@ import { getIcon, IconBag, IconCheck, IconStore } from '@/components/nasaq/icons
  * معاينة المتجر العام — تقرأ بيانات المشروع من المتجر المحلي وتعرض الموقع
  * كما يراه الزائر، دون الحاجة لأي خادم.
  */
+/**
+ * التصدير الثابت لا يستطيع استنتاج الشرائح الممكنة؛ نولّد المسار للمشاريع
+ * الجاهزة كي يُبنى المتجر كصفحة ثابتة لكل مشروع.
+ */
+export function generateStaticParams() {
+  return [{ slug: 'proj_store' }, { slug: 'proj_restaurant' }, { slug: 'proj_workshop' }, { slug: 'proj_engineering' }, { slug: 'proj_realestate' }, { slug: 'proj_digital' }];
+}
+
 export default function StoreHomePage() {
   const params = useParams();
   const slug = typeof params?.slug === 'string' ? params.slug : '';
