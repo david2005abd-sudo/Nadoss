@@ -422,13 +422,13 @@ export default function StorePreview({ slug = '' }: { slug?: string }) {
                     className="nq-item-art"
                     style={{ background: `linear-gradient(135deg, ${project.primaryColor}1F, ${project.primaryColor}0A)` }}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="nq-item-art-head">
                       <span className="badge badge-muted">{item.category}</span>
                       {item.note && <span className="badge badge-warning">{item.note}</span>}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="nq-item-art-foot">
                       <span style={{ color: project.primaryColor }}>{getIcon(project.businessType === 'restaurant' ? 'utensils' : 'bag', { size: 18 })}</span>
-                      <span className="text-[11px] font-bold" style={{ color: project.primaryColor }}>RTL Ready</span>
+                      <span className="text-[11px] font-bold" style={{ color: project.primaryColor }}>{businessLabel}</span>
                     </div>
                   </div>
                   <div>

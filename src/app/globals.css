@@ -1113,5 +1113,66 @@ body {
 h1, h2, h3, h4, h5, h6,
 .hero-title, .section-title, .kpi-value, .brand-mark {
   font-family: 'Almarai', 'Tajawal', Arial, system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  /* العربية متصلة: أي letter-spacing سلبي يمزق اتصال الحروف */
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-feature-settings: normal;
 }
+h1, h2, h3, .hero-title, .section-title {
+  text-wrap: balance;
+  line-height: 1.35;
+}
+p, .hero-desc, .section-desc {
+  text-wrap: pretty;
+  line-height: 1.75;
+}
+/* أرقام وخطوط لاتينية داخل نص عربي */
+[dir='ltr'], .font-mono {
+  letter-spacing: normal;
+}
+
+/* علامة الصح في قوائم الثقة */
+.nq-check {
+  @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold;
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+/* رأس وتذييل بطاقة العنصر في المتجر */
+.nq-item-art-head {
+  @apply flex flex-wrap items-center gap-1.5;
+}
+.nq-item-art-head .badge {
+  @apply max-w-full truncate;
+}
+.nq-item-art-foot {
+  @apply mt-auto flex items-center gap-1.5 pt-2;
+}
+
+/* =====================================================================
+   Layout polish — consistent rhythm, no orphan articles, no cramped rows
+   ===================================================================== */
+
+/* الشبكات: صفوف متساوية ومسافات موحّدة */
+.grid-2 > *, .grid-3 > *, .grid-4 > * {
+  min-width: 0;
+}
+
+/* البطاقات: عنوان ومحتوى بمسافات منتظمة */
+.card > :first-child { margin-top: 0; }
+.card > :last-child { margin-bottom: 0; }
+
+/* الجداول: لا escol نص يخرج عن الخلية */
+.data-table td, .data-table th { overflow-wrap: anywhere; }
+
+/* الشارات: لا تلتصق ببعضها */
+.badge + .badge { margin-inline-start: 0.25rem; }
+
+/* الحقول: تسمية ثابتة لا تقفز */
+.form-label { line-height: 1.6; }
+
+/* الأزرار المتجاورة: مسافة متساوية */
+.btn + .btn { margin-inline-start: 0.5rem; }
+
+/* العناوين الفرعية داخل البطاقات */
+.card h3 { line-height: 1.45; }

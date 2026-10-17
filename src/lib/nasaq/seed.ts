@@ -919,8 +919,8 @@ const projects: Project[] = [
    { id: 'dig_4', name: 'اشتراك شهري ', type: 'تفعيل تلقائي', price: 260000, deliveryStatus: 'تسليم آلي فوري', availableCodes: 25, sampleCode: 'DEMO-SUB-9932-XXXX' },
   ],
   orders: [
-   { id: 'ORD-5011', number: 'ORD-5011', customer: 'تركي العنزي', date: '2026-10-16', total: 740000, status: 'مكتمل (تم تسليم الكود)', items: 'بطاقة ألعاب رقمية', history: ['تم الطلب', 'تم تسليم الكود ال آليًا'] },
-   { id: 'ORD-5012', number: 'ORD-5012', customer: 'نواف الشهري', date: '2026-10-16', total: 460000, status: 'مكتمل (تم تسليم الكود)', items: 'بطاقة شحن + اشتراك رقمي ', history: ['تم الطلب', 'تم تسليم الأكواد'] },
+   { id: 'ORD-5011', number: 'ORD-5011', customer: 'تركي العنزي', date: '2026-10-16', total: 740000, status: 'مكتمل (تم تسليم الكود)', items: 'بطاقة ألعاب رقمية', history: ['تم الطلب', 'تم تسليم الكود آليًا'] },
+   { id: 'ORD-5012', number: 'ORD-5012', customer: 'نواف الشهري', date: '2026-10-16', total: 460000, status: 'مكتمل (تم تسليم الكود)', items: 'بطاقة شحن + اشتراك رقمي', history: ['تم الطلب', 'تم تسليم الأكواد'] },
   ],
   customers: [
    { id: 'dc_1', name: 'تركي العنزي', phone: '0761122331', city: 'بغداد', ordersCount: 11, totalSpent: 1620, lastActivity: 'شراء بطاقة ألعاب رقمية' },
@@ -1078,8 +1078,8 @@ const aiUsageLogs: AiUsageLog[] = [
 const notifications: Notification[] = [
  { id: 'nt_1', title: 'طلب جديد #ORD-1043', text: 'وصل طلب جديد في متجر ندى بقيمة 1,250,000 د.ع.', time: 'منذ 10 دقائق', read: false, type: 'info' },
  { id: 'nt_2', title: 'تنبيه انخفاض مخزون', text: 'منتج (كريم ترطيب) وصل إلى 4 قطع فقط (الحد الأدنى 12).', time: 'منذ 35 دقيقة', read: false, type: 'warning' },
- { id: 'nt_3', title: 'اكتمال إعداد الموقع ال', text: 'تم حفظ قوالب وأقسام موقع متجر ندى بنجاح.', time: 'منذ ساعتين', read: false, type: 'success' },
- { id: 'nt_4', title: 'تنبيه استهلاك AI ', text: 'مشروع (أبعاد للهندسة) استهلك 80% من الحصة ال الشهرية.', time: 'أمس', read: true, type: 'warning' },
+ { id: 'nt_3', title: 'اكتمال إعداد الموقع', text: 'تم حفظ قوالب وأقسام موقع متجر ندى بنجاح.', time: 'منذ ساعتين', read: false, type: 'success' },
+ { id: 'nt_4', title: 'تنبيه استهلاك AI ', text: 'مشروع (أبعاد للهندسة) استهلك 80% من حصته الشهرية.', time: 'أمس', read: true, type: 'warning' },
 ];
 
 const supportTickets: SupportTicket[] = [

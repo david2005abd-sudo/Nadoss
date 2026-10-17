@@ -18,7 +18,7 @@ export default function AdminNotificationsPage() {
   <>
    <AdminHeader
     title="الإشعارات والتقارير"
-    subtitle="إشعارات المنصة ال (مشتركون جدد، تجاوزات حدود، طلبات دعم، تكاملات)."
+    subtitle="إشعارات المنصة: مشتركون جدد، تجاوزات حدود، طلبات دعم، وتكاملات."
     actions={
      <button
       type="button"

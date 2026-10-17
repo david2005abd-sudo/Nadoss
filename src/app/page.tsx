@@ -131,8 +131,8 @@ export default function HomePage() {
    <section id="hero" className="hero-section">
     <div className="nasaq-container hero-grid">
      <div>
-      <span className="badge badge-primary">منصة عربية متعددة الأنشطة مدعومة بالذكاء الاصطناعي</span>
-      <h1 className="hero-title mt-3">
+      <span className="badge badge-primary mb-4 inline-block">منصة عربية متعددة الأنشطة مدعومة بالذكاء الاصطناعي</span>
+      <h1 className="hero-title">
        مشروعك يستحق موقعًا يدير أعماله، لا مجرد صفحة تعرضه.
       </h1>
       <p className="hero-desc">
@@ -148,14 +148,21 @@ export default function HomePage() {
         استكشف المنصة
        </a>
        <Link href="/dashboard" className="btn btn-lg btn-secondary">
-        دخول لوحة العميل ال
+        دخول لوحة التحكم
        </Link>
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted">
-       <span>✓ لوحة تتكيف مع 27+ نشاطًا تجاريًا</span>
-       <span>✓ بدون خبرة برمجية</span>
-       <span>✓ محرك وحدات ذكي قابل للتخصيص</span>
-      </div>
+      <ul className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
+       {[
+        'لوحة تتكيف مع 27+ نشاطًا تجاريًا',
+        'بدون خبرة برمجية',
+        'محرك وحدات ذكي قابل للتخصيص',
+       ].map((t) => (
+        <li key={t} className="flex items-center gap-1.5">
+         <span className="nq-check" aria-hidden="true">✓</span>
+         <span>{t}</span>
+        </li>
+       ))}
+      </ul>
      </div>
 
      <div className="hero-composition" aria-label="معاينة تفاعلية لمكونات المنصة">

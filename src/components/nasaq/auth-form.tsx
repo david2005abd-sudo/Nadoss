@@ -179,7 +179,7 @@ export function LoginForm() {
     <p className="mt-4 text-center text-xs text-muted">
      يمكنك أيضًا{' '}
      <Link href="/dashboard" className="text-primary hover:underline">
-      تصفح لوحة العميل ال
+      تصفح لوحة التحكم
      </Link>{' '}
      بدون تسجيل دخول.
     </p>

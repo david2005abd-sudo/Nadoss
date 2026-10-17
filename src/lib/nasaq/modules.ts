@@ -139,7 +139,7 @@ export const MODULE_REGISTRY: Record<ModuleId, ModuleDef> = {
   id: 'employees', name: 'الموظفون والفريق', description: 'إدارة أعضاء الفريق وأدوارهم والوحدات المسموح لهم بالوصول إليها.',
   icon: 'users', supportedBusinessTypes: ['maintenance', 'engineering', 'beauty', 'tech', 'mixed'], dependencies: [], defaultEnabled: true,
   availableInPlans: ['Business'], permissions: ['owner'],
-  route: 'employees', status: 'active', recommendReason: 'لتوزيع المهام والصلاحيات ال على فريق العمل',
+  route: 'employees', status: 'active', recommendReason: 'لتوزيع المهام والصلاحيات على فريق العمل',
  },
  marketing: {
   id: 'marketing', name: 'التسويق والعروض', description: 'إنشاء كوبونات خصم وحملات ترويجية لزيادة المبيعات.',

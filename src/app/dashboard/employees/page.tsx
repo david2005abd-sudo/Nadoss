@@ -72,7 +72,7 @@ export default function EmployeesPage() {
        </div>
       ) : (
        <div className="table-wrap nq-reveal">
-        <EmptyState title={q ? 'لا توجد نتائج مطابقة' : 'لا يوجد موظفون بعد'} description="أضف أعضاء فريقك لتوزيع المهام والصلاحيات ال." />
+        <EmptyState title={q ? 'لا توجد نتائج مطابقة' : 'لا يوجد موظفون بعد'} description="أضف أعضاء فريقك لتوزيع المهام والصلاحيات على الفريق." />
        </div>
       )}
 

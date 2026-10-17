@@ -57,7 +57,7 @@ export default function BuilderPage() {
       <span aria-hidden="true">/</span>
       <span className="font-medium text-text-primary">محرر الموقع</span>
      </nav>
-     <h1 className="text-xl font-extrabold sm:text-2xl">محرر الموقع التفاعلي </h1>
+     <h1 className="text-xl font-extrabold sm:text-2xl">محرر الموقع</h1>
      <p className="mt-1 text-sm text-muted">عدّل اسم الموقع والنصوص والأقسام وقارن بين المعاينة على الحاسوب والهاتف.</p>
     </div>
     <div className="flex gap-2">
