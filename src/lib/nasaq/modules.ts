@@ -121,7 +121,7 @@ export const MODULE_REGISTRY: Record<ModuleId, ModuleDef> = {
   id: 'invoices', name: 'الفواتير', description: 'إصدار فواتير ومتابعة حالات السداد.',
   icon: 'receipt', supportedBusinessTypes: ['maintenance', 'engineering', 'cards', 'tech', 'mixed'], dependencies: [], defaultEnabled: true,
   availableInPlans: ['Growth', 'Business'], permissions: ['owner', 'manager'],
-  route: 'invoices', status: 'active', recommendReason: 'لتنظيم المطالبات المالية والفواتير ال',
+  route: 'invoices', status: 'active', recommendReason: 'لتنظيم المطالبات المالية والفواتير',
  },
  delivery: {
   id: 'delivery', name: 'التوصيل والشحن', description: 'متابعة مناديب التوصيل ومناطق التغطية وحالات الشحن.',
@@ -130,7 +130,7 @@ export const MODULE_REGISTRY: Record<ModuleId, ModuleDef> = {
   route: 'delivery', status: 'active', recommendReason: 'لتتبع توصيل الطلبات للعملاء',
  },
  customers: {
-  id: 'customers', name: 'العملاء', description: 'قاعدة بيانات العملاء، سجل الطلبات، وإجمالي المشتريات ال.',
+  id: 'customers', name: 'العملاء', description: 'قاعدة بيانات العملاء، سجل الطلبات، وإجمالي المشتريات.',
   icon: 'users', supportedBusinessTypes: ['all'], dependencies: [], defaultEnabled: true,
   availableInPlans: ['Starter', 'Growth', 'Business'], permissions: ['owner', 'manager'],
   route: 'customers', status: 'active', recommendReason: 'أساسي لبناء علاقة مستدامة مع عملائك',
@@ -148,7 +148,7 @@ export const MODULE_REGISTRY: Record<ModuleId, ModuleDef> = {
   route: 'marketing', status: 'active', recommendReason: 'لتنشيط المبيعات عبر العروض والكوبونات',
  },
  files: {
-  id: 'files', name: 'الملفات والمخططات', description: 'مكتبة لحفظ المخططات الهندسية والعقود والملفات المرفقة ال.',
+  id: 'files', name: 'الملفات والمخططات', description: 'مكتبة لحفظ المخططات الهندسية والعقود والملفات المرفقة.',
   icon: 'folder', supportedBusinessTypes: ['engineering', 'tech', 'realestate', 'education'], dependencies: [], defaultEnabled: true,
   availableInPlans: ['Growth', 'Business'], permissions: ['owner', 'manager'],
   route: 'files', status: 'active', recommendReason: 'لحفظ ومشاركة ملفات المشاريع والمخططات',
@@ -160,7 +160,7 @@ export const MODULE_REGISTRY: Record<ModuleId, ModuleDef> = {
   route: 'analytics', status: 'active', recommendReason: 'لقراءة مؤشرات الأداء واتخاذ قرارات مبنية على البيانات',
  },
  content: {
-  id: 'content', name: 'المحتوى والصفحات', description: 'إدارة صفحات الموقع، العناوين، أوصاف SEO، وحالة النشر ال.',
+  id: 'content', name: 'المحتوى والصفحات', description: 'إدارة صفحات الموقع، عناوينها، أوصاف SEO، وحالة النشر.',
   icon: 'layout', supportedBusinessTypes: ['all'], dependencies: [], defaultEnabled: true,
   availableInPlans: ['Starter', 'Growth', 'Business'], permissions: ['owner', 'manager'],
   route: 'content', status: 'active', recommendReason: 'للتحكم بصفحات موقعك الإلكتروني ومحتواها',

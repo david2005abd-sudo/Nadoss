@@ -18,7 +18,7 @@ export default function CustomersPage() {
  return (
   <DashboardModule
    title="العملاء"
-   subtitle="قاعدة بيانات العملاء وسجل مشترياتهم ال."
+   subtitle="قاعدة بيانات العملاء وسجل مشترياتهم."
    actions={() => (
     <button type="button" className="btn btn-primary btn-sm" onClick={() => { setEditing(null); setForm(BLANK); setOpen(true); }}>
      <IconPlus size={16} /> عميل جديد

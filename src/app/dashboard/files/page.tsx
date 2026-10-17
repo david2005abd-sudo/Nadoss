@@ -24,7 +24,7 @@ export default function FilesPage() {
  return (
   <DashboardModule
    title="الملفات والمخططات"
-   subtitle="مكتبة لحفظ المخططات الهندسية والعقود والملفات المرفقة ال."
+   subtitle="مكتبة لحفظ المخططات الهندسية والعقود والملفات المرفقة."
    actions={ctx => (
     <button type="button" className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>
      <IconPlus size={16} /> ملف جديد

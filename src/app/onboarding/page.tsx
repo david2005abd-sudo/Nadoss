@@ -209,7 +209,7 @@ export default function OnboardingPage() {
     </div>
     <div className="flex gap-2">
      <Link href="/admin/overview" className="btn btn-outline btn-sm">
-      لوحة المالك 
+      لوحة المالك
      </Link>
      <Link href="/dashboard" className="btn btn-outline btn-sm">
       تخطي المعالج (تصفح المشاريع ال)

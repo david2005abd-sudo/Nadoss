@@ -195,8 +195,8 @@ function AppTopbar({ onMenu }: { onMenu: () => void }) {
      )}
     </Link>
 
-    <Link href="/admin/overview" className="btn btn-ghost btn-sm hide-sm" title="لوحة المالك ال">
-     لوحة المالك 
+    <Link href="/admin/overview" className="btn btn-ghost btn-sm hide-sm" title="لوحة المالك">
+     لوحة المالك
     </Link>
 
     <Link href="/login" className="btn btn-outline btn-sm">دخول</Link>

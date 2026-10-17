@@ -520,7 +520,7 @@ const projects: Project[] = [
    { id: 'cat_4', name: 'العناية والجمال', description: 'منتجات العناية بالبشرة والترطيب' },
   ],
   orders: [
-   { id: 'ORD-1041', number: 'ORD-1041', customer: 'سارة القحطاني', date: '2026-10-15', total: 2480000, status: 'مكتمل', items: 'عطر شرقي فاخر + حقيبة جلدية', history: ['تم إنشاء الطلب', 'تم تأكيد الدفع ال', 'تم الشحن', 'مكتمل'] },
+   { id: 'ORD-1041', number: 'ORD-1041', customer: 'سارة القحطاني', date: '2026-10-15', total: 2480000, status: 'مكتمل', items: 'عطر شرقي فاخر + حقيبة جلدية', history: ['تم إنشاء الطلب', 'تم تأكيد الدفع', 'تم الشحن', 'مكتمل'] },
    { id: 'ORD-1042', number: 'ORD-1042', customer: 'خالد السبيعي', date: '2026-10-15', total: 1680000, status: 'قيد التجهيز', items: 'ساعة ذكية', history: ['تم إنشاء الطلب', 'قيد التجهيز في المستودع'] },
    { id: 'ORD-1043', number: 'ORD-1043', customer: 'ريم الشمري', date: '2026-10-16', total: 1160000, status: 'جديد', items: 'سماعة لاسلكية + كريم ترطيب', history: ['تم استلام الطلب'] },
    { id: 'ORD-1044', number: 'ORD-1044', customer: 'فهد الدوسري', date: '2026-10-16', total: 1120000, status: 'بانتظار التوصيل', items: 'عطر شرقي فاخر', history: ['تم إنشاء الطلب', 'خرج مع مندوب التوصيل'] },
@@ -1011,7 +1011,7 @@ const aiProviders: AiProvider[] = [
   connStatus: 'غير مُختبر',
   limit: '30,000 رمز / يوم',
   isDefault: false,
-  desc: 'خيار اقتصادي لتحليل البيانات ال.',
+  desc: 'خيار اقتصادي لتحليل البيانات.',
  },
  {
   id: 'prov_mistral',
@@ -1071,7 +1071,7 @@ const aiUsageLogs: AiUsageLog[] = [
  { id: 'ail_1', project: 'متجر ندى', provider: 'OpenAI', model: 'gpt-4o-mini', task: 'كتابة وصف عطر شرقي فاخر', requests: 14, tokens: 6420, estCost: '$0.04', date: '2026-10-16', status: 'مكتمل ' },
  { id: 'ail_2', project: 'مطعم مذاق', provider: 'Google Gemini', model: 'gemini-1.5-flash', task: 'اقتراح عرض غداء ترويجي', requests: 9, tokens: 4100, estCost: '$0.02', date: '2026-10-16', status: 'مكتمل ' },
  { id: 'ail_3', project: 'ورشة المحرك', provider: 'Claude', model: 'claude-3-5-sonnet', task: 'صياغة مسودة عرض سعر صيانة', requests: 18, tokens: 11200, estCost: '$0.11', date: '2026-10-15', status: 'مكتمل ' },
- { id: 'ail_4', project: 'أبعاد للهندسة', provider: 'Claude', model: 'claude-3-5-sonnet', task: 'تحسين وصف مشروع معماري', requests: 27, tokens: 19800, estCost: '$0.19', date: '2026-10-15', status: 'تنبيه اقتراب الحد ال' },
+ { id: 'ail_4', project: 'أبعاد للهندسة', provider: 'Claude', model: 'claude-3-5-sonnet', task: 'تحسين وصف مشروع معماري', requests: 27, tokens: 19800, estCost: '$0.19', date: '2026-10-15', status: 'تنبيه اقتراب الحد' },
  { id: 'ail_5', project: 'عالم البطاقات', provider: 'OpenRouter', model: 'openrouter/auto', task: 'تنظيم فئات البطاقات الرقمية', requests: 7, tokens: 2900, estCost: '$0.01', date: '2026-10-14', status: 'مكتمل ' },
 ];
 
@@ -1090,7 +1090,7 @@ const supportTickets: SupportTicket[] = [
 const activityLog: ActivityEntry[] = [
  { id: 'act_1', time: '10:45 ص', actor: 'ندى العتيبي', action: 'تحديث سعر منتج (عطر شرقي فاخر) في متجر ندى' },
  { id: 'act_2', time: '10:15 ص', actor: 'ماجد الزهراني', action: 'تأكيد حجز طاولة عشاء في مطعم مذاق' },
- { id: 'act_3', time: '09:50 ص', actor: 'النظام ال', action: 'حفظ نسخة الحالة في التخزين المحلي للمتصفح' },
+ { id: 'act_3', time: '09:50 ص', actor: 'النظام', action: 'حفظ نسخة الحالة في التخزين المحلي للمتصفح' },
 ];
 
 /* ==========================================================================

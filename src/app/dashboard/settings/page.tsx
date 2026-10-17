@@ -67,7 +67,7 @@ export default function SettingsPage() {
            <input className="form-control" value={project.language} onChange={(e) => patch({ language: e.target.value })} />
           </Field>
          </div>
-         <Field label="الوصف ال">
+         <Field label="الوصف">
           <textarea id="set-proj-desc" className="form-control" rows={3} value={project.description} onChange={(e) => patch({ description: e.target.value })} />
          </Field>
         </div>

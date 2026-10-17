@@ -173,7 +173,7 @@ export default function AdminAiPage() {
       />
      </Field>
      <div className="grid-2 nq-reveal nq-stagger">
-      <Field label="الحد الأقصى ال">
+      <Field label="الحد الأقصى">
        <input className="form-control" value={form.limit ?? ''} onChange={(e) => setForm((f) => ({ ...f, limit: e.target.value }))} />
       </Field>
       <Field label="الحالة">

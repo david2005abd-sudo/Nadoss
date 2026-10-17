@@ -12,7 +12,7 @@ export const BUSINESS_TYPES = [
  { id: 'beauty', name: 'مركز تجميل أو عيادة', shortDesc: 'حجز المواعيد، قائمة الجلسات والخدمات، وإدارة ملفات العملاء.', icon: 'sparkle', sampleProject: 'proj_workshop' },
  { id: 'education', name: 'تعليم وتدريب', shortDesc: 'عرض الدورات التدريبية، التسجيل، الجداول، والمحتوى التعليمي.', icon: 'book', sampleProject: 'proj_digital' },
  { id: 'digital', name: 'ألعاب ومنتجات رقمية', shortDesc: 'بيع الكتب، القوالب، البرمجيات، والتسليم الرقمي الفوري.', icon: 'cpu', sampleProject: 'proj_digital' },
- { id: 'cards', name: 'بطاقات وشحن إلكتروني', shortDesc: 'إدارة الأكواد الرقمية، مخزون البطاقات، والتسليم الآلي ال.', icon: 'card', sampleProject: 'proj_digital' },
+ { id: 'cards', name: 'بطاقات وشحن إلكتروني', shortDesc: 'إدارة الأكواد الرقمية، مخزون البطاقات، والتسليم الآلي.', icon: 'card', sampleProject: 'proj_digital' },
  { id: 'tech', name: 'شركة تقنية أو برمجة', shortDesc: 'عرض الحلول الرقمية، سابقة الأعمال، طلبات عروض الأسعار، والمشاريع.', icon: 'code', sampleProject: 'proj_engineering' },
  { id: 'autoparts', name: 'متجر قطع غيار', shortDesc: 'فهرس أرقام القطع OEM، توافق المركبات، المخزون، والطلبات.', icon: 'cog', sampleProject: 'proj_workshop' },
  { id: 'mixed', name: 'مشروع مختلط', shortDesc: 'دمج مرن بين بيع المنتجات وتقديم الخدمات والحجوزات في لوحة واحدة.', icon: 'layers', sampleProject: 'proj_store' },
