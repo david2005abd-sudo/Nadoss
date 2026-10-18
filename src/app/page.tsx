@@ -49,6 +49,16 @@ const FAQS = [
  { q: 'هل بياناتي محفوظة عند إغلاق الصفحة؟', a: 'نعم، تُحفظ تغييراتك ومشاريعك بأمان في متصفحك عبر localStorage، ويمكنك تصديرها كملف JSON أو إعادة تعيينها متى شئت.' },
 ] as const;
 
+
+/** يكتب القالب المختار مؤقتًا ليقرأه معالج الإنشاء (يتجاوز أخطاء التخزين). */
+function stashTemplate(t: { businessType: string; templateId: string }) {
+  try {
+    window.localStorage.setItem('nasaq_pending_template', JSON.stringify(t));
+  } catch {
+    // التخزين محجوب — يستمر المعالج بالقيم الافتراضية
+  }
+}
+
 const NAV_LINKS = [
  { label: 'الرئيسية', href: '#hero' },
  { label: 'المميزات', href: '#features' },
@@ -469,7 +479,7 @@ export default function HomePage() {
           href="/onboarding"
           className="btn btn-sm btn-primary"
           style={{ flex: 1 }}
-          onClick={() => window.localStorage.setItem('nasaq_pending_template', JSON.stringify({ businessType: tpl.businessType, templateId: tpl.id }))}
+          onClick={() => stashTemplate({ businessType: tpl.businessType, templateId: tpl.id })}
          >
           اختيار القالب
          </Link>
@@ -633,7 +643,7 @@ export default function HomePage() {
        <Link
         href="/onboarding"
         className="btn btn-primary btn-sm"
-        onClick={() => window.localStorage.setItem('nasaq_pending_template', JSON.stringify({ businessType: previewTemplate.businessType, templateId: previewTemplate.id }))}
+        onClick={() => stashTemplate({ businessType: previewTemplate.businessType, templateId: previewTemplate.id })}
        >
         اختيار القالب
        </Link>

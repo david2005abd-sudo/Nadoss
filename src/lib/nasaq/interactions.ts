@@ -147,39 +147,6 @@ export function useRipple<T extends HTMLElement = HTMLButtonElement>() {
 }
 
 /* ==========================================================================
-   useMagnetic — element leans toward the cursor slightly
-   ========================================================================== */
-
-export function useMagnetic<T extends HTMLElement = HTMLButtonElement>(strength = 8) {
-  const ref = useRef<T | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia('(hover: none)').matches) return;
-
-    const onMove = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      const dx = ((e.clientX - (r.left + r.width / 2)) / r.width) * strength;
-      const dy = ((e.clientY - (r.top + r.height / 2)) / r.height) * strength;
-      el.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px)`;
-    };
-    const onLeave = () => {
-      el.style.transform = '';
-    };
-
-    el.addEventListener('pointermove', onMove);
-    el.addEventListener('pointerleave', onLeave);
-    return () => {
-      el.removeEventListener('pointermove', onMove);
-      el.removeEventListener('pointerleave', onLeave);
-    };
-  }, [strength]);
-
-  return ref;
-}
-
-/* ==========================================================================
    useScrollProgress — 0..1 page scroll progress
    ========================================================================== */
 
@@ -247,48 +214,4 @@ export function useLocalToast(timeoutMs = 3200) {
   const dismiss = useCallback((id: string) => setToasts((t) => t.filter((x) => x.id !== id)), []);
 
   return { toasts, push, dismiss };
-}
-
-/* ==========================================================================
-   useMediaQuery — reactive media query
-   ========================================================================== */
-
-export function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return;
-    const mql = window.matchMedia(query);
-    const onChange = () => setMatches(mql.matches);
-    onChange();
-    mql.addEventListener?.('change', onChange);
-    return () => mql.removeEventListener?.('change', onChange);
-  }, [query]);
-
-  return matches;
-}
-
-/* ==========================================================================
-   useHotkey — keyboard shortcut
-   ========================================================================== */
-
-export function useHotkey(combo: string, handler: (e: KeyboardEvent) => void) {
-  useEffect(() => {
-    const parts = combo.toLowerCase().split('+').map((p) => p.trim());
-    const key = parts[parts.length - 1];
-    const needCtrl = parts.includes('ctrl');
-    const needShift = parts.includes('shift');
-    const needAlt = parts.includes('alt');
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== key) return;
-      if (needCtrl !== (e.ctrlKey || e.metaKey)) return;
-      if (needShift !== e.shiftKey) return;
-      if (needAlt !== e.altKey) return;
-      handler(e);
-    };
-
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [combo, handler]);
 }

@@ -191,7 +191,7 @@ export default function OnboardingPage() {
   };
 
   addProject(project);
-  if (typeof window !== 'undefined') window.localStorage.removeItem('nasaq_pending_template');
+  try { if (typeof window !== 'undefined') window.localStorage.removeItem('nasaq_pending_template'); } catch { /* ignore */ }
   window.location.href = '/dashboard';
  }
 
