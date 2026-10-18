@@ -1176,3 +1176,52 @@ p, .hero-desc, .section-desc {
 
 /* العناوين الفرعية داخل البطاقات */
 .card h3 { line-height: 1.45; }
+
+/* =====================================================================
+   Table action column — stays reachable while the table scrolls (RTL)
+   ===================================================================== */
+.data-table td:last-child,
+.data-table th:last-child {
+  position: sticky;
+  left: 0;                       /* in RTL the last column is the far-left edge */
+  z-index: 2;
+  background: var(--surface);
+  box-shadow: 6px 0 8px -6px rgba(23, 32, 51, 0.12);
+}
+.data-table thead th:last-child {
+  background: var(--muted-surface);
+}
+/* keep the hover tone from hiding the sticky cell */
+.data-table tbody tr:hover td:last-child {
+  background: var(--surface);
+}
+/* in a wide table the sticky edge is unnecessary but harmless */
+@media (min-width: 900px) {
+  .data-table td:last-child,
+  .data-table th:last-child {
+    position: static;
+    box-shadow: none;
+  }
+}
+
+/* =====================================================================
+   Sticky first + last columns in horizontally-scrolled tables
+   The last column holds the row actions and must stay reachable on phones.
+   ===================================================================== */
+@media (max-width: 900px) {
+  /* in RTL the last column sits at the left edge of the scroller */
+  .data-table td:last-child,
+  .data-table th:last-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--surface);
+    box-shadow: -6px 0 10px -8px rgba(23, 32, 51, 0.22);
+  }
+  .data-table thead th:last-child {
+    background: var(--muted-surface);
+  }
+  .data-table tbody tr:hover td:last-child {
+    background: var(--surface);
+  }
+}

@@ -49,10 +49,10 @@ export function DashboardModule({
    <div className="flex flex-wrap items-end justify-between gap-3">
     <div>
      <nav className="breadcrumbs" aria-label="مسار التنقل">
-      {(breadcrumb ?? [project.name, title]).map((c, i) => (
+      {(breadcrumb ?? [project.name]).map((c, i) => (
        <span key={`${c}-${i}`} className="flex items-center gap-2">
         {i > 0 && <span aria-hidden="true">/</span>}
-        <span className={i === (breadcrumb ?? [project.name, title]).length - 1 ? 'font-medium text-text-primary' : ''}>{c}</span>
+        <span>{c}</span>
        </span>
       ))}
      </nav>
